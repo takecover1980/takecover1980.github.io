@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: wordpress | withweb]]></title>
+  <link href="http://blog.withweb.info/blog/categories/wordpress/atom.xml" rel="self"/>
+  <link href="http://blog.withweb.info/"/>
+  <updated>2012-10-04T23:07:29+09:00</updated>
+  <id>http://blog.withweb.info/</id>
+  <author>
+    <name><![CDATA[takecover1980]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[WordPress3.2のデフォルトテーマがシンプルできれい]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/10/wordpress32/"/>
+    <updated>2011-09-10T03:16:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/10/wordpress32</id>
+    <content type="html"><![CDATA[<p>WordPress3.2になってから、デフォルトテーマがTwentyTenからTwentyElevenに変わりましたね。</p>
+
+<!-- more -->
+
+
+<h2>Twenty Eleven</h2>
+
+<p><img src="/images/20110910-twentyeleven.png" title="twentyeleven" alt="image twentyeleven" /></p>
+
+<p>見た目はかなりきれいだと思います。イメージギャラリーやフォトログ、ショーケースのテンプレートも用意されていてなかなかに高機能。デモはここで見られます。</p>
+
+<p>たぶん大抵の人がブログでやりたいことは、だいたいできちゃうんじゃないでしょうか。</p>
+
+<p>デバイスの幅に対応してくれるので、何もしなくてもiPhoneやAndroidできれいに表示されます。</p>
+
+<p>このブログも始めたばかりなので、今のところテーマはTwentyElevenのままにしています。後で変えることになると思いますが、しばらくはこのままでもいいかな。</p>
+]]></content>
+  </entry>
+  
+</feed>

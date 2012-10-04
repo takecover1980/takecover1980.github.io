@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mac | withweb]]></title>
+  <link href="http://blog.withweb.info/blog/categories/mac/atom.xml" rel="self"/>
+  <link href="http://blog.withweb.info/"/>
+  <updated>2012-10-04T23:07:29+09:00</updated>
+  <id>http://blog.withweb.info/</id>
+  <author>
+    <name><![CDATA[takecover1980]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[MacBook Air 13インチ (mid 2011) を買いました]]></title>
+    <link href="http://blog.withweb.info/blog/2011/11/05/macbook-air/"/>
+    <updated>2011-11-05T06:13:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/11/05/macbook-air</id>
+    <content type="html"><![CDATA[<p>新しいMacBook Airが欲しいけどいつ買おうか。何となく決め手が無い。</p>
+
+<p>7月21日に発売されてから3ヶ月以上も迷った末に、結局買いました。</p>
+
+<!-- more -->
+
+
+<h2>引っ越しの荷物を減らしたい</h2>
+
+<p>買う決心をした理由はこれです。というか、これだけです。</p>
+
+<p>東京から広島へ引越すことになり「荷物を減らしたいなー」ということで、iMacから乗り換えるべく注文していたMacBook Airが届きました。</p>
+
+<p><img src="/images/20111105-macbook-air-package.png" title="macbook air package" alt="image macbook air package" /></p>
+
+<p>なんかもう箱からして薄い。</p>
+
+<p>前に使っていたiMac(early 2009)はまだまだ普通に使えますが、リセールバリューを考えると3年半使ったのは長過ぎた気がします。売れるうちに売ってしまいます。</p>
+
+<h2>スペックは適当に選んだ</h2>
+
+<p>今回買ったスペックは13インチの高い方です。キーボードだけカスタマイズしています。</p>
+
+<ul>
+<li>サイズ：13インチ</li>
+<li>CPU：1.7GHz i5</li>
+<li>メモリ：4GB</li>
+<li>ストレージ：256GB</li>
+<li>キーボード：US</li>
+</ul>
+
+
+<p>利用シーンが単純なのでスペックも単純に決めました。</p>
+
+<ul>
+<li>家で使う</li>
+<li>メインマシン（これ1台）</li>
+<li>外に持ち出すことがあるかも（ないかも）</li>
+<li>Webサービスやアプリの開発をする</li>
+<li>だいたい2年くらいで買い替える</li>
+</ul>
+
+
+<p>スペック選びは悩む人が多いと思いますが、どのくらいの期間使うか決めておけば案外割り切って選べると思います。</p>
+
+<p>キーボードは慣れでUSにしています。打つ時は見ないのでこだわりはありません。</p>
+
+<p><img src="/images/20111105-macbook-air-keyboard.png" title="macbook air keyboard" alt="image macbook air keyboard" /></p>
+
+<p>ファンクションキーの列もLion仕様になってます。写ってないけど右端のイジェクトキーも電源キーに変わっています。</p>
+
+<h2>使い勝手</h2>
+
+<p>そろそろ聞き飽きてきた頃ですが、SSDのおかげで全体的に静かで速いです。</p>
+
+<p>今のところアプリの起動も操作も「待たされる感」がありません。VirtualBoxでWindowsを起動した時なんてもう意味が分からないレベルです。</p>
+
+<p>あと関係ないけど、MacBook Airって大根とか切れそうなくらい薄いですね。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Google Chromeがいつの間にかLionのフルスクリーンに対応していた]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/20/google-chrome-lion/"/>
+    <updated>2011-09-20T16:38:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/20/google-chrome-lion</id>
+    <content type="html"><![CDATA[<p>何の気なしにウィンドウを最大化した時に気が付いたんですが、いつの間にかMac OS X Lionのフルスクリーンに対応していたみたいです。</p>
+
+<p>アップデートでは例のごとくいろいろと改善されたようですが、Lionユーザ向けには目立った機能として2つ盛り込まれたようです。</p>
+
+<!-- more -->
+
+
+<h2>フルスクリーンに対応した</h2>
+
+<p>LionユーザにはおなじみのフルスクリーンがChromeでもできるようになりました。</p>
+
+<p>ウィンドウがニュイーンと広がってMission Controlのデスクトップから独立するアレですね。</p>
+
+<p><img src="/images/20110920-chrome-fullscreen.png" title="chrome fullscreen" alt="image chrome fullscreen" /></p>
+
+<p>ウィンドウ右上の矢印ボタンをクリックするか、Cmd+Control+Fでフルスクリーンになります。</p>
+
+<p>私のiMac 24インチ(1920x1200)だと</p>
+
+<p><img src="/images/20110920-imac-view.png" title="imac view" alt="image imac view" /></p>
+
+<p>こんな感じです。</p>
+
+<p>余白だらけですね。もっと広い解像度だとほとんど余白になりそうです。</p>
+
+<p>個人的にはあまり使うことはなさそうですが、ブラウザをフルスクリーンで使う人にはなんとなくうれしいのではないでしょうか。</p>
+
+<h2>スクロール時のみスクロールバーが表示される</h2>
+
+<p>これは<a href="http://googlejapan.blogspot.com/2011/09/google-chrome.html">GoogleJapanのブログ</a>を見て知ったのですが、スクロールした時だけウィンドウ右側にスクロールバーが表示されます。iPhoneやiPadユーザにはおなじみなので、よりMacらしさ(Appleらしさ？)が出た感じです。</p>
+
+<p>フルスクリーンもそうですが、こういう細かいインタフェースがデフォルトアプリに近づくことで違和感なく乗り換えられるようになったのではないかと思います。</p>
+
+<p>それにしても、Chromeは自動でアップデートされるので、いつ何が変わったのか意外と気付かないものですね。</p>
+]]></content>
+  </entry>
+  
+</feed>

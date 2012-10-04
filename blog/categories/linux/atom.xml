@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: linux | withweb]]></title>
+  <link href="http://blog.withweb.info/blog/categories/linux/atom.xml" rel="self"/>
+  <link href="http://blog.withweb.info/"/>
+  <updated>2012-10-04T23:07:29+09:00</updated>
+  <id>http://blog.withweb.info/</id>
+  <author>
+    <name><![CDATA[takecover1980]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[後で泣かないための個人的なWeb開発環境の作り方]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/13/web-develop/"/>
+    <updated>2011-09-13T18:20:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/13/web-develop</id>
+    <content type="html"><![CDATA[<p>開発環境はしばらく使っていくと設定ファイルのゴミなどで散らかってしまいます。パソコンを買い換えたりサーバ環境を壊した時に構築し直すのもかなり面倒です。</p>
+
+<p>運用も復旧も移行も楽にしたい。でも「開発サーバで動くのに本番サーバで動かない」なんてことにはなりたくない。</p>
+
+<p>そんな風に考えたエンジニアが個人的なWeb開発環境を構築してみました。そのまとめです。</p>
+
+<!-- more -->
+
+
+<h2>仮想化する</h2>
+
+<p>VirtualBoxを使ってLinuxとWindowsを仮想化します。</p>
+
+<p>仮想化しておけば作業用PCとサーバ環境を分られるのでゴミファイルが邪魔になりません。物理的な場所もとらない。</p>
+
+<p>設定ファイルをいじってサーバ環境を壊してもスナップショットから簡単に戻せます。マシン移行、バックアップ、レストアなんかもファイルコピーだけなので簡単です。</p>
+
+<p>Linuxは開発サーバでいろいろ入ってます。</p>
+
+<ul>
+<li>Webサーバ(Apache)</li>
+<li>DBサーバ(MySQL/SQLite)</li>
+<li>内部DNSサーバ(BIND)</li>
+<li>APサーバ(WordPress/Redmine/etc)</li>
+</ul>
+
+
+<p>WindowsはIEの動作確認用に入れています。</p>
+
+<p>サービスを追加する時はローカル用のドメイン、バーチャルホスト、DBを追加すれば開発を始められます。</p>
+
+<h2>XAMPPやMAMPは使わない</h2>
+
+<p>Web上で動くものはたいていLinuxサーバで動いています。</p>
+
+<p>そこを軽く見ていると後で泣きをみます。開発サーバと本番サーバは似ていれば似ているほど後が楽です。</p>
+
+<p>個人的にはユニットテストまでならアリだと思いますが、この環境でテストしたつもりになるのはやめておいた方がいいと思います。会社で「テスト終わりました」とか言うと間違いなく怒られます。</p>
+
+<p>AMP(Apache/MySQL/PHP)環境の雰囲気を知りたい人やローカルでWordPress等を動かしてみたい人がとっかかりに使うのは凄くいいと思います。</p>
+
+<p>また、他の言語、ライブラリ、フレームワークを使おうとすると非常に手間がかかり逆に不便です。あくまでもXAMPP、MAMPが提供している範囲で簡単に導入できるようになるソフトです。</p>
+
+<h2>内部DNSサーバを立てておく</h2>
+
+<p>これは本当に便利です。</p>
+
+<p>ルータに内部DNS、プロバイダのDNSを使うように設定します。</p>
+
+<p>これでLAN内のWindows/Mac/iPhoneどこからでも同じURLで開発サーバへアクセスできます。わざわざドメインを取得する必要もないし、hostsファイルにいちいち追加する必要もありません。</p>
+
+<p>Web/DBサーバと比べるとDNSサーバは構築自体の敷居が高いですが、内部向けならあまりやることは無いしネットワークの勉強になると思います。</p>
+
+<h2>まとめ</h2>
+
+<p>要は企業が社内で使うイントラネットの簡易版です。</p>
+
+<p>例えばブログをレンタルサーバ＋独自ドメインで使っている人がこういう環境を構築すると、今まで各サービスの管理画面に参考サイトからコピペしていたものが何だったのかよく分かると思います。</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: vps | withweb]]></title>
+  <link href="http://blog.withweb.info/blog/categories/vps/atom.xml" rel="self"/>
+  <link href="http://blog.withweb.info/"/>
+  <updated>2012-10-04T23:07:29+09:00</updated>
+  <id>http://blog.withweb.info/</id>
+  <author>
+    <name><![CDATA[takecover1980]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[VPSのファイアウォール設定を見直す]]></title>
+    <link href="http://blog.withweb.info/blog/2012/05/22/vps-iptables/"/>
+    <updated>2012-05-22T17:50:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/05/22/vps-iptables</id>
+    <content type="html"><![CDATA[<p>自分しか使わないサーバとはいえ、あんまり考えずに設定をしてたので見直し。</p>
+
+<!-- more -->
+
+
+<h2>ポリシー</h2>
+
+<ul>
+<li>受信パケットは原則破棄</li>
+<li>送信パケットは原則通過</li>
+<li>転送パケットは原則破棄</li>
+<li>ローカルループバックからの受信を許可</li>
+<li>セッションが確立した後の受信を許可</li>
+<li>SYN Cookies有効</li>
+<li>ブロードキャスト宛のPINGに応答しない</li>
+<li>ICMP Redirectパケットを破棄</li>
+<li>Source Routedパケットを破棄</li>
+<li>フラグメント化されたパケットを破棄</li>
+<li>NetBIOS関連のパケットを破棄</li>
+<li>1秒間に4回を超えるPINGを破棄</li>
+<li>ブロードキャスト、マルチキャスト宛のパケットを破棄</li>
+<li>113番ポート(IDENT)の受信は拒否応答</li>
+<li>指定サービスの受信を許可</li>
+<li>その他のアクセスはログ記録して破棄</li>
+</ul>
+
+
+<p>ひとまず特定の国やIPはブロックしていませんが、後で手を入れていくことになると思うのでこんな感じのスクリプトにしてます。</p>
+
+<h2>スクリプト</h2>
+
+<pre><code>#!/bin/bash
+
+########################################
+# 前処理
+########################################
+
+# ファイアウォール停止
+/etc/rc.d/init.d/iptables stop
+
+########################################
+# 基本設定
+########################################
+
+# デフォルトルール
+iptables -P INPUT DROP
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD DROP
+
+# 自ホストからのアクセスを許可
+iptables -A INPUT -i lo -j ACCEPT
+
+# セッションが確立した後は許可
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+########################################
+# 攻撃対策
+########################################
+
+# SYN Cookies有効(TCP SYN Flood攻撃対策)
+sysctl -w net.ipv4.tcp_syncookies=1 &gt; /dev/null
+sed -i '/net.ipv4.tcp_syncookies/d' /etc/sysctl.conf
+echo "net.ipv4.tcp_syncookies=1" &gt;&gt; /etc/sysctl.conf
+
+# ブロードキャストアドレス宛pingには応答しない(Smurf攻撃対策)
+sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=1 &gt; /dev/null
+sed -i '/net.ipv4.icmp_echo_ignore_broadcasts/d' /etc/sysctl.conf
+echo "net.ipv4.icmp_echo_ignore_broadcasts=1" &gt;&gt; /etc/sysctl.conf
+
+# ICMP Redirectパケットは拒否
+sed -i '/net.ipv4.conf.*.accept_redirects/d' /etc/sysctl.conf
+for dev in `ls /proc/sys/net/ipv4/conf/`
+do
+    sysctl -w net.ipv4.conf.$dev.accept_redirects=0 &gt; /dev/null
+    echo "net.ipv4.conf.$dev.accept_redirects=0" &gt;&gt; /etc/sysctl.conf
+done
+
+# Source Routedパケットは拒否
+sed -i '/net.ipv4.conf.*.accept_source_route/d' /etc/sysctl.conf
+for dev in `ls /proc/sys/net/ipv4/conf/`
+do
+    sysctl -w net.ipv4.conf.$dev.accept_source_route=0 &gt; /dev/null
+    echo "net.ipv4.conf.$dev.accept_source_route=0" &gt;&gt; /etc/sysctl.conf
+done
+
+# フラグメント化されたパケットは破棄
+iptables -A INPUT -f -j LOG --log-prefix '[IPTABLES FRAGMENT] : '
+iptables -A INPUT -f -j DROP
+
+# NetBIOS関連のアクセスは破棄
+iptables -A INPUT -p tcp -m multiport --dports 135,137,138,139,445 -j DROP
+iptables -A INPUT -p udp -m multiport --dports 135,137,138,139,445 -j DROP
+iptables -A OUTPUT -p tcp -m multiport --sports 135,137,138,139,445 -j DROP
+iptables -A OUTPUT -p udp -m multiport --sports 135,137,138,139,445 -j DROP
+
+# 1秒間に4回を超えるpingは破棄(Ping of Death攻撃対策)
+iptables -N LOG_PINGDEATH
+iptables -A LOG_PINGDEATH -m limit --limit 1/s --limit-burst 4 -j ACCEPT
+iptables -A LOG_PINGDEATH -j LOG --log-prefix '[IPTABLES PINGDEATH] : '
+iptables -A LOG_PINGDEATH -j DROP
+iptables -A INPUT -p icmp --icmp-type echo-request -j LOG_PINGDEATH
+
+# 全ホスト(ブロードキャストアドレス、マルチキャストアドレス)宛パケットは破棄
+iptables -A INPUT -d 255.255.255.255 -j DROP
+iptables -A INPUT -d 224.0.0.1 -j DROP
+
+# 113番ポート(IDENT)へのアクセスには拒否応答(メールサーバ等のレスポンス低下防止)
+iptables -A INPUT -p tcp --dport 113 -j REJECT --reject-with tcp-reset
+
+########################################
+# 各種サービス設定
+########################################
+
+# SSH
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# HTTP, HTTPS
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+########################################
+# その他
+########################################
+
+# 上記のルールにマッチしなかったアクセスはログを記録して破棄
+iptables -A INPUT -m limit --limit 1/s -j LOG --log-prefix '[IPTABLES INPUT] : '
+iptables -A INPUT -j DROP
+iptables -A FORWARD -m limit --limit 1/s -j LOG --log-prefix '[IPTABLES FORWARD] : '
+iptables -A FORWARD -j DROP
+
+########################################
+# 後処理
+########################################
+
+# サーバー再起動時にも上記設定が有効となるようにルールを保存
+/etc/rc.d/init.d/iptables save
+
+# ファイアウォール起動
+/etc/rc.d/init.d/iptables start
+</code></pre>
+
+<p>何か変なことしてたらツッコミお願いします。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[さくらのVPS 2G(CentOS6)で最初にやったことメモ]]></title>
+    <link href="http://blog.withweb.info/blog/2012/05/20/sakura-vps2g-centos6/"/>
+    <updated>2012-05-20T20:26:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/05/20/sakura-vps2g-centos6</id>
+    <content type="html"><![CDATA[<p>さくらのVPS 2Gを借りたので、最初にやったことをメモ。どこかに書かないと忘れちゃう。</p>
+
+<!-- more -->
+
+
+<h2>ユーザ</h2>
+
+<p>まずはrootのパスワードを変更。</p>
+
+<pre><code># passwd
+</code></pre>
+
+<p>直接rootでログインしたくないので一般ユーザをwheelグループで作る。</p>
+
+<pre><code># useradd &lt;ユーザID&gt; -g wheel
+# passwd &lt;ユーザID&gt;
+</code></pre>
+
+<p>wheelグループをパスワードなしでsudoできるようにする。</p>
+
+<pre><code># visudo
+%wheel ALL=(ALL) NOPASSWD:ALL
+</code></pre>
+
+<h2>SSH</h2>
+
+<p>一般ユーザの公開鍵を登録。authorized_keysの中身はローカルPCで作った公開鍵からコピペ。</p>
+
+<pre><code># cd /home/&lt;ユーザID&gt;
+# mkdir .ssh
+# chmod 700 .ssh
+# vi .ssh/authorized_keys
+# chmod 600 .ssh/authorized_keys
+# chown -R &lt;ユーザID&gt;:wheel .ssh
+</code></pre>
+
+<p>SSHの設定。ポート番号を変えて、rootログイン禁止、パスワード認証を止めて鍵交換方式で認証する。</p>
+
+<pre><code># vi /etc/ssh/sshd_config
+Port &lt;SSHのポート番号&gt;
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+</code></pre>
+
+<p>ひと通り設定したらサービスを再起動。</p>
+
+<pre><code># service sshd restart
+</code></pre>
+
+<h2>ファイアウォール</h2>
+
+<p>とりあえずHTTPとSSHを通す。色々なサイトで紹介されているものをベースにしてます。</p>
+
+<pre><code># vi /etc/sysconfig/iptables
+*filter
+:INPUT   ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT  ACCEPT [0:0]
+:RH-Firewall-1-INPUT - [0:0]
+
+-A INPUT -j RH-Firewall-1-INPUT
+-A FORWARD -j RH-Firewall-1-INPUT
+-A RH-Firewall-1-INPUT -i lo -j ACCEPT
+-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
+-A RH-Firewall-1-INPUT -p 50 -j ACCEPT
+-A RH-Firewall-1-INPUT -p 51 -j ACCEPT
+-A RH-Firewall-1-INPUT -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT
+-A RH-Firewall-1-INPUT -p udp -m udp --dport 631 -j ACCEPT
+-A RH-Firewall-1-INPUT -p tcp -m tcp --dport 631 -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# HTTP, SSH
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80    -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport &lt;SSHのポート番号&gt; -j ACCEPT
+
+-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
+
+COMMIT
+</code></pre>
+
+<h2>不要なサービスの停止</h2>
+
+<p>わざわざ止めるほどサービスが起動していなかったけど、いくつか止めておいた。</p>
+
+<pre><code># chkconfig lvm2-monitor off
+# chkconfig yum-updateonboot off
+</code></pre>
+
+<h2>メモリ使用量を確認</h2>
+
+<pre><code># free
+             total       used       free     shared    buffers     cached
+Mem:       2054808     139612    1915196          0       8312      57288
+-/+ buffers/cache:      74012    1980796
+Swap:      2096472          0    2096472
+</code></pre>
+
+<p>メモリ使用量は140MBくらい。素の状態ならこんなもんでしょう。</p>
+
+<h2>まとめ</h2>
+
+<p>ひとまず使い始める前の設定は最低限できたかな。ログ監視くらいはこの時点で入れておけばよかったかも。</p>
+]]></content>
+  </entry>
+  
+</feed>

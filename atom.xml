@@ -1,0 +1,1193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[withweb]]></title>
+  <link href="http://blog.withweb.info/atom.xml" rel="self"/>
+  <link href="http://blog.withweb.info/"/>
+  <updated>2012-10-04T23:07:29+09:00</updated>
+  <id>http://blog.withweb.info/</id>
+  <author>
+    <name><![CDATA[takecover1980]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Octopressでブログしよう]]></title>
+    <link href="http://blog.withweb.info/blog/2012/10/04/octopress/"/>
+    <updated>2012-10-04T23:00:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/10/04/octopress</id>
+    <content type="html"><![CDATA[<p>普通のブログってやつがとても面倒なんです。</p>
+
+<p>CMSにログインしたり画像アップロードしたり謎エディタで記事書いたり公開ボタン押したりバックアップするのにプラグイン入れたりとか、やってられない。</p>
+
+<p>手元のエディタで記事を書いてコマンド打ったら公開。そんな感じで楽したいのでOctopressに移行します。いまさら感が半端ないけどね。</p>
+
+<!-- more -->
+
+
+<h2>構成</h2>
+
+<ul>
+<li>Octopress ブログエンジン。Markdownで記事を書いてhtmlに出力する。</li>
+<li>Bitbucket ソース管理。Octopressのディレクトリを管理する。</li>
+<li>GitHub サイトの公開場所。Octopressで出力したhtmlなどを置く。</li>
+</ul>
+
+
+<p>ソースはとりあえずBitbucketのプライベートリポジトリに置くことにします。なんとなくですが。</p>
+
+<h2>GitHub Pagesの準備</h2>
+
+<p>gitのインストール、SSH Keysの登録が終わっている前提で、<a href="https://github.com/new">Create a New Repo</a>でUSERNAME.github.comの名前でリポジトリを作ります。</p>
+
+<p>USERNAMEは各自置き換えてくださいね。</p>
+
+<h2>Octopressインストール</h2>
+
+<p>まずは、USERNAME.github.comでアクセスできるようにするところまで。</p>
+
+<pre><code>$ git clone git://github.com/imathis/octopress.git octopress
+$ cd octopress
+$ sudo gem install bundler
+$ sudo bundle install
+$ rake install
+
+$ rake setup_github_pages
+# Enter the read/write url for your repository:
+# git@github.com:USERNAME/USERNAME.github.com.gitを入力します。
+
+$ rake generate
+$ rake deploy
+</code></pre>
+
+<p>独自ドメイン（サブドメイン）で運用したいので、ドメイン会社のサイトでDNSの設定をしておきます。</p>
+
+<pre><code>サブドメイン：blog
+種別：CNAME
+内容：USERNAME.github.com
+</code></pre>
+
+<p>OctopressにCNAMEファイルを作ります。_config.ymlも書き換えて、タイトルやURLなどちゃんとしたものに設定しておきましょう。</p>
+
+<pre><code>$ echo 'blog.withweb.info' &gt; source/CNAME
+$ rake generate
+$ rake deploy
+</code></pre>
+
+<p>あとは、記事をどんどん追加していくだけ。</p>
+
+<h2>記事を書いて投稿する</h2>
+
+<p>これだけ覚えておけばだいたいいける。記事やページの追加はコマンド打たなくてもsource/_postsの中にMarkdownのファイルを突っ込むだけでいけるみたい。</p>
+
+<pre><code>$ rake new_post["title"] # 新規記事を作成
+$ rake new_page["title"] # 新規ページを作成
+$ rake generate          # 記事をhtmlに変換
+$ rake preview           # プレビュー(localhost:4000)
+$ rake deploy            # 記事を公開(GitHub Pagesにデプロイ)
+</code></pre>
+
+<h2>サイトの運用</h2>
+
+<p>ソースはBitbucketにするのでリモートリポジトリを追加します。</p>
+
+<pre><code>$ git remote add bitbucket git@bitbucket.org:USERNAME/octopress.git
+$ git push -u bitbucket source
+</code></pre>
+
+<p>あとはpushしていけば記事のバックアップをとっていけます。</p>
+
+<pre><code>$ git add .
+$ git commit -m 'commit message'
+$ git push
+</code></pre>
+
+<h2>Octopressの更新</h2>
+
+<p>Octopress自体を更新する場合は、本家の更新を取り込んでマージします。</p>
+
+<pre><code>$ git fetch octopress
+$ git pull octopress master
+</code></pre>
+
+<h2>参考ページ</h2>
+
+<ul>
+<li><a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">Octopressのインストールから運用管理まで - T.I.D.</a></li>
+<li><a href="http://blog.glidenote.com/blog/2011/11/07/install-octopress-on-github/">GithubとOctopressでモダンな技術系ブログを作ってみる - Glide Note - グライドノート</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[VPSのファイアウォール設定を見直す]]></title>
+    <link href="http://blog.withweb.info/blog/2012/05/22/vps-iptables/"/>
+    <updated>2012-05-22T17:50:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/05/22/vps-iptables</id>
+    <content type="html"><![CDATA[<p>自分しか使わないサーバとはいえ、あんまり考えずに設定をしてたので見直し。</p>
+
+<!-- more -->
+
+
+<h2>ポリシー</h2>
+
+<ul>
+<li>受信パケットは原則破棄</li>
+<li>送信パケットは原則通過</li>
+<li>転送パケットは原則破棄</li>
+<li>ローカルループバックからの受信を許可</li>
+<li>セッションが確立した後の受信を許可</li>
+<li>SYN Cookies有効</li>
+<li>ブロードキャスト宛のPINGに応答しない</li>
+<li>ICMP Redirectパケットを破棄</li>
+<li>Source Routedパケットを破棄</li>
+<li>フラグメント化されたパケットを破棄</li>
+<li>NetBIOS関連のパケットを破棄</li>
+<li>1秒間に4回を超えるPINGを破棄</li>
+<li>ブロードキャスト、マルチキャスト宛のパケットを破棄</li>
+<li>113番ポート(IDENT)の受信は拒否応答</li>
+<li>指定サービスの受信を許可</li>
+<li>その他のアクセスはログ記録して破棄</li>
+</ul>
+
+
+<p>ひとまず特定の国やIPはブロックしていませんが、後で手を入れていくことになると思うのでこんな感じのスクリプトにしてます。</p>
+
+<h2>スクリプト</h2>
+
+<pre><code>#!/bin/bash
+
+########################################
+# 前処理
+########################################
+
+# ファイアウォール停止
+/etc/rc.d/init.d/iptables stop
+
+########################################
+# 基本設定
+########################################
+
+# デフォルトルール
+iptables -P INPUT DROP
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD DROP
+
+# 自ホストからのアクセスを許可
+iptables -A INPUT -i lo -j ACCEPT
+
+# セッションが確立した後は許可
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+########################################
+# 攻撃対策
+########################################
+
+# SYN Cookies有効(TCP SYN Flood攻撃対策)
+sysctl -w net.ipv4.tcp_syncookies=1 &gt; /dev/null
+sed -i '/net.ipv4.tcp_syncookies/d' /etc/sysctl.conf
+echo "net.ipv4.tcp_syncookies=1" &gt;&gt; /etc/sysctl.conf
+
+# ブロードキャストアドレス宛pingには応答しない(Smurf攻撃対策)
+sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=1 &gt; /dev/null
+sed -i '/net.ipv4.icmp_echo_ignore_broadcasts/d' /etc/sysctl.conf
+echo "net.ipv4.icmp_echo_ignore_broadcasts=1" &gt;&gt; /etc/sysctl.conf
+
+# ICMP Redirectパケットは拒否
+sed -i '/net.ipv4.conf.*.accept_redirects/d' /etc/sysctl.conf
+for dev in `ls /proc/sys/net/ipv4/conf/`
+do
+    sysctl -w net.ipv4.conf.$dev.accept_redirects=0 &gt; /dev/null
+    echo "net.ipv4.conf.$dev.accept_redirects=0" &gt;&gt; /etc/sysctl.conf
+done
+
+# Source Routedパケットは拒否
+sed -i '/net.ipv4.conf.*.accept_source_route/d' /etc/sysctl.conf
+for dev in `ls /proc/sys/net/ipv4/conf/`
+do
+    sysctl -w net.ipv4.conf.$dev.accept_source_route=0 &gt; /dev/null
+    echo "net.ipv4.conf.$dev.accept_source_route=0" &gt;&gt; /etc/sysctl.conf
+done
+
+# フラグメント化されたパケットは破棄
+iptables -A INPUT -f -j LOG --log-prefix '[IPTABLES FRAGMENT] : '
+iptables -A INPUT -f -j DROP
+
+# NetBIOS関連のアクセスは破棄
+iptables -A INPUT -p tcp -m multiport --dports 135,137,138,139,445 -j DROP
+iptables -A INPUT -p udp -m multiport --dports 135,137,138,139,445 -j DROP
+iptables -A OUTPUT -p tcp -m multiport --sports 135,137,138,139,445 -j DROP
+iptables -A OUTPUT -p udp -m multiport --sports 135,137,138,139,445 -j DROP
+
+# 1秒間に4回を超えるpingは破棄(Ping of Death攻撃対策)
+iptables -N LOG_PINGDEATH
+iptables -A LOG_PINGDEATH -m limit --limit 1/s --limit-burst 4 -j ACCEPT
+iptables -A LOG_PINGDEATH -j LOG --log-prefix '[IPTABLES PINGDEATH] : '
+iptables -A LOG_PINGDEATH -j DROP
+iptables -A INPUT -p icmp --icmp-type echo-request -j LOG_PINGDEATH
+
+# 全ホスト(ブロードキャストアドレス、マルチキャストアドレス)宛パケットは破棄
+iptables -A INPUT -d 255.255.255.255 -j DROP
+iptables -A INPUT -d 224.0.0.1 -j DROP
+
+# 113番ポート(IDENT)へのアクセスには拒否応答(メールサーバ等のレスポンス低下防止)
+iptables -A INPUT -p tcp --dport 113 -j REJECT --reject-with tcp-reset
+
+########################################
+# 各種サービス設定
+########################################
+
+# SSH
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# HTTP, HTTPS
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+########################################
+# その他
+########################################
+
+# 上記のルールにマッチしなかったアクセスはログを記録して破棄
+iptables -A INPUT -m limit --limit 1/s -j LOG --log-prefix '[IPTABLES INPUT] : '
+iptables -A INPUT -j DROP
+iptables -A FORWARD -m limit --limit 1/s -j LOG --log-prefix '[IPTABLES FORWARD] : '
+iptables -A FORWARD -j DROP
+
+########################################
+# 後処理
+########################################
+
+# サーバー再起動時にも上記設定が有効となるようにルールを保存
+/etc/rc.d/init.d/iptables save
+
+# ファイアウォール起動
+/etc/rc.d/init.d/iptables start
+</code></pre>
+
+<p>何か変なことしてたらツッコミお願いします。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[さくらのVPS 2G(CentOS6)で最初にやったことメモ]]></title>
+    <link href="http://blog.withweb.info/blog/2012/05/20/sakura-vps2g-centos6/"/>
+    <updated>2012-05-20T20:26:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/05/20/sakura-vps2g-centos6</id>
+    <content type="html"><![CDATA[<p>さくらのVPS 2Gを借りたので、最初にやったことをメモ。どこかに書かないと忘れちゃう。</p>
+
+<!-- more -->
+
+
+<h2>ユーザ</h2>
+
+<p>まずはrootのパスワードを変更。</p>
+
+<pre><code># passwd
+</code></pre>
+
+<p>直接rootでログインしたくないので一般ユーザをwheelグループで作る。</p>
+
+<pre><code># useradd &lt;ユーザID&gt; -g wheel
+# passwd &lt;ユーザID&gt;
+</code></pre>
+
+<p>wheelグループをパスワードなしでsudoできるようにする。</p>
+
+<pre><code># visudo
+%wheel ALL=(ALL) NOPASSWD:ALL
+</code></pre>
+
+<h2>SSH</h2>
+
+<p>一般ユーザの公開鍵を登録。authorized_keysの中身はローカルPCで作った公開鍵からコピペ。</p>
+
+<pre><code># cd /home/&lt;ユーザID&gt;
+# mkdir .ssh
+# chmod 700 .ssh
+# vi .ssh/authorized_keys
+# chmod 600 .ssh/authorized_keys
+# chown -R &lt;ユーザID&gt;:wheel .ssh
+</code></pre>
+
+<p>SSHの設定。ポート番号を変えて、rootログイン禁止、パスワード認証を止めて鍵交換方式で認証する。</p>
+
+<pre><code># vi /etc/ssh/sshd_config
+Port &lt;SSHのポート番号&gt;
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+</code></pre>
+
+<p>ひと通り設定したらサービスを再起動。</p>
+
+<pre><code># service sshd restart
+</code></pre>
+
+<h2>ファイアウォール</h2>
+
+<p>とりあえずHTTPとSSHを通す。色々なサイトで紹介されているものをベースにしてます。</p>
+
+<pre><code># vi /etc/sysconfig/iptables
+*filter
+:INPUT   ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT  ACCEPT [0:0]
+:RH-Firewall-1-INPUT - [0:0]
+
+-A INPUT -j RH-Firewall-1-INPUT
+-A FORWARD -j RH-Firewall-1-INPUT
+-A RH-Firewall-1-INPUT -i lo -j ACCEPT
+-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
+-A RH-Firewall-1-INPUT -p 50 -j ACCEPT
+-A RH-Firewall-1-INPUT -p 51 -j ACCEPT
+-A RH-Firewall-1-INPUT -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT
+-A RH-Firewall-1-INPUT -p udp -m udp --dport 631 -j ACCEPT
+-A RH-Firewall-1-INPUT -p tcp -m tcp --dport 631 -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# HTTP, SSH
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80    -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport &lt;SSHのポート番号&gt; -j ACCEPT
+
+-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
+
+COMMIT
+</code></pre>
+
+<h2>不要なサービスの停止</h2>
+
+<p>わざわざ止めるほどサービスが起動していなかったけど、いくつか止めておいた。</p>
+
+<pre><code># chkconfig lvm2-monitor off
+# chkconfig yum-updateonboot off
+</code></pre>
+
+<h2>メモリ使用量を確認</h2>
+
+<pre><code># free
+             total       used       free     shared    buffers     cached
+Mem:       2054808     139612    1915196          0       8312      57288
+-/+ buffers/cache:      74012    1980796
+Swap:      2096472          0    2096472
+</code></pre>
+
+<p>メモリ使用量は140MBくらい。素の状態ならこんなもんでしょう。</p>
+
+<h2>まとめ</h2>
+
+<p>ひとまず使い始める前の設定は最低限できたかな。ログ監視くらいはこの時点で入れておけばよかったかも。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[URoad-8000が802.11nに対応]]></title>
+    <link href="http://blog.withweb.info/blog/2011/12/28/uroad-8000/"/>
+    <updated>2011-12-28T03:50:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/12/28/uroad-8000</id>
+    <content type="html"><![CDATA[<p>何となくURoad-8000の自動アップデートをしてみたら2011/12/26のアップデートで802.11nに対応したようです。私はあまり気にしていなかったのですが、URoad-8000ユーザは待っていた人も多いんじゃないでしょうか。</p>
+
+<!-- more -->
+
+
+<h2>IEEE 802.11Nって何？</h2>
+
+<p>簡単に言うと、IEEEという学会が決めた無線LANの規格です。802.11g、802.11a、802.11bあたりとまとめて802シリーズなんて呼ばれたりします。 他の802シリーズと比較すると</p>
+
+<ul>
+<li>速い</li>
+<li>安定している</li>
+<li>カバーエリアが広い</li>
+</ul>
+
+
+<p>という特徴があります。</p>
+
+<p>イマドキのルータはだいたい対応していそうなので、知らないうちにご家庭の無線LANが11nということも多いかと思います。</p>
+
+<h2>Macで通信規格を確認する方法</h2>
+
+<p>ネットワークユーティリティで確認できますが、もっと簡単な方法があります。</p>
+
+<p>メニューバーのAirMacアイコンをoptionキーを押しながらクリックすると詳細情報が表示されます。</p>
+
+<p><img src="http://blog.withweb.info/images/20111228-mac-network-config-view.png" title="mac network config view" alt="image mac network config view" /></p>
+
+<p>通信規格、セキュリティなどいろいろ表示されるので今何を使っているのか簡単に確認できます。（近所にWi-Fiを使っている人が多いのか、たくさん表示されてますがそこは気にしないで）</p>
+
+<p>この「optionキーを押しながらクリック」は他のメニューにも使えます。</p>
+
+<p>例えば、Bluetoothならアドレスの確認、サウンドなら入出力装置の切り替えなどの項目が追加されます。いちいちシステム環境設定を起動しなくてすむので便利ですね。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[MacBook Air 13インチ (mid 2011) を買いました]]></title>
+    <link href="http://blog.withweb.info/blog/2011/11/05/macbook-air/"/>
+    <updated>2011-11-05T06:13:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/11/05/macbook-air</id>
+    <content type="html"><![CDATA[<p>新しいMacBook Airが欲しいけどいつ買おうか。何となく決め手が無い。</p>
+
+<p>7月21日に発売されてから3ヶ月以上も迷った末に、結局買いました。</p>
+
+<!-- more -->
+
+
+<h2>引っ越しの荷物を減らしたい</h2>
+
+<p>買う決心をした理由はこれです。というか、これだけです。</p>
+
+<p>東京から広島へ引越すことになり「荷物を減らしたいなー」ということで、iMacから乗り換えるべく注文していたMacBook Airが届きました。</p>
+
+<p><img src="http://blog.withweb.info/images/20111105-macbook-air-package.png" title="macbook air package" alt="image macbook air package" /></p>
+
+<p>なんかもう箱からして薄い。</p>
+
+<p>前に使っていたiMac(early 2009)はまだまだ普通に使えますが、リセールバリューを考えると3年半使ったのは長過ぎた気がします。売れるうちに売ってしまいます。</p>
+
+<h2>スペックは適当に選んだ</h2>
+
+<p>今回買ったスペックは13インチの高い方です。キーボードだけカスタマイズしています。</p>
+
+<ul>
+<li>サイズ：13インチ</li>
+<li>CPU：1.7GHz i5</li>
+<li>メモリ：4GB</li>
+<li>ストレージ：256GB</li>
+<li>キーボード：US</li>
+</ul>
+
+
+<p>利用シーンが単純なのでスペックも単純に決めました。</p>
+
+<ul>
+<li>家で使う</li>
+<li>メインマシン（これ1台）</li>
+<li>外に持ち出すことがあるかも（ないかも）</li>
+<li>Webサービスやアプリの開発をする</li>
+<li>だいたい2年くらいで買い替える</li>
+</ul>
+
+
+<p>スペック選びは悩む人が多いと思いますが、どのくらいの期間使うか決めておけば案外割り切って選べると思います。</p>
+
+<p>キーボードは慣れでUSにしています。打つ時は見ないのでこだわりはありません。</p>
+
+<p><img src="http://blog.withweb.info/images/20111105-macbook-air-keyboard.png" title="macbook air keyboard" alt="image macbook air keyboard" /></p>
+
+<p>ファンクションキーの列もLion仕様になってます。写ってないけど右端のイジェクトキーも電源キーに変わっています。</p>
+
+<h2>使い勝手</h2>
+
+<p>そろそろ聞き飽きてきた頃ですが、SSDのおかげで全体的に静かで速いです。</p>
+
+<p>今のところアプリの起動も操作も「待たされる感」がありません。VirtualBoxでWindowsを起動した時なんてもう意味が分からないレベルです。</p>
+
+<p>あと関係ないけど、MacBook Airって大根とか切れそうなくらい薄いですね。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iPhone 4Sが届いた]]></title>
+    <link href="http://blog.withweb.info/blog/2011/11/02/iphone4s/"/>
+    <updated>2011-11-02T00:51:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/11/02/iphone4s</id>
+    <content type="html"><![CDATA[<p>もう届いたと言うか、やっと届いたと言うか。<a href="http://blog.withweb.info/blog/2011/10/21/iphone4s/">ソフトバンクオンラインショップで注文していたiPhone 4S</a>が届きました。発売前から機種変更したかったからうれしいですね。</p>
+
+<!-- more -->
+
+
+<h2>いつものApple</h2>
+
+<p><img src="http://blog.withweb.info/images/20111102-iphone4s-package.png" title="iphone4s package" alt="image iphone4s package" /></p>
+
+<p>箱です。相変わらずのシンプル梱包。</p>
+
+<p>MacやiPodもそうですが、この「Apple製品のシンプルさ」が好きな人は多いのではないかと。</p>
+
+<p>説明書もペラペラの紙が入ってるだけ。日本の携帯電話も見習って欲しいところです。</p>
+
+<h2>予約から受け取りまでの流れ</h2>
+
+<p>だいたいこんな感じです。</p>
+
+<ol>
+<li>2011/10/19：ソフトバンクオンラインショップで予約</li>
+<li>2011/10/19：メール受信「ご予約お申し込み受付のご連絡」</li>
+<li>2011/10/30：メール受信「本申し込みの依頼」</li>
+<li>2011/10/30：ソフトバンクオンラインショップで本申し込み</li>
+<li>2011/10/30：メール受信「お申し込み受付のご連絡」</li>
+<li>2011/10/30：メール受信「商品発送手続き開始のご連絡」</li>
+<li>2011/10/31：メール受信「出荷完了のご連絡」</li>
+<li>2011/11/01：iPhone4S到着</li>
+</ol>
+
+
+<p>予約からしばらくは入荷待ちですが、用意できてからはすぐ届きました。</p>
+
+<p>本申し込みの時に受け取りの日時指定ができます。運送業者は佐◯。（佐◯はいつも時間指定を守らないのでヤマトにして欲しかった&#8230;）</p>
+
+<h2>機種変更作業</h2>
+
+<p>オンラインショップで買った場合、電話の切り替えとか自分でやります。</p>
+
+<p>「めんどくさそー」と思ってましたがそんなことはなかった。簡単でした。</p>
+
+<p>ソフトバンクから届くメール「出荷完了のご連絡」に商品到着後の手続きについて書かれているのでその通りにします。</p>
+
+<h2>電話機切替手続き</h2>
+
+<p>Webと電話のどちらかで手続きします。私はWebでやりました。</p>
+
+<p>予約した時の受付番号とメールアドレス、生年月日を入力すれば完了です。</p>
+
+<h2>アクティベーション</h2>
+
+<p>iTunesにつないで、言われるがままに進めます。</p>
+
+<p>もともとiTunesを使っていたからか、項目は基本的に入力済。よくある「同意する」チェックを付ける程度で完了です。</p>
+
+<h2>3GSから4Sへのデータ移行</h2>
+
+<p>アクティベーションが終わった後で復元するか聞かれるのでそのまま進めます。</p>
+
+<p>あとは同期と同じ要領で待つだけ。超簡単。</p>
+
+<h2>サクサク</h2>
+
+<p>もういろんなサイトで言われている通り、ぱっと見た感じはiPhone4です。</p>
+
+<p>少し触っただけですが本当にサクサク動きます。（3GSからの機種変更だから？）</p>
+
+<p>これもそのうち「重いなー」と思う時が来るんだろうけど、新しいうちはこのサクサク感がうれしいですね。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iPhone 4Sをソフトバンクオンラインショップで予約した]]></title>
+    <link href="http://blog.withweb.info/blog/2011/10/21/iphone4s/"/>
+    <updated>2011-10-21T03:05:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/10/21/iphone4s</id>
+    <content type="html"><![CDATA[<p>待ちに待ったiPhoneの最新機種。もう買って手元に届いた人も多いんじゃないでしょうか。</p>
+
+<p>ソフトバンクだけでなくauからも発売される事や予約の行列、販売台数などなど、発売前も後も世間で熱い話題ですね。</p>
+
+<p>そんなiPhone4Sを予約しました。</p>
+
+<!-- more -->
+
+
+<h2>やっと予約した</h2>
+
+<p>発売日の前後は帰省したりでバタバタしていたので、帰宅後にソフトバンクオンラインショップで予約しました。もう乗り遅れてる感が満載です。</p>
+
+<p>iPhone4もiPhone4Sも予約開始当日は激混みだったようですが、さすがにオンラインショップも混み合うこともなくスイスイ進みました。乗り遅れて良かったかも。</p>
+
+<p>今回予約したのはiPhone 4S 64GBの黒。</p>
+
+<ul>
+<li>白だと汚れが目立ちそうだから黒</li>
+<li>今は16GBでも十分だけど写真たくさん撮りたいから64GB</li>
+</ul>
+
+
+<p>理由なんて簡単なものです。</p>
+
+<h2>下調べはほとんどしていない</h2>
+
+<p>先にキャリアの回線、価格、キャンペーンの比較をしておけば良かったんですが、ネットで少し調べただけです。</p>
+
+<p>さらっと眺めてみた印象としては</p>
+
+<ul>
+<li>価格は正直たいして変わらない</li>
+<li>回線は正直どっちもどっち(基本的にWifi使うし)</li>
+<li>3GSから乗り換えるならソフトバンクがお得？</li>
+</ul>
+
+
+<p>といったところです。</p>
+
+<p>3GSの割賦金が残っているのでソフトバンクの「実質無償機種変更キャンペーン」を使いました。簡単に言うと「残っている割賦金を月々の割引でチャラにしてくれる」ようです。お得じゃないですか。即決。</p>
+
+<p>他にもiPad2が月額料金0円から使えるようですが、端末代がタダになるわけではないのでトータルコストはWifi版とあまり変わらないみたいです。</p>
+
+<p>iPadは今欲しいわけでもないし、買うならWifi版で十分なのでこれは見送りました。</p>
+
+<h2>あとは待つだけ</h2>
+
+<p>単純に楽しみです。引取りに行く手間も無いのでのんびり待ってます。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Webデザイナーとエンジニアにとってのフレームワークは違うもの？]]></title>
+    <link href="http://blog.withweb.info/blog/2011/10/02/framework/"/>
+    <updated>2011-10-02T02:41:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/10/02/framework</id>
+    <content type="html"><![CDATA[<p>Webデザイナーの方と話している時に話がかみ合わないことがありました。</p>
+
+<p>どうやら両者の間では「フレームワーク」という言葉の意味するところが微妙に違うようです。</p>
+
+<p>ちょっとしたことでしたが、こういうのは意外と戸惑いますね。</p>
+
+<!-- more -->
+
+
+<h2>何が違うのか</h2>
+
+<p>大雑把に言うと、Webデザイナーにとっての「フレームワーク」はエンジニアにとっての「テンプレート」のことのようです。</p>
+
+<p>広い意味ではテンプレートもフレームワークに含まれるかもしれないので、どちらが正しいという話では無いかなと思います。</p>
+
+<p>ただ、エンジニアにとっては別物という印象があるので話がかみ合わなくなるみたいですね。</p>
+
+<h2>エンジニアにとってのフレームワーク</h2>
+
+<p><a href="http://e-words.jp/w/E38395E383ACE383BCE383A0E383AFE383BCE382AF.html">IT用語辞典</a>に詳しく載っていますが、アプリ開発で必要になる汎用的な機能を仕組みとして提供してくれるものです。</p>
+
+<p>MVC分離、O/Rマッピング、ページ遷移など、アプリケーションの基盤や汎用的な処理部品はフレームワークに任せることで、開発者はビジネスロジックの実装に注力できる。というものですね。</p>
+
+<p>Web系の開発で使われるものだと、このあたりが有名でしょうか。</p>
+
+<ul>
+<li>Struts</li>
+<li>cakePHP</li>
+<li>Django</li>
+<li>Ruby on Rails</li>
+</ul>
+
+
+<h2>Webデザイナーにとってのフレームワーク</h2>
+
+<p>Webデザイナーの方との会話で聞いたのはこのあたりです。</p>
+
+<ul>
+<li>G5 Frameworkなどのグリッドシステム</li>
+<li>WordPressなどでのあまりCSS設定されていないテーマ</li>
+</ul>
+
+
+<p>基本的にHTML、CSSなどのテンプレートのようですね。それを基に手を入れていく感じでしょうか。</p>
+
+<h2>まとめ</h2>
+
+<p>おそらくエンジニアが違和感を感じるポイントは「&#8221;直接編集するもの&#8221;をフレームワークと呼んでいる」ところだと思います。</p>
+
+<p>ただ、あくまでも私の経験というか感覚によるものなので、もちろん一概に言えることではありません。</p>
+
+<p>この記事はかなり偏った視点になっていると思います。できればいろんな方のご意見を聞きたいですね。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[タバコをやめる前に試してみたこと]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/25/try-stop-smoking/"/>
+    <updated>2011-09-25T08:47:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/25/try-stop-smoking</id>
+    <content type="html"><![CDATA[<p>以前からタバコをやめようと思っていました。</p>
+
+<p>増税による値上がりや健康に悪いなど理由はいくらでもありますが、そんなのは後からついてくるもの。今回は「自分でやめると決めたからやめる」という単純かつ強力なものです。</p>
+
+<p>せっかくなので、やめる前に自分の体でちょっとした実験をしてみました。</p>
+
+<!-- more -->
+
+
+<h2>はじめに</h2>
+
+<p>この記事は私の体で試してみた結果です。</p>
+
+<p>これから禁煙を始めてみようと思う方への参考になるかもしれませんが、あくまでも1例です。他の方にも当てはまるとは限りません。</p>
+
+<h2>実験の前に</h2>
+
+<p>禁煙を始めた人に立ちはだかるのが「離脱症状」です。</p>
+
+<p>これは、ニコチンに依存していた身体の中から、ニコチンが抜けていく過程で起こるさまざまな症状です。</p>
+
+<p>症状自体も期間もかなり個人差があるようですが、このあたりが良くある症状みたいです。</p>
+
+<ul>
+<li>体がだるい</li>
+<li>眠い</li>
+<li>イライラする</li>
+<li>頭痛がする</li>
+<li>落ち着かない</li>
+</ul>
+
+
+<p>当たり前のように私にも立ちはだかりました。</p>
+
+<h2>被験者のスペック</h2>
+
+<p>だいたいこんな感じです。平均よりタバコの量が多いですかね。</p>
+
+<ul>
+<li>喫煙期間は10年以上</li>
+<li>量は1日3〜4箱(60〜80本)</li>
+<li>銘柄はマールボロ・ライト・メンソール(タール8mg/ニコチン0.8mg)</li>
+</ul>
+
+
+<h2>実験内容</h2>
+
+<p>ある期間を禁煙した後で、タバコを吸った前後の感想を記録します。</p>
+
+<p>禁煙した人がどんな状況になるのか、その後タバコを吸うとどんな気持ちになるのか。本格的に禁煙する前に知っておきたくなったんです。</p>
+
+<p>ただ、あまり長期間やると実際に禁煙するころには心が折れているかもしれないので、適当に短期間にします。</p>
+
+<p>そこで、一般に失敗しやすい期間と言われている「離脱症状のピーク3日間」と「1週間」を実験期間とします。</p>
+
+<h2>実験結果</h2>
+
+<h3>1日間禁煙(9/6)</h3>
+
+<p>なんてことありません。ミント系のガムを噛むなり冷たい水を飲むなりでどうにでもなります。</p>
+
+<p>タバコを吸った時の感想もちょっと時間が開いた時と変わりませんね。</p>
+
+<h3>2日間禁煙(9/8〜9/9)</h3>
+
+<p>じわじわと落ち着きが無くなってきます。コンビニで買ったボトルガムが半分くらい減りました。</p>
+
+<p>タバコを吸った瞬間は臭くていやな感じがしますが、すぐに慣れて懐かしい気持ちになります。</p>
+
+<h3>3日間禁煙(9/11〜9/13)</h3>
+
+<p>意味が分かりませんがなんだか焦ります。2つ目のボトルガムが無くなりました。</p>
+
+<p>タバコを吸いたいというよりも、手持ち無沙汰な感じです。</p>
+
+<p>タバコを吸った瞬間はかなり臭くて、しばらく気持ち悪くなりました。</p>
+
+<h3>7日間禁煙(9/15〜9/21)</h3>
+
+<p>「タバコが無い」ということが普通に感じます。なんとなくご飯がおいしくなった気もします。</p>
+
+<p>タバコを吸う必要が感じられず、吸うと頭がくらくらします。初めてタバコを吸った日を思い出しました。</p>
+
+<p>吸った後はいやな感じだけが残り、「もう捨ててしまえ」という気持ちでいっぱいです。</p>
+
+<h2>実験を終えて</h2>
+
+<p>やらなきゃ良かった。1週間禁煙した時点でそのままやめちゃえば良かったです。</p>
+
+<p>短期間に繰り返しているので離脱症状は大小ありましたが、1ヶ月間に4回も体験するのは精神的にも肉体的にもかなり辛いですね。</p>
+
+<p>なんだか違う理由になった気がしますが結果的にもう吸いたくありません。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Wimax通信障害で思ったこと]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/23/wimax/"/>
+    <updated>2011-09-23T00:29:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/23/wimax</id>
+    <content type="html"><![CDATA[<p>9月21日の17時45分ごろから9月22日の13時ごろまで、東日本エリアで通信障害によりインターネット接続ができない状況が続きました。</p>
+
+<p>この記事を書いている現在は普通につながりますが、ちょっと思ったことを書いてみます。</p>
+
+<!-- more -->
+
+
+<h2>何があったのか</h2>
+
+<p><a href="http://www.uqwimax.jp/service/information/maintenance/post-4074.html">UQWimaxの発表</a>や各種ニュースによると東日本の16都道府県で約20時間インターネットに繋がらない状況がつづきました。</p>
+
+<p>台風の影響ではなく通信設備の障害のようで、100万件以上のユーザに影響があったようです。</p>
+
+<h2>ルータが赤く点滅すると不安になる</h2>
+
+<p>いままで経験したことがなかったのでルータが壊れたのかと思ってしまいました&#8230;</p>
+
+<p>マニュアルや管理ページで圏外なのはすぐ分かったので、とりあえず待つことにしましたが赤く点滅されると少し不安になりますね。</p>
+
+<p>すぐ気づけるのでいいんですが。</p>
+
+<h2>iPhoneで良かった</h2>
+
+<p>前回の記事<a href="http://blog.withweb.info/blog/2011/09/21/iphone-cost/">iPhoneの請求額がものすごく安くなった</a>を書いたあとで、iPod Touchでもいいんじゃないかという気持ちになっていました。</p>
+
+<p>iPod Touchだと通話はSkypeになるんですが、今回のような通信障害があると通話もできなくなってしまいます。</p>
+
+<p>iPhoneはデータ通信をオフにしていても通話とSMSはできるので、連絡手段がなくなるという状況になることもなく、とりあえずの安心感があったのでこのままiPhoneを使おうと思います。</p>
+
+<h2>実はそんなに困らなかった</h2>
+
+<p>個人的には1日程度ならたいして困りませんでした。一時的に3G回線に切り替えればメールくらいは見れますしね。</p>
+
+<p>不便というか不快だったのは、たまっていたSMSの迷惑メールが大量にきたことくらいですw</p>
+
+<p>このあたりをどう思うかは個人差があると思います。ずっとつながっていたい人はきっと大変ですね。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iPhoneの請求額がものすごく安くなった]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/21/iphone-cost/"/>
+    <updated>2011-09-21T03:03:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/21/iphone-cost</id>
+    <content type="html"><![CDATA[<p>今月の請求額が確定したのでソフトバンクから通知メールがきました。どのくらい安くなったか期待と不安を胸に請求金額を見てみます。(ちょっとワクワクしてます)</p>
+
+<!-- more -->
+
+
+<h2>半額以下になった</h2>
+
+<p>以前の記事<a href="http://blog.withweb.info/blog/2011/09/11/iphone/">iPhoneのパケット代を安くしてみよう</a>でいくつかやってみた結果。</p>
+
+<p><img src="http://blog.withweb.info/images/20110921-iphone-charge.png" title="iphone charge" alt="image iphone charge" /></p>
+
+<p>3,388円です。</p>
+
+<p>ちなみに今まではだいたい8,000円前後。半額以下になりました！</p>
+
+<h2>内訳を見てみよう</h2>
+
+<p><img src="http://blog.withweb.info/images/20110921-iphone-itemized-statement.png" title="iphone itemized statement" alt="image iphone itemized statement" /></p>
+
+<p>あれ？前に計算した時となんか違う&#8230;</p>
+
+<p>パケットし放題 for スマートフォンって1,029円じゃなかったっけ。</p>
+
+<p>月月割って-1,100円じゃなかったっけ。</p>
+
+<p>両方ともなぜか安くなってますが200円くらいの誤差だし安くなったわけだし。これ以上は気にしないことにします。(携帯の料金はよく分からないなぁ)</p>
+
+<p>あと通話料0円はSkypeのおかげですね。これは料金プラン以上に大きい。</p>
+
+<h2>まとめ</h2>
+
+<p>料金が計算と違うという謎が残りますが大満足の結果です。iPhoneを一括で買った人はさらに安くなりそうです。</p>
+
+<p>どうしたらいいんでしょうね。うれしくて踊り出しそうな勢いです。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Google Chromeがいつの間にかLionのフルスクリーンに対応していた]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/20/google-chrome-lion/"/>
+    <updated>2011-09-20T16:38:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/20/google-chrome-lion</id>
+    <content type="html"><![CDATA[<p>何の気なしにウィンドウを最大化した時に気が付いたんですが、いつの間にかMac OS X Lionのフルスクリーンに対応していたみたいです。</p>
+
+<p>アップデートでは例のごとくいろいろと改善されたようですが、Lionユーザ向けには目立った機能として2つ盛り込まれたようです。</p>
+
+<!-- more -->
+
+
+<h2>フルスクリーンに対応した</h2>
+
+<p>LionユーザにはおなじみのフルスクリーンがChromeでもできるようになりました。</p>
+
+<p>ウィンドウがニュイーンと広がってMission Controlのデスクトップから独立するアレですね。</p>
+
+<p><img src="http://blog.withweb.info/images/20110920-chrome-fullscreen.png" title="chrome fullscreen" alt="image chrome fullscreen" /></p>
+
+<p>ウィンドウ右上の矢印ボタンをクリックするか、Cmd+Control+Fでフルスクリーンになります。</p>
+
+<p>私のiMac 24インチ(1920x1200)だと</p>
+
+<p><img src="http://blog.withweb.info/images/20110920-imac-view.png" title="imac view" alt="image imac view" /></p>
+
+<p>こんな感じです。</p>
+
+<p>余白だらけですね。もっと広い解像度だとほとんど余白になりそうです。</p>
+
+<p>個人的にはあまり使うことはなさそうですが、ブラウザをフルスクリーンで使う人にはなんとなくうれしいのではないでしょうか。</p>
+
+<h2>スクロール時のみスクロールバーが表示される</h2>
+
+<p>これは<a href="http://googlejapan.blogspot.com/2011/09/google-chrome.html">GoogleJapanのブログ</a>を見て知ったのですが、スクロールした時だけウィンドウ右側にスクロールバーが表示されます。iPhoneやiPadユーザにはおなじみなので、よりMacらしさ(Appleらしさ？)が出た感じです。</p>
+
+<p>フルスクリーンもそうですが、こういう細かいインタフェースがデフォルトアプリに近づくことで違和感なく乗り換えられるようになったのではないかと思います。</p>
+
+<p>それにしても、Chromeは自動でアップデートされるので、いつ何が変わったのか意外と気付かないものですね。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[とてもシンプルなHTML5のサンプルコード]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/16/simple-html5-sample/"/>
+    <updated>2011-09-16T21:13:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/16/simple-html5-sample</id>
+    <content type="html"><![CDATA[<p>HTML5のサンプルコードを探している時にたまたま見つけたのでちょっと紹介します。</p>
+
+<p>少し古い記事ですがHTMLに記述する各要素についても簡単に説明されているのでイメージしやすく、これから始めてみようという人にもおすすめです。</p>
+
+<!-- more -->
+
+
+<p>そんなに難しい英語じゃないし機械翻訳でも意味は分かると思います。</p>
+
+<p><a href="http://css-tricks.com/121-what-beautiful-html-code-looks-like/"><img src="http://blog.withweb.info/images/20110916-css-trick.png" title="css trick" alt="link image css trick" /></a></p>
+
+<p>HTML5はXHTML1.1よりもきれいに書けるよ。だからソースコードを更新したぜ！</p>
+
+<p>ということみたいです。</p>
+
+<p>Webデザイン関係でたまに見に行くサイトなんですが、単にCSSトリックというよりWebデザインに関するものがいろいろ紹介されています。</p>
+
+<p>おもしろいサイトも紹介されているので何かと参考になると思います。</p>
+
+<h2>シンプルなソースコードは大切</h2>
+
+<p>HTMLやCSSはW3Cが段階的に仕様を決めていき、各ブラウザのベンダーはその仕様を少し先取りして実装しています。</p>
+
+<p>そのせいか、相応の対応をしないと同じソースコードでもブラウザよって表示に差異がでます。</p>
+
+<p>私見ですが、モダンブラウザだとWebkit系のSafariやChromeはわりと素直で、Gecko系のFireFoxがちょっとバギーな気がします。Operaはよく分かりません。IEはもはや何も言うことがありません。</p>
+
+<p>そのため、修正や運用後のメンテナンスをしやすくするためにもシンプルなソースコードは大切です。</p>
+
+<p>プログラムは「書かなければバグは出ない」のと同じように、分かりやすく書くだけでなく余計な事を書かないのも気をつけたいですね。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[後で泣かないための個人的なWeb開発環境の作り方]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/13/web-develop/"/>
+    <updated>2011-09-13T18:20:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/13/web-develop</id>
+    <content type="html"><![CDATA[<p>開発環境はしばらく使っていくと設定ファイルのゴミなどで散らかってしまいます。パソコンを買い換えたりサーバ環境を壊した時に構築し直すのもかなり面倒です。</p>
+
+<p>運用も復旧も移行も楽にしたい。でも「開発サーバで動くのに本番サーバで動かない」なんてことにはなりたくない。</p>
+
+<p>そんな風に考えたエンジニアが個人的なWeb開発環境を構築してみました。そのまとめです。</p>
+
+<!-- more -->
+
+
+<h2>仮想化する</h2>
+
+<p>VirtualBoxを使ってLinuxとWindowsを仮想化します。</p>
+
+<p>仮想化しておけば作業用PCとサーバ環境を分られるのでゴミファイルが邪魔になりません。物理的な場所もとらない。</p>
+
+<p>設定ファイルをいじってサーバ環境を壊してもスナップショットから簡単に戻せます。マシン移行、バックアップ、レストアなんかもファイルコピーだけなので簡単です。</p>
+
+<p>Linuxは開発サーバでいろいろ入ってます。</p>
+
+<ul>
+<li>Webサーバ(Apache)</li>
+<li>DBサーバ(MySQL/SQLite)</li>
+<li>内部DNSサーバ(BIND)</li>
+<li>APサーバ(WordPress/Redmine/etc)</li>
+</ul>
+
+
+<p>WindowsはIEの動作確認用に入れています。</p>
+
+<p>サービスを追加する時はローカル用のドメイン、バーチャルホスト、DBを追加すれば開発を始められます。</p>
+
+<h2>XAMPPやMAMPは使わない</h2>
+
+<p>Web上で動くものはたいていLinuxサーバで動いています。</p>
+
+<p>そこを軽く見ていると後で泣きをみます。開発サーバと本番サーバは似ていれば似ているほど後が楽です。</p>
+
+<p>個人的にはユニットテストまでならアリだと思いますが、この環境でテストしたつもりになるのはやめておいた方がいいと思います。会社で「テスト終わりました」とか言うと間違いなく怒られます。</p>
+
+<p>AMP(Apache/MySQL/PHP)環境の雰囲気を知りたい人やローカルでWordPress等を動かしてみたい人がとっかかりに使うのは凄くいいと思います。</p>
+
+<p>また、他の言語、ライブラリ、フレームワークを使おうとすると非常に手間がかかり逆に不便です。あくまでもXAMPP、MAMPが提供している範囲で簡単に導入できるようになるソフトです。</p>
+
+<h2>内部DNSサーバを立てておく</h2>
+
+<p>これは本当に便利です。</p>
+
+<p>ルータに内部DNS、プロバイダのDNSを使うように設定します。</p>
+
+<p>これでLAN内のWindows/Mac/iPhoneどこからでも同じURLで開発サーバへアクセスできます。わざわざドメインを取得する必要もないし、hostsファイルにいちいち追加する必要もありません。</p>
+
+<p>Web/DBサーバと比べるとDNSサーバは構築自体の敷居が高いですが、内部向けならあまりやることは無いしネットワークの勉強になると思います。</p>
+
+<h2>まとめ</h2>
+
+<p>要は企業が社内で使うイントラネットの簡易版です。</p>
+
+<p>例えばブログをレンタルサーバ＋独自ドメインで使っている人がこういう環境を構築すると、今まで各サービスの管理画面に参考サイトからコピペしていたものが何だったのかよく分かると思います。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iPhoneのパケット代を安くしてみよう]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/11/iphone/"/>
+    <updated>2011-09-11T07:52:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/11/iphone</id>
+    <content type="html"><![CDATA[<p>iPhoneのデータ通信を3GではなくWifiのみで使うとパケット代を安くできるらしい。</p>
+
+<p>やってみたいけど何をしたらいいのかよく分からなかったので、ちょっとまとめてみます。</p>
+
+<!-- more -->
+
+
+<h2>きっかけ</h2>
+
+<p>家のインターネット回線をADSLからWimaxに変えた時に、その辺に置いても邪魔にならないよう小さなルータにしました。手のひらサイズの「Uroad-8000」です。</p>
+
+<p>バッテリーも9時間もつらしいので、外に持ち出しても十分使えそう。もし出先で電源が無くてもエネループで何とかなるだろうし。これもう3G回線使わなくてもいいんじゃない？</p>
+
+<p>ただ、パケット定額プランにしろ月月割にしろ正直よく分からないので、結局何をしたらいいのか分かりません。どうしたものか。</p>
+
+<p>ということで、ちょっと調べてみました。</p>
+
+<h2>何をすればいいのか</h2>
+
+<p>前提として、無線でインターネットに繋がるルータが必要です。</p>
+
+<p>私の場合は家のインターネット回線がWimaxなので、この回線を使い回しちゃおうというものです。iPhoneのデータ通信のために新しく契約するとその分お金がかかるので注意してください。</p>
+
+<p>他にメジャーなものだとイーモバイルのPocket Wi-Fiでしょうか。最近だとDocomoがXiをやってますね。</p>
+
+<p>その上でやることは2つ。とっても簡単。</p>
+
+<ol>
+<li>iPhoneの「モバイルデータ通信」をオフにする</li>
+<li>パケット定額プランを「パケットし放題 for スマートフォン」にする</li>
+</ol>
+
+
+<h2>iPhoneの「モバイルデータ通信」をオフにする</h2>
+
+<p>iPhoneの[設定]-[一般]-[ネットワーク]で「モバイルデータ通信」をオフにします。</p>
+
+<p><img src="http://blog.withweb.info/images/20110911-mobile-data-off.png" title="mobile data off" alt="image mobile data off" /></p>
+
+<p>とりあえずこれで3G回線でのデータ通信はできなくなります。電話(とSMS)は使えます。</p>
+
+<p>一番上の「3Gをオンにする」をオフにすると圏外になって電話もできなくなるので注意。(ソフトバンクの仕様？)</p>
+
+<h2>パケット定額プランを「パケットし放題 for スマートフォン」にする</h2>
+
+<p>iPhoneで選択できるパケット定額サービスは2つ。</p>
+
+<ul>
+<li>パケットし放題フラット</li>
+<li>パケットし放題 for スマートフォン</li>
+</ul>
+
+
+<p>ソフトバンクのサイトから抜粋。ページが分かれていて比較しにくいので並べてみます。</p>
+
+<p><img src="http://blog.withweb.info/images/20110911-packet-free-flat.png" title="packet free flat" alt="image packet free flat" /></p>
+
+<p><img src="http://blog.withweb.info/images/20110911-packet-free-for-smart-phone.png" title="packet free for smart phone" alt="image packet free for smart phone" /></p>
+
+<p>下限額で3,500円くらい安く、上限額で1,500円くらい高くなりますね。下に何か書かれていますが、要は「3G回線を使うとお金かかるよ」と理解。</p>
+
+<p>プランの変更は<a href="https://my.softbank.jp/msb/d/top">ソフトバンクモバイル</a>で簡単に変更できます。</p>
+
+<h2>結局いくら安くなるのか？</h2>
+
+<p>各プランは月月割の金額が違うので、そこも考慮します。</p>
+
+<p><img src="http://blog.withweb.info/images/20110911-month-discount.png" title="month discount" alt="image month discount" /></p>
+
+<p>私のiPhoneは3GSなので、月月割額が1,580円から1,100円に減りますね。</p>
+
+<p>それじゃ、計算してみましょう。</p>
+
+<ul>
+<li>パケットし放題フラット(4,410円)−月月割(1,580円)＝2,830円</li>
+<li>パケットし放題 for スマートフォン(1,029円)−月月割(1,100円)＝マイナス71円</li>
+<li>2,830円−マイナス71円＝2,901円</li>
+</ul>
+
+
+<p>うん？マイナス71円とか訳がわからない。
+まぁ強引に計算しているわけだし。差額が分かればいいか。</p>
+
+<p>その差は2,901円。1年だと34,812円安くなる。素晴らしいね。</p>
+
+<h2>メールのMMSは使えなくなる</h2>
+
+<p>これは要注意です。たぶんたいていの人はこれを理由に3G回線を捨てられないんじゃないかと思います。特に女性は抵抗ある人が多そう。</p>
+
+<p>iPhoneの標準メールは大きく分けて3つあり、このうちMMSが使えなくなります。</p>
+
+<ol>
+<li>SMS</li>
+<li>MMS</li>
+<li>E-Mail</li>
+</ol>
+
+
+<p>SMSはショートメールです。あて先が電話番号で、テキストと絵文字が送受信できます。1通70文字まで(超えたら分割)、ホワイト/ゴールドプラン以外は他社への送信は有料。他社携帯とのSMS送受信は2011/07/13からできるようになったみたいですね。</p>
+
+<p>MMSはいわゆる携帯メール(◯◯◯@softbank.ne.jp)のことです。Docomoでいうところのiモードメール。写メとかデコメとか皆さん普段使っていると思います。</p>
+
+<p>E-Mailは特に言うことは無いですが、ソフトバンクのメールアドレス(◯◯◯@i.softbank.jp)です。</p>
+
+<p>私はもう割りきってMMSは使わないことにしました。E-Mailも普段使っているGmailにします。きっと慣れるよ。</p>
+
+<h2>電話代も安くしよう</h2>
+
+<p>せっかくなので電話代も安くしちゃいましょう。</p>
+
+<p>Skypeですね。もう有名すぎて何も言うことはありません。</p>
+
+<p>WiFiなら3Gより回線速度に余裕があるから切れにくいだろうし、Skypeを持ち出せるなんてなんだか素敵じゃないですか。あまり使っていませんがチャットも使えます。</p>
+
+<h2>まとめ</h2>
+
+<p>外に持ち出せる無線データ通信のルータ、電源、脱MMSをクリアできるかどうかがポイントですね。</p>
+
+<p>なんとなく後で困ることがでてくるんじゃないか不安だったんですが、今のところ特に困ってないし大丈夫そうです。</p>
+
+<p>※ルータを忘れて出かけると何も出来ない子になるので注意！</p>
+
+<h2>参考記事</h2>
+
+<ul>
+<li><a href="http://mb.softbank.jp/mb/iphone/price_plan/">iPhone 4 / 3GS：料金・割引 | ソフトバンクモバイル</a></li>
+<li><a href="http://goryugo.com/20110111/iphoelowprice/">iPhoneのあらゆる料金をとにかく安くすませる | goryugo</a></li>
+<li><a href="http://d.hatena.ne.jp/tonutto/20100902/1283389349">iPhoneをまる1ヶ月ポータブルWiFiのみで運用してみる実験なう - ちよろぐ！ -CHIYO LOGUE-</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[WordPress3.2のデフォルトテーマがシンプルできれい]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/10/wordpress32/"/>
+    <updated>2011-09-10T03:16:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/10/wordpress32</id>
+    <content type="html"><![CDATA[<p>WordPress3.2になってから、デフォルトテーマがTwentyTenからTwentyElevenに変わりましたね。</p>
+
+<!-- more -->
+
+
+<h2>Twenty Eleven</h2>
+
+<p><img src="http://blog.withweb.info/images/20110910-twentyeleven.png" title="twentyeleven" alt="image twentyeleven" /></p>
+
+<p>見た目はかなりきれいだと思います。イメージギャラリーやフォトログ、ショーケースのテンプレートも用意されていてなかなかに高機能。デモはここで見られます。</p>
+
+<p>たぶん大抵の人がブログでやりたいことは、だいたいできちゃうんじゃないでしょうか。</p>
+
+<p>デバイスの幅に対応してくれるので、何もしなくてもiPhoneやAndroidできれいに表示されます。</p>
+
+<p>このブログも始めたばかりなので、今のところテーマはTwentyElevenのままにしています。後で変えることになると思いますが、しばらくはこのままでもいいかな。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ブログでも書いてみようじゃないか]]></title>
+    <link href="http://blog.withweb.info/blog/2011/09/09/blog-post/"/>
+    <updated>2011-09-09T20:56:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2011/09/09/blog-post</id>
+    <content type="html"><![CDATA[<p>何となくというか、気の迷いというか、</p>
+
+<p>「ブログでもはじめてみようかなー」</p>
+
+<p>と、ふいに思ったわけです。そんなわけで目的も志も無いままに始めてみようと思います。</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: octopress | withweb]]></title>
+  <link href="http://blog.withweb.info/blog/categories/octopress/atom.xml" rel="self"/>
+  <link href="http://blog.withweb.info/"/>
+  <updated>2012-10-04T23:07:29+09:00</updated>
+  <id>http://blog.withweb.info/</id>
+  <author>
+    <name><![CDATA[takecover1980]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Octopressでブログしよう]]></title>
+    <link href="http://blog.withweb.info/blog/2012/10/04/octopress/"/>
+    <updated>2012-10-04T23:00:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/10/04/octopress</id>
+    <content type="html"><![CDATA[<p>普通のブログってやつがとても面倒なんです。</p>
+
+<p>CMSにログインしたり画像アップロードしたり謎エディタで記事書いたり公開ボタン押したりバックアップするのにプラグイン入れたりとか、やってられない。</p>
+
+<p>手元のエディタで記事を書いてコマンド打ったら公開。そんな感じで楽したいのでOctopressに移行します。いまさら感が半端ないけどね。</p>
+
+<!-- more -->
+
+
+<h2>構成</h2>
+
+<ul>
+<li>Octopress ブログエンジン。Markdownで記事を書いてhtmlに出力する。</li>
+<li>Bitbucket ソース管理。Octopressのディレクトリを管理する。</li>
+<li>GitHub サイトの公開場所。Octopressで出力したhtmlなどを置く。</li>
+</ul>
+
+
+<p>ソースはとりあえずBitbucketのプライベートリポジトリに置くことにします。なんとなくですが。</p>
+
+<h2>GitHub Pagesの準備</h2>
+
+<p>gitのインストール、SSH Keysの登録が終わっている前提で、<a href="https://github.com/new">Create a New Repo</a>でUSERNAME.github.comの名前でリポジトリを作ります。</p>
+
+<p>USERNAMEは各自置き換えてくださいね。</p>
+
+<h2>Octopressインストール</h2>
+
+<p>まずは、USERNAME.github.comでアクセスできるようにするところまで。</p>
+
+<pre><code>$ git clone git://github.com/imathis/octopress.git octopress
+$ cd octopress
+$ sudo gem install bundler
+$ sudo bundle install
+$ rake install
+
+$ rake setup_github_pages
+# Enter the read/write url for your repository:
+# git@github.com:USERNAME/USERNAME.github.com.gitを入力します。
+
+$ rake generate
+$ rake deploy
+</code></pre>
+
+<p>独自ドメイン（サブドメイン）で運用したいので、ドメイン会社のサイトでDNSの設定をしておきます。</p>
+
+<pre><code>サブドメイン：blog
+種別：CNAME
+内容：USERNAME.github.com
+</code></pre>
+
+<p>OctopressにCNAMEファイルを作ります。_config.ymlも書き換えて、タイトルやURLなどちゃんとしたものに設定しておきましょう。</p>
+
+<pre><code>$ echo 'blog.withweb.info' &gt; source/CNAME
+$ rake generate
+$ rake deploy
+</code></pre>
+
+<p>あとは、記事をどんどん追加していくだけ。</p>
+
+<h2>記事を書いて投稿する</h2>
+
+<p>これだけ覚えておけばだいたいいける。記事やページの追加はコマンド打たなくてもsource/_postsの中にMarkdownのファイルを突っ込むだけでいけるみたい。</p>
+
+<pre><code>$ rake new_post["title"] # 新規記事を作成
+$ rake new_page["title"] # 新規ページを作成
+$ rake generate          # 記事をhtmlに変換
+$ rake preview           # プレビュー(localhost:4000)
+$ rake deploy            # 記事を公開(GitHub Pagesにデプロイ)
+</code></pre>
+
+<h2>サイトの運用</h2>
+
+<p>ソースはBitbucketにするのでリモートリポジトリを追加します。</p>
+
+<pre><code>$ git remote add bitbucket git@bitbucket.org:USERNAME/octopress.git
+$ git push -u bitbucket source
+</code></pre>
+
+<p>あとはpushしていけば記事のバックアップをとっていけます。</p>
+
+<pre><code>$ git add .
+$ git commit -m 'commit message'
+$ git push
+</code></pre>
+
+<h2>Octopressの更新</h2>
+
+<p>Octopress自体を更新する場合は、本家の更新を取り込んでマージします。</p>
+
+<pre><code>$ git fetch octopress
+$ git pull octopress master
+</code></pre>
+
+<h2>参考ページ</h2>
+
+<ul>
+<li><a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">Octopressのインストールから運用管理まで - T.I.D.</a></li>
+<li><a href="http://blog.glidenote.com/blog/2011/11/07/install-octopress-on-github/">GithubとOctopressでモダンな技術系ブログを作ってみる - Glide Note - グライドノート</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

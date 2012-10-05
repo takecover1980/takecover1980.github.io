@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: develop | withweb]]></title>
+  <link href="http://blog.withweb.info/blog/categories/develop/atom.xml" rel="self"/>
+  <link href="http://blog.withweb.info/"/>
+  <updated>2012-10-05T17:33:16+09:00</updated>
+  <id>http://blog.withweb.info/</id>
+  <author>
+    <name><![CDATA[takecover1980]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Scala+PlayFramework2はじめました]]></title>
+    <link href="http://blog.withweb.info/blog/2012/10/05/scala-playframework/"/>
+    <updated>2012-10-05T17:30:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/10/05/scala-playframework</id>
+    <content type="html"><![CDATA[<p>最近Scalaが人気あるみたいですね。Twitterがバックエンドで使ってることも話題になりました。そんなScalaに興味がでてきたので、とっかかりが簡単そうなPlay Framework2と合わせて触ってみます。</p>
+
+<p>ドキュメントが充実してるからわざわざ書くことはあんまりないんだけど、最初は大まかな流れが分かればいいんじゃないかと思います。</p>
+
+<!-- more -->
+
+
+<h2>インストール</h2>
+
+<p>JDK6以降が前提です。あとは特に何も言う事が無いくらい簡単。<a href="http://playdocja.appspot.com/">日本語公式サイト</a>からzipファイルをダウンロードして、展開してパスを通すだけです。</p>
+
+<p>今回はMacのHomebrewにパッケージがあったのでそっちでインストールします。</p>
+
+<pre><code>$ brew install play
+</code></pre>
+
+<h2>アプリ作成の流れ</h2>
+
+<p>大まかな流れはこんな感じ。分かりやすくていい感じ。</p>
+
+<ol>
+<li>playコマンドでアプリケーションを作成する</li>
+<li>URLとコントローラを対応付ける</li>
+<li>コントローラ(+モデル)を実装する</li>
+<li>2〜3の繰り返し</li>
+</ol>
+
+
+<h2>playコマンドでアプリケーションを作成する</h2>
+
+<pre><code>$ play new sample
+</code></pre>
+
+<p>対話式にアプリケーション名とテンプレートの選択をします。テンプレートは下の3つから選びますが、今回はScalaを使いたいので1を選びます。</p>
+
+<ol>
+<li>Scalaアプリケーション</li>
+<li>Javaアプリケーション</li>
+<li>空のアプリケーション</li>
+</ol>
+
+
+<p>この時点で起動できます。やり方はこんな感じ。</p>
+
+<pre><code>$ play  # playコンソール起動
+$ run   # playコンソール内でアプリケーション起動
+</code></pre>
+
+<p>http://localhost:9000にアクセスするとwelcome画面が表示されます。サーバ起動しっぱなしでもソース変更すれば反映されるので、止めずにこのまま進めます。</p>
+
+<p><img src="/images/20121005-playframework-welcome.png" title="playframework welcome" alt="image playframework welcome" /></p>
+
+<h2>URLとコントローラを対応付ける</h2>
+
+<p>conf/routesにルートを追加します。このURLにアクセスした時に対応したコントローラのメソッドが実行されます。</p>
+
+<p>とりあえずGETで/helloを追加。Applicationクラスにメソッドを追加してみます。</p>
+
+<p>``` text conf/routes</p>
+
+<h1>Home page</h1>
+
+<p>GET     /                       controllers.Application.index</p>
+
+<h1>Hello</h1>
+
+<p>GET     /hello                  controllers.Application.hello
+```</p>
+
+<h2>コントローラ(+モデル)を実装する</h2>
+
+<p>とりあえずモデルは置いといて、Application.scalaに追記します。</p>
+
+<p>``` scala Application.scala
+package controllers</p>
+
+<p>import play.api.<em>
+import play.api.mvc.</em></p>
+
+<p>object Application extends Controller {</p>
+
+<p>  def index = Action {</p>
+
+<pre><code>Ok(views.html.index("Your new application is ready."))
+</code></pre>
+
+<p>  }</p>
+
+<p>  // 信頼と実績のアレ
+  def hello = Action {</p>
+
+<pre><code>Ok("Hello, world!")
+</code></pre>
+
+<p>  }</p>
+
+<p>}
+```</p>
+
+<p>http://localhost:9000/helloにアクセスすると、「Hello, world!」が表示されます。</p>
+
+<p><img src="/images/20121005-playframework-hello.png" title="playframework hello" alt="image playframework hello" /></p>
+
+<p>とりあえず触ってみるレベルではとても簡単です。J2EEでの作り方とはずいぶん違いますね。</p>
+
+<p>ScalaもPlay Framework2もいろいろ作ってみるのはこれからになりますが、なかなか楽しそうです。</p>
+
+<h2>参考ページ</h2>
+
+<ul>
+<li><a href="http://playdocja.appspot.com/documentation/2.0.3/Home">Documentation: Home — Playframework</a></li>
+<li><a href="https://github.com/playframework-ja/Play20/wiki">Play 2.0 ドキュメント · playframework-ja/Play20 Wiki · GitHub</a></li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

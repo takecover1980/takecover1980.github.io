@@ -4,7 +4,7 @@
   <title><![CDATA[withweb]]></title>
   <link href="http://blog.withweb.info/atom.xml" rel="self"/>
   <link href="http://blog.withweb.info/"/>
-  <updated>2012-10-04T23:43:20+09:00</updated>
+  <updated>2012-10-05T17:33:16+09:00</updated>
   <id>http://blog.withweb.info/</id>
   <author>
     <name><![CDATA[takecover1980]]></name>
@@ -12,6 +12,141 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Scala+PlayFramework2はじめました]]></title>
+    <link href="http://blog.withweb.info/blog/2012/10/05/scala-playframework/"/>
+    <updated>2012-10-05T17:30:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/10/05/scala-playframework</id>
+    <content type="html"><![CDATA[<p>最近Scalaが人気あるみたいですね。Twitterがバックエンドで使ってることも話題になりました。そんなScalaに興味がでてきたので、とっかかりが簡単そうなPlay Framework2と合わせて触ってみます。</p>
+
+<p>ドキュメントが充実してるからわざわざ書くことはあんまりないんだけど、最初は大まかな流れが分かればいいんじゃないかと思います。</p>
+
+<!-- more -->
+
+
+<h2>インストール</h2>
+
+<p>JDK6以降が前提です。あとは特に何も言う事が無いくらい簡単。<a href="http://playdocja.appspot.com/">日本語公式サイト</a>からzipファイルをダウンロードして、展開してパスを通すだけです。</p>
+
+<p>今回はMacのHomebrewにパッケージがあったのでそっちでインストールします。</p>
+
+<pre><code>$ brew install play
+</code></pre>
+
+<h2>アプリ作成の流れ</h2>
+
+<p>大まかな流れはこんな感じ。分かりやすくていい感じ。</p>
+
+<ol>
+<li>playコマンドでアプリケーションを作成する</li>
+<li>URLとコントローラを対応付ける</li>
+<li>コントローラ(+モデル)を実装する</li>
+<li>2〜3の繰り返し</li>
+</ol>
+
+
+<h2>playコマンドでアプリケーションを作成する</h2>
+
+<pre><code>$ play new sample
+</code></pre>
+
+<p>対話式にアプリケーション名とテンプレートの選択をします。テンプレートは下の3つから選びますが、今回はScalaを使いたいので1を選びます。</p>
+
+<ol>
+<li>Scalaアプリケーション</li>
+<li>Javaアプリケーション</li>
+<li>空のアプリケーション</li>
+</ol>
+
+
+<p>この時点で起動できます。やり方はこんな感じ。</p>
+
+<pre><code>$ play  # playコンソール起動
+$ run   # playコンソール内でアプリケーション起動
+</code></pre>
+
+<p>http://localhost:9000にアクセスするとwelcome画面が表示されます。サーバ起動しっぱなしでもソース変更すれば反映されるので、止めずにこのまま進めます。</p>
+
+<p><img src="http://blog.withweb.info/images/20121005-playframework-welcome.png" title="playframework welcome" alt="image playframework welcome" /></p>
+
+<h2>URLとコントローラを対応付ける</h2>
+
+<p>conf/routesにルートを追加します。このURLにアクセスした時に対応したコントローラのメソッドが実行されます。</p>
+
+<p>とりあえずGETで/helloを追加。Applicationクラスにメソッドを追加してみます。</p>
+
+<figure class='code'><figcaption><span>conf/routes</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'># Home page
+</span><span class='line'>GET     /                       controllers.Application.index
+</span><span class='line'>
+</span><span class='line'># Hello
+</span><span class='line'>GET     /hello                  controllers.Application.hello
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>コントローラ(+モデル)を実装する</h2>
+
+<p>とりあえずモデルは置いといて、Application.scalaに追記します。</p>
+
+<figure class='code'><figcaption><span>Application.scala</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">controllers</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">play.api._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">play.api.mvc._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Application</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">index</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nc">Ok</span><span class="o">(</span><span class="n">views</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">index</span><span class="o">(</span><span class="s">&quot;Your new application is ready.&quot;</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// 信頼と実績のアレ</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">hello</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nc">Ok</span><span class="o">(</span><span class="s">&quot;Hello, world!&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>http://localhost:9000/helloにアクセスすると、「Hello, world!」が表示されます。</p>
+
+<p><img src="http://blog.withweb.info/images/20121005-playframework-hello.png" title="playframework hello" alt="image playframework hello" /></p>
+
+<p>とりあえず触ってみるレベルではとても簡単です。J2EEでの作り方とはずいぶん違いますね。</p>
+
+<p>ScalaもPlay Framework2もいろいろ作ってみるのはこれからになりますが、なかなか楽しそうです。</p>
+
+<h2>参考ページ</h2>
+
+<ul>
+<li><a href="http://playdocja.appspot.com/documentation/2.0.3/Home">Documentation: Home — Playframework</a></li>
+<li><a href="https://github.com/playframework-ja/Play20/wiki">Play 2.0 ドキュメント · playframework-ja/Play20 Wiki · GitHub</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Octopressでブログしよう]]></title>

@@ -9,7 +9,12 @@
   <meta name="author" content="takecover1980">
 
   
-  <meta name="description" content="最近Scalaが人気あるみたいですね。Twitterがバックエンドで使ってることも話題になりました。そんなScalaに興味がでてきたので、とっかかりが簡単そうなPlay Framework2と合わせて触ってみます。 ドキュメントが充実してるからわざわざ書くことはあんまりないんだけど、 &hellip;">
+  <meta name="description" content="jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。 こんな感じで設定しました。 ユーザ:jenkinsをtty(コンソール)無しでsudoさせる1
+2
+3
+4
+5
+$ sudo /usr/sbin/visudo # &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +82,64 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/10/06/script-enable-sudo-in-cron/">Cronの中でsudoを使う方法</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-10-06T19:30:00+09:00" pubdate data-updated="true">Oct 6<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。</p>
+
+<p>こんな感じで設定しました。</p>
+
+<figure class='code'><figcaption><span>ユーザ:jenkinsをtty(コンソール)無しでsudoさせる</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo /usr/sbin/visudo
+</span><span class='line'>
+</span><span class='line'>#Defaults requiretty           # tty無しの場合sudoさせない(コメントアウト)
+</span><span class='line'>Defaults:jenkins !requiretty   # ユーザjenkinsはtty無しでsudo可能
+</span><span class='line'>jenkins ALL=(ALL) NOPASSWD:ALL # ユーザjenkinsはパスワード無しでsudo可能
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/10/06/script-enable-sudo-in-cron/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -248,47 +311,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/12/28/uroad-8000/">URoad-8000が802.11nに対応</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-12-28T03:50:00+09:00" pubdate data-updated="true">Dec 28<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>何となくURoad-8000の自動アップデートをしてみたら2011/12/26のアップデートで802.11nに対応したようです。私はあまり気にしていなかったのですが、URoad-8000ユーザは待っていた人も多いんじゃないでしょうか。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2011/12/28/uroad-8000/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -304,6 +326,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/10/06/script-enable-sudo-in-cron/">cronの中でsudoを使う方法</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/10/05/scala-playframework/">Scala+PlayFramework2はじめました</a>
       </li>
     
@@ -317,10 +343,6 @@
     
       <li class="post">
         <a href="/blog/2012/05/20/sakura-vps2g-centos6/">さくらのVPS 2G(CentOS6)で最初にやったことメモ</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/12/28/uroad-8000/">URoad-8000が802.11nに対応</a>
       </li>
     
   </ul>

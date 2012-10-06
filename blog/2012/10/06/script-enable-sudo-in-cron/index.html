@@ -5,11 +5,16 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopressでブログしよう - withweb</title>
+  <title>cronの中でsudoを使う方法 - withweb</title>
   <meta name="author" content="takecover1980">
 
   
-  <meta name="description" content="普通のブログってやつがとても面倒なんです。 CMSにログインしたり画像アップロードしたり謎エディタで記事書いたり公開ボタン押したりバックアップするのにプラグイン入れたりとか、やってられない。 手元のエディタで記事を書いてコマンド打ったら公開。そんな感じで楽したいのでOctopressに移行します。 &hellip;">
+  <meta name="description" content="jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。 こんな感じで設定しました。 ユーザ:jenkinsをtty(コンソール)無しでsudoさせる1
+2
+3
+4
+5
+$ sudo /usr/sbin/visudo # &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +23,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.withweb.info/blog/2012/10/04/octopress/">
+  <link rel="canonical" href="http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -80,7 +85,7 @@
   
   <header>
     
-      <h1 class="entry-title">Octopressでブログしよう</h1>
+      <h1 class="entry-title">Cronの中でsudoを使う方法</h1>
     
     
       <p class="meta">
@@ -96,114 +101,52 @@
   
 
 
-<time datetime="2012-10-04T23:00:00+09:00" pubdate data-updated="true">Oct 4<span>th</span>, 2012</time>
+<time datetime="2012-10-06T19:30:00+09:00" pubdate data-updated="true">Oct 6<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>普通のブログってやつがとても面倒なんです。</p>
+<div class="entry-content"><p>jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。</p>
 
-<p>CMSにログインしたり画像アップロードしたり謎エディタで記事書いたり公開ボタン押したりバックアップするのにプラグイン入れたりとか、やってられない。</p>
+<p>こんな感じで設定しました。</p>
 
-<p>手元のエディタで記事を書いてコマンド打ったら公開。そんな感じで楽したいのでOctopressに移行します。いまさら感が半端ないけどね。</p>
+<figure class='code'><figcaption><span>ユーザ:jenkinsをtty(コンソール)無しでsudoさせる</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo /usr/sbin/visudo
+</span><span class='line'>
+</span><span class='line'>#Defaults requiretty           # tty無しの場合sudoさせない(コメントアウト)
+</span><span class='line'>Defaults:jenkins !requiretty   # ユーザjenkinsはtty無しでsudo可能
+</span><span class='line'>jenkins ALL=(ALL) NOPASSWD:ALL # ユーザjenkinsはパスワード無しでsudo可能
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 
 <!-- more -->
 
 
-<h2>構成</h2>
+<h2>ちょっと解説</h2>
 
-<ul>
-<li>Octopress ブログエンジン。Markdownで記事を書いてhtmlに出力する。</li>
-<li>Bitbucket ソース管理。Octopressのディレクトリを管理する。</li>
-<li>GitHub サイトの公開場所。Octopressで出力したhtmlなどを置く。</li>
-</ul>
+<p>sshコマンドやcronの中でsudoを使うスクリプトを使う場合によくあるケースなんですが</p>
 
-
-<p>ソースはとりあえずBitbucketのプライベートリポジトリに置くことにします。なんとなくですが。</p>
-
-<h2>GitHub Pagesの準備</h2>
-
-<p>gitのインストール、SSH Keysの登録が終わっている前提で、<a href="https://github.com/new">Create a New Repo</a>でUSERNAME.github.comの名前でリポジトリを作ります。</p>
-
-<p>USERNAMEは各自置き換えてくださいね。</p>
-
-<h2>Octopressインストール</h2>
-
-<p>まずは、USERNAME.github.comでアクセスできるようにするところまで。</p>
-
-<pre><code>$ git clone git://github.com/imathis/octopress.git octopress
-$ cd octopress
-$ sudo gem install bundler
-$ sudo bundle install
-$ rake install
-
-$ rake setup_github_pages
-# Enter the read/write url for your repository:
-# git@github.com:USERNAME/USERNAME.github.com.gitを入力します。
-
-$ rake generate
-$ rake deploy
+<pre><code>sudo: sorry, you must have a tty to run sudo
 </code></pre>
 
-<p>独自ドメイン（サブドメイン）で運用したいので、ドメイン会社のサイトでDNSの設定をしておきます。</p>
+<p>こんなエラーで止まることがあります。これは、/etc/sudoersの設定でtty(コンソール)とつながってないsudoが禁止されているためです。</p>
 
-<pre><code>サブドメイン：blog
-種別：CNAME
-内容：USERNAME.github.com
+<p>/etc/sudoersの下の行をコメントアウトするか、!requirettyを指定するとこの設定を無効化できます。</p>
+
+<pre><code>Defaults requiretty
 </code></pre>
 
-<p>OctopressにCNAMEファイルを作ります。_config.ymlも書き換えて、タイトルやURLなどちゃんとしたものに設定しておきましょう。</p>
+<p>が、クラッキング目的で進入したソフト等からsudoされないようにするのが目的なので、安易に外すのもいかがなものかと思うわけです。(効果があるかどうかは置いといて)</p>
 
-<pre><code>$ echo 'blog.withweb.info' &gt; source/CNAME
-$ rake generate
-$ rake deploy
-</code></pre>
-
-<p>あとは、記事をどんどん追加していくだけ。</p>
-
-<h2>記事を書いて投稿する</h2>
-
-<p>これだけ覚えておけばだいたいいける。記事やページの追加はコマンド打たなくてもsource/_postsの中にMarkdownのファイルを突っ込むだけでいけるみたい。</p>
-
-<pre><code>$ rake new_post["title"] # 新規記事を作成
-$ rake new_page["title"] # 新規ページを作成
-$ rake generate          # 記事をhtmlに変換
-$ rake preview           # プレビュー(localhost:4000)
-$ rake deploy            # 記事を公開(GitHub Pagesにデプロイ)
-</code></pre>
-
-<h2>サイトの運用</h2>
-
-<p>ソースはBitbucketにするのでリモートリポジトリを追加します。</p>
-
-<pre><code>$ git remote add bitbucket git@bitbucket.org:USERNAME/octopress.git
-$ git push -u bitbucket source
-</code></pre>
-
-<p>あとはpushしていけば記事のバックアップをとっていけます。</p>
-
-<pre><code>$ git add .
-$ git commit -m 'commit message'
-$ git push
-</code></pre>
-
-<h2>Octopressの更新</h2>
-
-<p>Octopress自体を更新する場合は、本家の更新を取り込んでマージします。</p>
-
-<pre><code>$ git fetch octopress
-$ git pull octopress master
-</code></pre>
-
-<h2>参考ページ</h2>
-
-<ul>
-<li><a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">Octopressのインストールから運用管理まで - T.I.D.</a></li>
-<li><a href="http://blog.glidenote.com/blog/2011/11/07/install-octopress-on-github/">GithubとOctopressでモダンな技術系ブログを作ってみる - Glide Note - グライドノート</a></li>
-</ul>
-
+<p>というわけで、今回は特定のユーザのみsudoを許可する設定を行いました。</p>
 </div>
 
 
@@ -226,12 +169,12 @@ $ git pull octopress master
   
 
 
-<time datetime="2012-10-04T23:00:00+09:00" pubdate data-updated="true">Oct 4<span>th</span>, 2012</time>
+<time datetime="2012-10-06T19:30:00+09:00" pubdate data-updated="true">Oct 6<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/octopress/'>octopress</a>
+    <a class='category' href='/blog/categories/vps/'>vps</a>
   
 </span>
 
@@ -240,7 +183,7 @@ $ git pull octopress master
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2012/10/04/octopress/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2012/10/04/octopress/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -253,10 +196,8 @@ $ git pull octopress master
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/05/22/vps-iptables/" title="Previous Post: VPSのファイアウォール設定を見直す">&laquo; VPSのファイアウォール設定を見直す</a>
+        <a class="basic-alignment left" href="/blog/2012/10/05/scala-playframework/" title="Previous Post: Scala+PlayFramework2はじめました">&laquo; Scala+PlayFramework2はじめました</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/10/05/scala-playframework/" title="Next Post: Scala+PlayFramework2はじめました">Scala+PlayFramework2はじめました &raquo;</a>
       
     </p>
   </footer>
@@ -339,8 +280,8 @@ $ git pull octopress master
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.withweb.info/blog/2012/10/04/octopress/';
-        var disqus_url = 'http://blog.withweb.info/blog/2012/10/04/octopress/';
+        var disqus_identifier = 'http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/';
+        var disqus_url = 'http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -4,7 +4,7 @@
   <title><![CDATA[withweb]]></title>
   <link href="http://blog.withweb.info/atom.xml" rel="self"/>
   <link href="http://blog.withweb.info/"/>
-  <updated>2012-10-05T18:56:06+09:00</updated>
+  <updated>2012-10-06T19:35:44+09:00</updated>
   <id>http://blog.withweb.info/</id>
   <author>
     <name><![CDATA[takecover1980]]></name>
@@ -12,6 +12,53 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[cronの中でsudoを使う方法]]></title>
+    <link href="http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/"/>
+    <updated>2012-10-06T19:30:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron</id>
+    <content type="html"><![CDATA[<p>jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。</p>
+
+<p>こんな感じで設定しました。</p>
+
+<figure class='code'><figcaption><span>ユーザ:jenkinsをtty(コンソール)無しでsudoさせる</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo /usr/sbin/visudo
+</span><span class='line'>
+</span><span class='line'>#Defaults requiretty           # tty無しの場合sudoさせない(コメントアウト)
+</span><span class='line'>Defaults:jenkins !requiretty   # ユーザjenkinsはtty無しでsudo可能
+</span><span class='line'>jenkins ALL=(ALL) NOPASSWD:ALL # ユーザjenkinsはパスワード無しでsudo可能
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!-- more -->
+
+
+<h2>ちょっと解説</h2>
+
+<p>sshコマンドやcronの中でsudoを使うスクリプトを使う場合によくあるケースなんですが</p>
+
+<pre><code>sudo: sorry, you must have a tty to run sudo
+</code></pre>
+
+<p>こんなエラーで止まることがあります。これは、/etc/sudoersの設定でtty(コンソール)とつながってないsudoが禁止されているためです。</p>
+
+<p>/etc/sudoersの下の行をコメントアウトするか、!requirettyを指定するとこの設定を無効化できます。</p>
+
+<pre><code>Defaults requiretty
+</code></pre>
+
+<p>が、クラッキング目的で進入したソフト等からsudoされないようにするのが目的なので、安易に外すのもいかがなものかと思うわけです。(効果があるかどうかは置いといて)</p>
+
+<p>というわけで、今回は特定のユーザのみsudoを許可する設定を行いました。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Scala+PlayFramework2はじめました]]></title>

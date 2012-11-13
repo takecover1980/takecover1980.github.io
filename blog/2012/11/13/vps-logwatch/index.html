@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>iPhone 4Sをソフトバンクオンラインショップで予約した - withweb</title>
+  <title>VPSにログ監視ツールlogwatchをインストール - withweb</title>
   <meta name="author" content="takecover1980">
 
   
-  <meta name="description" content="待ちに待ったiPhoneの最新機種。もう買って手元に届いた人も多いんじゃないでしょうか。 ソフトバンクだけでなくauからも発売される事や予約の行列、販売台数などなど、発売前も後も世間で熱い話題ですね。 そんなiPhone4Sを予約しました。 やっと予約した &hellip;">
+  <meta name="description" content="Linuxサーバのログを整形して管理者(root)に1日1回メール送信してくれるツールです。 メール送信なのでMTAが必要です。既に設定済の場合は読み飛ばしてください。 今回は個人的なサーバなので正直sSMTPで十分ですが、最近のLinuxならPostfixが標準だと思うのでそっちを使います。また &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.withweb.info/blog/2011/10/21/iphone4s/">
+  <link rel="canonical" href="http://blog.withweb.info/blog/2012/11/13/vps-logwatch/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -80,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">iPhone 4Sをソフトバンクオンラインショップで予約した</h1>
+      <h1 class="entry-title">VPSにログ監視ツールlogwatchをインストール</h1>
     
     
       <p class="meta">
@@ -96,62 +96,81 @@
   
 
 
-<time datetime="2011-10-21T03:05:00+09:00" pubdate data-updated="true">Oct 21<span>st</span>, 2011</time>
+<time datetime="2012-11-13T22:30:00+09:00" pubdate data-updated="true">Nov 13<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>待ちに待ったiPhoneの最新機種。もう買って手元に届いた人も多いんじゃないでしょうか。</p>
+<div class="entry-content"><p>Linuxサーバのログを整形して管理者(root)に1日1回メール送信してくれるツールです。</p>
 
-<p>ソフトバンクだけでなくauからも発売される事や予約の行列、販売台数などなど、発売前も後も世間で熱い話題ですね。</p>
+<p>メール送信なのでMTAが必要です。既に設定済の場合は読み飛ばしてください。</p>
 
-<p>そんなiPhone4Sを予約しました。</p>
+<p>今回は個人的なサーバなので正直sSMTPで十分ですが、最近のLinuxならPostfixが標準だと思うのでそっちを使います。また、ドメインは信頼と実績のexample.comなので適時読み替えてください。外部からの受信、転送はしないのでDNSは触りません。</p>
 
 <!-- more -->
 
 
-<h2>やっと予約した</h2>
+<h2>インストール</h2>
 
-<p>発売日の前後は帰省したりでバタバタしていたので、帰宅後にソフトバンクオンラインショップで予約しました。もう乗り遅れてる感が満載です。</p>
+<p>yumでサクッとインストール。</p>
 
-<p>iPhone4もiPhone4Sも予約開始当日は激混みだったようですが、さすがにオンラインショップも混み合うこともなくスイスイ進みました。乗り遅れて良かったかも。</p>
+<pre><code>$ sudo yum install -y postfix logwatch
+</code></pre>
 
-<p>今回予約したのはiPhone 4S 64GBの黒。</p>
+<h2>Postfixの設定</h2>
 
-<ul>
-<li>白だと汚れが目立ちそうだから黒</li>
-<li>今は16GBでも十分だけど写真たくさん撮りたいから64GB</li>
-</ul>
+<p>ローカルと外向きにメール送信できるように以下を編集します。メールボックスはMaildir形式。</p>
 
-
-<p>理由なんて簡単なものです。</p>
-
-<h2>下調べはほとんどしていない</h2>
-
-<p>先にキャリアの回線、価格、キャンペーンの比較をしておけば良かったんですが、ネットで少し調べただけです。</p>
-
-<p>さらっと眺めてみた印象としては</p>
-
-<ul>
-<li>価格は正直たいして変わらない</li>
-<li>回線は正直どっちもどっち(基本的にWifi使うし)</li>
-<li>3GSから乗り換えるならソフトバンクがお得？</li>
-</ul>
+<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>myhostname = mail.example.com                                           // 自FQDN名
+</span><span class='line'>mydomain = example.com                                                  // 自ドメイン名
+</span><span class='line'>myorigin = $mydomain                                                    // 送信元ドメイン名
+</span><span class='line'>inet_interfaces = localhost                                             // 待ち受けるネットワークインタフェース
+</span><span class='line'>mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain  // ローカルで受信するドメイン名
+</span><span class='line'>home_mailbox = Maildir/                                                 // メールボックス形式
+</span><span class='line'>smtpd_banner = $myhostname ESMTP unknown                                // バージョン非表示
+</span></code></pre></td></tr></table></div></figure>
 
 
-<p>といったところです。</p>
+<p>Maildir形式のメールボックスを使うので、新規ユーザ用にスケルトンを作っておく。既存ユーザのメールボックスを移行する場合はググればすぐ見つかります。</p>
 
-<p>3GSの割賦金が残っているのでソフトバンクの「実質無償機種変更キャンペーン」を使いました。簡単に言うと「残っている割賦金を月々の割引でチャラにしてくれる」ようです。お得じゃないですか。即決。</p>
+<pre><code>$ sudo mkdir -p /etc/skel/Maildir/{new,cur,tmp}
+$ sudo chmod -R 700 /etc/skel/Maildir/
+</code></pre>
 
-<p>他にもiPad2が月額料金0円から使えるようですが、端末代がタダになるわけではないのでトータルコストはWifi版とあまり変わらないみたいです。</p>
+<p>メール送信できるか確認</p>
 
-<p>iPadは今欲しいわけでもないし、買うならWifi版で十分なのでこれは見送りました。</p>
+<pre><code>$ echo "test message." | mail -s test &lt;受信確認用の外部のメールアドレス&gt;
+$ echo "test message." | mail -s test &lt;受信確認用のローカルユーザ&gt;
+</code></pre>
 
-<h2>あとは待つだけ</h2>
+<p>外部のメールアドレスにメールが届くのと、ローカルユーザの$HOME/Maildir/newにメールが届いていることを確認します。</p>
 
-<p>単純に楽しみです。引取りに行く手間も無いのでのんびり待ってます。</p>
+<h2>logwatchの設定</h2>
+
+<p>と言っても、今回はlogwatch自体は設定しません。ログレベルやアーカイブ有無など設定したい場合は/etc/logwatch/conf/logwatch.confを編集します。</p>
+
+<p>設定するのはこっち。logwatchはデフォルトでroot宛てのメール転送先を設定します。</p>
+
+<figure class='code'><figcaption><span>/etc/aliases</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>root: example@example.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>logwatchをインストールすると/etc/cron.daily/00logwatchも作られるので、ほっといても1日1回メール送信されます。が、コマンドでメール送信できるので確認しておきます。</p>
+
+<pre><code>$ logwatch --mailto root
+</code></pre>
+
+<p>とりあえずこれで簡単にログ監視できます。</p>
 </div>
 
 
@@ -174,12 +193,12 @@
   
 
 
-<time datetime="2011-10-21T03:05:00+09:00" pubdate data-updated="true">Oct 21<span>st</span>, 2011</time>
+<time datetime="2012-11-13T22:30:00+09:00" pubdate data-updated="true">Nov 13<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/iphone/'>iphone</a>
+    <a class='category' href='/blog/categories/vps/'>vps</a>
   
 </span>
 
@@ -188,7 +207,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2011/10/21/iphone4s/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2011/10/21/iphone4s/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2012/11/13/vps-logwatch/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2012/11/13/vps-logwatch/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -201,10 +220,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2011/10/02/framework/" title="Previous Post: Webデザイナーとエンジニアにとってのフレームワークは違うもの？">&laquo; Webデザイナーとエンジニアにとってのフレームワークは違うもの？</a>
+        <a class="basic-alignment left" href="/blog/2012/10/06/script-enable-sudo-in-cron/" title="Previous Post: cronの中でsudoを使う方法">&laquo; cronの中でsudoを使う方法</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2011/11/02/iphone4s/" title="Next Post: iPhone 4Sが届いた">iPhone 4Sが届いた &raquo;</a>
       
     </p>
   </footer>
@@ -287,8 +304,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.withweb.info/blog/2011/10/21/iphone4s/';
-        var disqus_url = 'http://blog.withweb.info/blog/2011/10/21/iphone4s/';
+        var disqus_identifier = 'http://blog.withweb.info/blog/2012/11/13/vps-logwatch/';
+        var disqus_url = 'http://blog.withweb.info/blog/2012/11/13/vps-logwatch/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -4,7 +4,7 @@
   <title><![CDATA[withweb]]></title>
   <link href="http://blog.withweb.info/atom.xml" rel="self"/>
   <link href="http://blog.withweb.info/"/>
-  <updated>2012-10-06T19:35:44+09:00</updated>
+  <updated>2012-11-13T22:48:55+09:00</updated>
   <id>http://blog.withweb.info/</id>
   <author>
     <name><![CDATA[takecover1980]]></name>
@@ -12,6 +12,82 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[VPSにログ監視ツールlogwatchをインストール]]></title>
+    <link href="http://blog.withweb.info/blog/2012/11/13/vps-logwatch/"/>
+    <updated>2012-11-13T22:30:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/11/13/vps-logwatch</id>
+    <content type="html"><![CDATA[<p>Linuxサーバのログを整形して管理者(root)に1日1回メール送信してくれるツールです。</p>
+
+<p>メール送信なのでMTAが必要です。既に設定済の場合は読み飛ばしてください。</p>
+
+<p>今回は個人的なサーバなので正直sSMTPで十分ですが、最近のLinuxならPostfixが標準だと思うのでそっちを使います。また、ドメインは信頼と実績のexample.comなので適時読み替えてください。外部からの受信、転送はしないのでDNSは触りません。</p>
+
+<!-- more -->
+
+
+<h2>インストール</h2>
+
+<p>yumでサクッとインストール。</p>
+
+<pre><code>$ sudo yum install -y postfix logwatch
+</code></pre>
+
+<h2>Postfixの設定</h2>
+
+<p>ローカルと外向きにメール送信できるように以下を編集します。メールボックスはMaildir形式。</p>
+
+<figure class='code'><figcaption><span>/etc/postfix/main.cf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>myhostname = mail.example.com                                           // 自FQDN名
+</span><span class='line'>mydomain = example.com                                                  // 自ドメイン名
+</span><span class='line'>myorigin = $mydomain                                                    // 送信元ドメイン名
+</span><span class='line'>inet_interfaces = localhost                                             // 待ち受けるネットワークインタフェース
+</span><span class='line'>mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain  // ローカルで受信するドメイン名
+</span><span class='line'>home_mailbox = Maildir/                                                 // メールボックス形式
+</span><span class='line'>smtpd_banner = $myhostname ESMTP unknown                                // バージョン非表示
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Maildir形式のメールボックスを使うので、新規ユーザ用にスケルトンを作っておく。既存ユーザのメールボックスを移行する場合はググればすぐ見つかります。</p>
+
+<pre><code>$ sudo mkdir -p /etc/skel/Maildir/{new,cur,tmp}
+$ sudo chmod -R 700 /etc/skel/Maildir/
+</code></pre>
+
+<p>メール送信できるか確認</p>
+
+<pre><code>$ echo "test message." | mail -s test &lt;受信確認用の外部のメールアドレス&gt;
+$ echo "test message." | mail -s test &lt;受信確認用のローカルユーザ&gt;
+</code></pre>
+
+<p>外部のメールアドレスにメールが届くのと、ローカルユーザの$HOME/Maildir/newにメールが届いていることを確認します。</p>
+
+<h2>logwatchの設定</h2>
+
+<p>と言っても、今回はlogwatch自体は設定しません。ログレベルやアーカイブ有無など設定したい場合は/etc/logwatch/conf/logwatch.confを編集します。</p>
+
+<p>設定するのはこっち。logwatchはデフォルトでroot宛てのメール転送先を設定します。</p>
+
+<figure class='code'><figcaption><span>/etc/aliases</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>root: example@example.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>logwatchをインストールすると/etc/cron.daily/00logwatchも作られるので、ほっといても1日1回メール送信されます。が、コマンドでメール送信できるので確認しておきます。</p>
+
+<pre><code>$ logwatch --mailto root
+</code></pre>
+
+<p>とりあえずこれで簡単にログ監視できます。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[cronの中でsudoを使う方法]]></title>

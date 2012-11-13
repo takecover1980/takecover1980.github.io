@@ -9,12 +9,7 @@
   <meta name="author" content="takecover1980">
 
   
-  <meta name="description" content="jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。 こんな感じで設定しました。 ユーザ:jenkinsをtty(コンソール)無しでsudoさせる1
-2
-3
-4
-5
-$ sudo /usr/sbin/visudo # &hellip;">
+  <meta name="description" content="Linuxサーバのログを整形して管理者(root)に1日1回メール送信してくれるツールです。 メール送信なのでMTAが必要です。既に設定済の場合は読み飛ばしてください。 今回は個人的なサーバなので正直sSMTPで十分ですが、最近のLinuxならPostfixが標準だと思うのでそっちを使います。また &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,6 +77,51 @@ $ sudo /usr/sbin/visudo # &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/11/13/vps-logwatch/">VPSにログ監視ツールlogwatchをインストール</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-11-13T22:30:00+09:00" pubdate data-updated="true">Nov 13<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Linuxサーバのログを整形して管理者(root)に1日1回メール送信してくれるツールです。</p>
+
+<p>メール送信なのでMTAが必要です。既に設定済の場合は読み飛ばしてください。</p>
+
+<p>今回は個人的なサーバなので正直sSMTPで十分ですが、最近のLinuxならPostfixが標準だと思うのでそっちを使います。また、ドメインは信頼と実績のexample.comなので適時読み替えてください。外部からの受信、転送はしないのでDNSは触りません。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/11/13/vps-logwatch/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -270,47 +310,6 @@ $ sudo /usr/sbin/visudo # &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/05/20/sakura-vps2g-centos6/">さくらのVPS 2G(CentOS6)で最初にやったことメモ</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-20T20:26:00+09:00" pubdate data-updated="true">May 20<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>さくらのVPS 2Gを借りたので、最初にやったことをメモ。どこかに書かないと忘れちゃう。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/05/20/sakura-vps2g-centos6/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -326,6 +325,10 @@ $ sudo /usr/sbin/visudo # &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/11/13/vps-logwatch/">VPSにログ監視ツールlogwatchをインストール</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/10/06/script-enable-sudo-in-cron/">cronの中でsudoを使う方法</a>
       </li>
     
@@ -339,10 +342,6 @@ $ sudo /usr/sbin/visudo # &hellip;">
     
       <li class="post">
         <a href="/blog/2012/05/22/vps-iptables/">VPSのファイアウォール設定を見直す</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/05/20/sakura-vps2g-centos6/">さくらのVPS 2G(CentOS6)で最初にやったことメモ</a>
       </li>
     
   </ul>

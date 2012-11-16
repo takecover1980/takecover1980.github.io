@@ -4,7 +4,7 @@
   <title><![CDATA[withweb]]></title>
   <link href="http://blog.withweb.info/atom.xml" rel="self"/>
   <link href="http://blog.withweb.info/"/>
-  <updated>2012-11-13T22:48:55+09:00</updated>
+  <updated>2012-11-17T05:28:15+09:00</updated>
   <id>http://blog.withweb.info/</id>
   <author>
     <name><![CDATA[takecover1980]]></name>
@@ -12,6 +12,124 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[VPSにGitLabをインストール]]></title>
+    <link href="http://blog.withweb.info/blog/2012/11/16/vps-gitlab-install/"/>
+    <updated>2012-11-16T22:30:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/11/16/vps-gitlab-install</id>
+    <content type="html"><![CDATA[<p>プライベートなリポジトリにBitbucketを使っているんですが、なんだかんだで使いにくい。そこで、お手軽とはいかないけど人気のGitHubクローンということで、GitLab使ってみます。</p>
+
+<p><a href="https://github.com/gitlabhq/gitlabhq/blob/stable/doc/installation.md">プロジェクトページの手順</a>の通りにやればいいんだけど、ちょっと手を抜いて違う手順でインストールしたのでメモ。</p>
+
+<!-- more -->
+
+
+<h2>構成</h2>
+
+<ul>
+<li>CentOS 6.2</li>
+<li>Ruby 1.9.3-p194</li>
+<li>Gitolite 3.2</li>
+<li>GitLab 3.0.3</li>
+</ul>
+
+
+<h2>準備</h2>
+
+<p>とりあえず必要そうなのを入れます。足りない物があればbundle installで怒られると思うので都度入れていけばいいと思います。</p>
+
+<pre><code>$ sudo yum install libxml2-devel libxslt-devel libicu-devel sqlite-devel redis
+</code></pre>
+
+<p>Redisを起動＋自動起動。いわゆるNoSQLってやつで、使うのは今回が初めて。</p>
+
+<pre><code>$ sudo chkconfig redis on
+$ sudo service redis start
+</code></pre>
+
+<p>GitoliteとGitLabのユーザを分けずにgitユーザだけで設定します。ここから先はgitユーザで作業します。</p>
+
+<pre><code>$ sudo useradd git
+$ sudo passwd git
+$ su - git
+</code></pre>
+
+<p>rbenv派です。GitLabに合うバージョンのRubyが導入済みの場合は読み飛ばしてください。</p>
+
+<pre><code>$ git clone http://github.com/sstephenson/rbenv.git ~/.rbenv
+$ git clone http://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+</code></pre>
+
+<figure class='code'><figcaption><span>~/.bash_profile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>PATH=$HOME/.rbenv/bin:$PATH:$HOME/bin
+</span><span class='line'>export PATH
+</span><span class='line'>eval &quot;$(rbenv init -)&quot;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>$ rbenv install 1.9.3-p194
+$ rbenv global 1.9.3-p194
+$ gem install bundler
+$ rbenv rehash
+</code></pre>
+
+<h2>Gitoliteインストール</h2>
+
+<p>SSHの鍵はgitlabとか分かりやすい名前にした方がいいかも。</p>
+
+<pre><code>$ git config --global user.email "git@example.com"
+$ git config --global user.name "gitadmin"
+$ git clone git://github.com/sitaramc/gitolite
+$ ssh-keygen -t rsa -N ""
+$ gitolite/install
+$ gitolite/src/gitolite setup -pk ~/.ssh/id_rsa.pub
+$ chmod -R g+rwX repositories/
+</code></pre>
+
+<figure class='code'><figcaption><span>~/.gitolite.rc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>UMASK                       =&gt;  0007, # 0077 -&gt; 0007
+</span><span class='line'>GIT_CONFIG_KEYS             =&gt;  &#39;.*&#39;, # &#39;&#39; -&gt; &#39;.*&#39;
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>~/.ssh/config</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>Host localhost
+</span><span class='line'>    Port &lt;SSHのポート番号&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>$ chmod 600 ~/.ssh/config
+</code></pre>
+
+<h2>GitLabインストール</h2>
+
+<p>SQLite大好きなのでDBはSQLiteを使います。たぶんMySQL使う人が多いだろうけど。</p>
+
+<pre><code>$ git clone -b stable git://github.com/gitlabhq/gitlabhq.git
+$ cd gitlabhq
+$ cp config/gitlab.yml.example config/gitlab.yml
+$ cp config/database.yml.sqlite config/database.yml
+</code></pre>
+
+<p>環境に合わせてgitlab.ymlとdatabase.ymlを編集したらセットアップ。</p>
+
+<pre><code>$ bundle install --without development test mysql postgres --deployment
+$ bundle exec rake gitlab:app:setup RAILS_ENV=production
+$ cp ./lib/hooks/post-receive ~/.gitolite/hooks/common/post-receive
+$ chmod 750 /home/git/.gitolite
+$ ./resque.sh
+</code></pre>
+
+<p>あとは手順どおりにWebサーバや起動スクリプトを設定すればOKです。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[VPSにログ監視ツールlogwatchをインストール]]></title>
@@ -1432,19 +1550,6 @@ Swap:      2096472          0    2096472
 <p>デバイスの幅に対応してくれるので、何もしなくてもiPhoneやAndroidできれいに表示されます。</p>
 
 <p>このブログも始めたばかりなので、今のところテーマはTwentyElevenのままにしています。後で変えることになると思いますが、しばらくはこのままでもいいかな。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ブログでも書いてみようじゃないか]]></title>
-    <link href="http://blog.withweb.info/blog/2011/09/09/blog-post/"/>
-    <updated>2011-09-09T20:56:00+09:00</updated>
-    <id>http://blog.withweb.info/blog/2011/09/09/blog-post</id>
-    <content type="html"><![CDATA[<p>何となくというか、気の迷いというか、</p>
-
-<p>「ブログでもはじめてみようかなー」</p>
-
-<p>と、ふいに思ったわけです。そんなわけで目的も志も無いままに始めてみようと思います。</p>
 ]]></content>
   </entry>
   

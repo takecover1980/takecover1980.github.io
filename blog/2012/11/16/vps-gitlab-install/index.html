@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>タバコをやめる前に試してみたこと - withweb</title>
+  <title>VPSにGitLabをインストール - withweb</title>
   <meta name="author" content="takecover1980">
 
   
-  <meta name="description" content="以前からタバコをやめようと思っていました。 増税による値上がりや健康に悪いなど理由はいくらでもありますが、そんなのは後からついてくるもの。今回は「自分でやめると決めたからやめる」という単純かつ強力なものです。 せっかくなので、やめる前に自分の体でちょっとした実験をしてみました。 はじめに &hellip;">
+  <meta name="description" content="プライベートなリポジトリにBitbucketを使っているんですが、なんだかんだで使いにくい。そこで、お手軽とはいかないけど人気のGitHubクローンということで、GitLab使ってみます。 プロジェクトページの手順の通りにやればいいんだけど、ちょっと手を抜いて違う手順でインストールしたのでメモ。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.withweb.info/blog/2011/09/25/try-stop-smoking/">
+  <link rel="canonical" href="http://blog.withweb.info/blog/2012/11/16/vps-gitlab-install/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -80,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">タバコをやめる前に試してみたこと</h1>
+      <h1 class="entry-title">VPSにGitLabをインストール</h1>
     
     
       <p class="meta">
@@ -96,105 +96,123 @@
   
 
 
-<time datetime="2011-09-25T08:47:00+09:00" pubdate data-updated="true">Sep 25<span>th</span>, 2011</time>
+<time datetime="2012-11-16T22:30:00+09:00" pubdate data-updated="true">Nov 16<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>以前からタバコをやめようと思っていました。</p>
+<div class="entry-content"><p>プライベートなリポジトリにBitbucketを使っているんですが、なんだかんだで使いにくい。そこで、お手軽とはいかないけど人気のGitHubクローンということで、GitLab使ってみます。</p>
 
-<p>増税による値上がりや健康に悪いなど理由はいくらでもありますが、そんなのは後からついてくるもの。今回は「自分でやめると決めたからやめる」という単純かつ強力なものです。</p>
-
-<p>せっかくなので、やめる前に自分の体でちょっとした実験をしてみました。</p>
+<p><a href="https://github.com/gitlabhq/gitlabhq/blob/stable/doc/installation.md">プロジェクトページの手順</a>の通りにやればいいんだけど、ちょっと手を抜いて違う手順でインストールしたのでメモ。</p>
 
 <!-- more -->
 
 
-<h2>はじめに</h2>
-
-<p>この記事は私の体で試してみた結果です。</p>
-
-<p>これから禁煙を始めてみようと思う方への参考になるかもしれませんが、あくまでも1例です。他の方にも当てはまるとは限りません。</p>
-
-<h2>実験の前に</h2>
-
-<p>禁煙を始めた人に立ちはだかるのが「離脱症状」です。</p>
-
-<p>これは、ニコチンに依存していた身体の中から、ニコチンが抜けていく過程で起こるさまざまな症状です。</p>
-
-<p>症状自体も期間もかなり個人差があるようですが、このあたりが良くある症状みたいです。</p>
+<h2>構成</h2>
 
 <ul>
-<li>体がだるい</li>
-<li>眠い</li>
-<li>イライラする</li>
-<li>頭痛がする</li>
-<li>落ち着かない</li>
+<li>CentOS 6.2</li>
+<li>Ruby 1.9.3-p194</li>
+<li>Gitolite 3.2</li>
+<li>GitLab 3.0.3</li>
 </ul>
 
 
-<p>当たり前のように私にも立ちはだかりました。</p>
+<h2>準備</h2>
 
-<h2>被験者のスペック</h2>
+<p>とりあえず必要そうなのを入れます。足りない物があればbundle installで怒られると思うので都度入れていけばいいと思います。</p>
 
-<p>だいたいこんな感じです。平均よりタバコの量が多いですかね。</p>
+<pre><code>$ sudo yum install libxml2-devel libxslt-devel libicu-devel sqlite-devel redis
+</code></pre>
 
-<ul>
-<li>喫煙期間は10年以上</li>
-<li>量は1日3〜4箱(60〜80本)</li>
-<li>銘柄はマールボロ・ライト・メンソール(タール8mg/ニコチン0.8mg)</li>
-</ul>
+<p>Redisを起動＋自動起動。いわゆるNoSQLってやつで、使うのは今回が初めて。</p>
+
+<pre><code>$ sudo chkconfig redis on
+$ sudo service redis start
+</code></pre>
+
+<p>GitoliteとGitLabのユーザを分けずにgitユーザだけで設定します。ここから先はgitユーザで作業します。</p>
+
+<pre><code>$ sudo useradd git
+$ sudo passwd git
+$ su - git
+</code></pre>
+
+<p>rbenv派です。GitLabに合うバージョンのRubyが導入済みの場合は読み飛ばしてください。</p>
+
+<pre><code>$ git clone http://github.com/sstephenson/rbenv.git ~/.rbenv
+$ git clone http://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+</code></pre>
+
+<figure class='code'><figcaption><span>~/.bash_profile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>PATH=$HOME/.rbenv/bin:$PATH:$HOME/bin
+</span><span class='line'>export PATH
+</span><span class='line'>eval &quot;$(rbenv init -)&quot;
+</span></code></pre></td></tr></table></div></figure>
 
 
-<h2>実験内容</h2>
+<pre><code>$ rbenv install 1.9.3-p194
+$ rbenv global 1.9.3-p194
+$ gem install bundler
+$ rbenv rehash
+</code></pre>
 
-<p>ある期間を禁煙した後で、タバコを吸った前後の感想を記録します。</p>
+<h2>Gitoliteインストール</h2>
 
-<p>禁煙した人がどんな状況になるのか、その後タバコを吸うとどんな気持ちになるのか。本格的に禁煙する前に知っておきたくなったんです。</p>
+<p>SSHの鍵はgitlabとか分かりやすい名前にした方がいいかも。</p>
 
-<p>ただ、あまり長期間やると実際に禁煙するころには心が折れているかもしれないので、適当に短期間にします。</p>
+<pre><code>$ git config --global user.email "git@example.com"
+$ git config --global user.name "gitadmin"
+$ git clone git://github.com/sitaramc/gitolite
+$ ssh-keygen -t rsa -N ""
+$ gitolite/install
+$ gitolite/src/gitolite setup -pk ~/.ssh/id_rsa.pub
+$ chmod -R g+rwX repositories/
+</code></pre>
 
-<p>そこで、一般に失敗しやすい期間と言われている「離脱症状のピーク3日間」と「1週間」を実験期間とします。</p>
+<figure class='code'><figcaption><span>~/.gitolite.rc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>UMASK                       =&gt;  0007, # 0077 -&gt; 0007
+</span><span class='line'>GIT_CONFIG_KEYS             =&gt;  &#39;.*&#39;, # &#39;&#39; -&gt; &#39;.*&#39;
+</span></code></pre></td></tr></table></div></figure>
 
-<h2>実験結果</h2>
 
-<h3>1日間禁煙(9/6)</h3>
 
-<p>なんてことありません。ミント系のガムを噛むなり冷たい水を飲むなりでどうにでもなります。</p>
 
-<p>タバコを吸った時の感想もちょっと時間が開いた時と変わりませんね。</p>
+<figure class='code'><figcaption><span>~/.ssh/config</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>Host localhost
+</span><span class='line'>    Port &lt;SSHのポート番号&gt;
+</span></code></pre></td></tr></table></div></figure>
 
-<h3>2日間禁煙(9/8〜9/9)</h3>
 
-<p>じわじわと落ち着きが無くなってきます。コンビニで買ったボトルガムが半分くらい減りました。</p>
+<pre><code>$ chmod 600 ~/.ssh/config
+</code></pre>
 
-<p>タバコを吸った瞬間は臭くていやな感じがしますが、すぐに慣れて懐かしい気持ちになります。</p>
+<h2>GitLabインストール</h2>
 
-<h3>3日間禁煙(9/11〜9/13)</h3>
+<p>SQLite大好きなのでDBはSQLiteを使います。たぶんMySQL使う人が多いだろうけど。</p>
 
-<p>意味が分かりませんがなんだか焦ります。2つ目のボトルガムが無くなりました。</p>
+<pre><code>$ git clone -b stable git://github.com/gitlabhq/gitlabhq.git
+$ cd gitlabhq
+$ cp config/gitlab.yml.example config/gitlab.yml
+$ cp config/database.yml.sqlite config/database.yml
+</code></pre>
 
-<p>タバコを吸いたいというよりも、手持ち無沙汰な感じです。</p>
+<p>環境に合わせてgitlab.ymlとdatabase.ymlを編集したらセットアップ。</p>
 
-<p>タバコを吸った瞬間はかなり臭くて、しばらく気持ち悪くなりました。</p>
+<pre><code>$ bundle install --without development test mysql postgres --deployment
+$ bundle exec rake gitlab:app:setup RAILS_ENV=production
+$ cp ./lib/hooks/post-receive ~/.gitolite/hooks/common/post-receive
+$ chmod 750 /home/git/.gitolite
+$ ./resque.sh
+</code></pre>
 
-<h3>7日間禁煙(9/15〜9/21)</h3>
-
-<p>「タバコが無い」ということが普通に感じます。なんとなくご飯がおいしくなった気もします。</p>
-
-<p>タバコを吸う必要が感じられず、吸うと頭がくらくらします。初めてタバコを吸った日を思い出しました。</p>
-
-<p>吸った後はいやな感じだけが残り、「もう捨ててしまえ」という気持ちでいっぱいです。</p>
-
-<h2>実験を終えて</h2>
-
-<p>やらなきゃ良かった。1週間禁煙した時点でそのままやめちゃえば良かったです。</p>
-
-<p>短期間に繰り返しているので離脱症状は大小ありましたが、1ヶ月間に4回も体験するのは精神的にも肉体的にもかなり辛いですね。</p>
-
-<p>なんだか違う理由になった気がしますが結果的にもう吸いたくありません。</p>
+<p>あとは手順どおりにWebサーバや起動スクリプトを設定すればOKです。</p>
 </div>
 
 
@@ -217,12 +235,12 @@
   
 
 
-<time datetime="2011-09-25T08:47:00+09:00" pubdate data-updated="true">Sep 25<span>th</span>, 2011</time>
+<time datetime="2012-11-16T22:30:00+09:00" pubdate data-updated="true">Nov 16<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/misc/'>misc</a>
+    <a class='category' href='/blog/categories/vps/'>vps</a>
   
 </span>
 
@@ -231,7 +249,7 @@
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2011/09/25/try-stop-smoking/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2011/09/25/try-stop-smoking/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2012/11/16/vps-gitlab-install/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2012/11/16/vps-gitlab-install/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -244,10 +262,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2011/09/23/wimax/" title="Previous Post: Wimax通信障害で思ったこと">&laquo; Wimax通信障害で思ったこと</a>
+        <a class="basic-alignment left" href="/blog/2012/11/13/vps-logwatch/" title="Previous Post: VPSにログ監視ツールlogwatchをインストール">&laquo; VPSにログ監視ツールlogwatchをインストール</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2011/10/02/framework/" title="Next Post: Webデザイナーとエンジニアにとってのフレームワークは違うもの？">Webデザイナーとエンジニアにとってのフレームワークは違うもの？ &raquo;</a>
       
     </p>
   </footer>
@@ -330,8 +346,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.withweb.info/blog/2011/09/25/try-stop-smoking/';
-        var disqus_url = 'http://blog.withweb.info/blog/2011/09/25/try-stop-smoking/';
+        var disqus_identifier = 'http://blog.withweb.info/blog/2012/11/16/vps-gitlab-install/';
+        var disqus_url = 'http://blog.withweb.info/blog/2012/11/16/vps-gitlab-install/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | withweb]]></title>
   <link href="http://blog.withweb.info/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://blog.withweb.info/"/>
-  <updated>2012-11-17T22:00:24+09:00</updated>
+  <updated>2012-11-17T22:05:53+09:00</updated>
   <id>http://blog.withweb.info/</id>
   <author>
     <name><![CDATA[takecover1980]]></name>
@@ -106,10 +106,17 @@ $ git push
 
 <h2>Octopressの更新</h2>
 
-<p>Octopress自体を更新する場合は、本家の更新を取り込んでマージします。</p>
+<p>Octopress自体を更新する場合は、本家の更新を取り込んでマージします。その後、ソースとスタイルを更新してpush、デプロイします。</p>
 
 <pre><code>$ git fetch octopress
 $ git pull octopress master
+$ bundle install
+$ rake update_source
+$ rake update_style
+$ rm -rf sass.old
+$ rm -rf source.old
+$ git push
+$ rake deploy
 </code></pre>
 
 <h2>参考ページ</h2>

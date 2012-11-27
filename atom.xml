@@ -4,7 +4,7 @@
   <title><![CDATA[withweb]]></title>
   <link href="http://blog.withweb.info/atom.xml" rel="self"/>
   <link href="http://blog.withweb.info/"/>
-  <updated>2012-11-17T22:05:53+09:00</updated>
+  <updated>2012-11-28T02:29:00+09:00</updated>
   <id>http://blog.withweb.info/</id>
   <author>
     <name><![CDATA[takecover1980]]></name>
@@ -12,6 +12,145 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[PlayFramework2とYahoo!オークションAPIを使ってみた]]></title>
+    <link href="http://blog.withweb.info/blog/2012/11/28/playframework-and-yahoo-auction-api/"/>
+    <updated>2012-11-28T02:30:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/11/28/playframework-and-yahoo-auction-api</id>
+    <content type="html"><![CDATA[<p>Yahoo!オークションAPIを使ってみたくなったので、とりあえず動くものを作ってみました。</p>
+
+<ul>
+<li><a href="http://auction.drive7.info">いまYahoo!オークションで人気の商品はコレ！</a></li>
+</ul>
+
+
+<p><img src="http://blog.withweb.info/images/20121128-auction-drive7-info.png" title="auction.drive7.info" alt="image auction.drive7.info" /></p>
+
+<p>いかにもアフィリエイトっぽくてアレな感じのタイトルですね。実際アフィリエイトID使っています。</p>
+
+<p>適当に用意したカテゴリから検索した結果をパネルっぽく表示して、クリックするとオークションのページに飛べます。</p>
+
+<!-- more -->
+
+
+<h2>準備</h2>
+
+<p>だいたいの流れはYahoo!デベロッパーネットワークの<a href="http://developer.yahoo.co.jp/start/">ご利用ガイド</a>に手順が書いてありますが、他に必要になりそうなドキュメントはこのへんです。</p>
+
+<ol>
+<li><a href="http://developer.yahoo.co.jp/webapi/auctions/">APIドキュメント</a></li>
+<li><a href="http://developer.yahoo.co.jp/sample/auctions/">サンプルコード</a></li>
+<li><a href="http://developer.yahoo.co.jp/attribution/">クレジット表示</a></li>
+</ol>
+
+
+<p>2のサンプルコードのページにサンプルリクエストURLが載っているので、ブラウザのURLバーに入れる等で試せます。</p>
+
+<p>アフィリエイトIDの確認と使い方は<a href="http://developer.yahoo.co.jp/appendix/auctions/affiliate.html">アフィリエイトプログラム</a>に書いてあります。Yahoo!ポイントで受け取るか、バリューコマースを使うか選べるようです。</p>
+
+<h2>APIを使う</h2>
+
+<p>JavascriptにアプリケーションIDを直書きするのはよくないかなぁと思ったので、Webサービスを作ります。</p>
+
+<p>それだけならYahoo! Pipesで十分だと思いますが、今回は使いたいのでPlay使います。おおまかにはこんな感じです。</p>
+
+<h3>Playframework2</h3>
+
+<figure class='code'><figcaption><span>conf/routes</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>GET /yapi controllers.YahooAPI.auction(q: String ?= &quot;book&quot;)
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>controllers/YahooAPI.scala</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">package</span> <span class="nn">controllers</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">import</span> <span class="nn">play.api._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">play.api.mvc._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">play.api.libs._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">play.api.libs.json._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">play.api.libs.ws._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">YahooAPI</span> <span class="k">extends</span> <span class="nc">Controller</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">auction</span><span class="o">(</span><span class="n">q</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=</span> <span class="nc">Action</span> <span class="o">{</span> <span class="n">request</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">appid</span> <span class="k">=</span> <span class="s">&quot;YOUR_APPID&quot;</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">baseurl</span> <span class="k">=</span> <span class="s">&quot;http://auctions.yahooapis.jp/AuctionWebService/V2/json/search&quot;</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">url</span> <span class="k">=</span> <span class="n">baseurl</span> <span class="o">+</span> <span class="s">&quot;?appid=&quot;</span> <span class="o">+</span> <span class="n">appid</span> <span class="o">+</span> <span class="s">&quot;&amp;query=&quot;</span> <span class="o">+</span> <span class="n">q</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nc">Async</span> <span class="o">{</span>
+</span><span class='line'>      <span class="nc">WS</span><span class="o">.</span><span class="n">url</span><span class="o">(</span><span class="n">url</span><span class="o">).</span><span class="n">get</span><span class="o">().</span><span class="n">map</span> <span class="o">{</span> <span class="n">response</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="nc">Ok</span><span class="o">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">).</span><span class="n">as</span><span class="o">(</span><span class="s">&quot;application/json&quot;</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>http://example.com/yapi?q=book</code>にアクセスするとbookの検索結果がJSONで返ってきます。</p>
+
+<h3>jQuery</h3>
+
+<figure class='code'><figcaption><span>script.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// API呼び出し</span>
+</span><span class='line'><span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+</span><span class='line'>  <span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;http://example.com/yapi&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">data</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;q&quot;</span><span class="o">:</span><span class="s2">&quot;ほげほげ&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>  <span class="nx">dataType</span><span class="o">:</span> <span class="s2">&quot;jsonp&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">complete</span><span class="o">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// 終了時の処理</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// コールバック</span>
+</span><span class='line'><span class="kd">function</span> <span class="nx">loaded</span><span class="p">(</span><span class="nx">json</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// API呼び出しの結果をゴニョゴニョする</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>取得した商品情報をレイアウトすれば完成です。</p>
+
+<p>いろいろ手を抜いてます。アクセスが多いならYahooのサーバに優しくしておいた方がいいと思います。リクエストをキューでコントロールするとか、同一クエリは数秒キャッシュするとか、複数のアプリケーションIDでローテーションするとか。あ、最後のは違うか。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[VPSにGitLabをインストール]]></title>
@@ -1533,30 +1672,6 @@ Swap:      2096472          0    2096472
 <li><a href="http://d.hatena.ne.jp/tonutto/20100902/1283389349">iPhoneをまる1ヶ月ポータブルWiFiのみで運用してみる実験なう - ちよろぐ！ -CHIYO LOGUE-</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[WordPress3.2のデフォルトテーマがシンプルできれい]]></title>
-    <link href="http://blog.withweb.info/blog/2011/09/10/wordpress32/"/>
-    <updated>2011-09-10T03:16:00+09:00</updated>
-    <id>http://blog.withweb.info/blog/2011/09/10/wordpress32</id>
-    <content type="html"><![CDATA[<p>WordPress3.2になってから、デフォルトテーマがTwentyTenからTwentyElevenに変わりましたね。</p>
-
-<!-- more -->
-
-
-<h2>Twenty Eleven</h2>
-
-<p><img src="http://blog.withweb.info/images/20110910-twentyeleven.png" title="twentyeleven" alt="image twentyeleven" /></p>
-
-<p>見た目はかなりきれいだと思います。イメージギャラリーやフォトログ、ショーケースのテンプレートも用意されていてなかなかに高機能。デモはここで見られます。</p>
-
-<p>たぶん大抵の人がブログでやりたいことは、だいたいできちゃうんじゃないでしょうか。</p>
-
-<p>デバイスの幅に対応してくれるので、何もしなくてもiPhoneやAndroidできれいに表示されます。</p>
-
-<p>このブログも始めたばかりなので、今のところテーマはTwentyElevenのままにしています。後で変えることになると思いますが、しばらくはこのままでもいいかな。</p>
 ]]></content>
   </entry>
   

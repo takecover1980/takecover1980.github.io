@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>VPSにGitLabをインストール - withweb</title>
+  <title>Octopressのプレビューにthinを使うと速くて快適になった - withweb</title>
   <meta name="author" content="takecover1980">
 
   
-  <meta name="description" content="プライベートなリポジトリにBitbucketを使っているんですが、なんだかんだで使いにくい。そこで、お手軽とはいかないけど人気のGitHubクローンということで、GitLab使ってみます。 プロジェクトページの手順の通りにやればいいんだけど、ちょっと手を抜いて違う手順でインストールしたのでメモ。 &hellip;">
+  <meta name="description" content="なかなかお気に入りのOctopressですが、rake previewが妙に遅いのと「Could not determine&#8230;」ってログが鬱陶しいのが気になってました。 どうしたものかとググってみるとけっこう簡単に対策できるみたい。これはやらねばなるまい、というわけでメモ。 やること &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.withweb.info/blog/2012/11/17/vps-gitlab-install/">
+  <link rel="canonical" href="http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -80,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">VPSにGitLabをインストール</h1>
+      <h1 class="entry-title">Octopressのプレビューにthinを使うと速くて快適になった</h1>
     
     
       <p class="meta">
@@ -96,123 +96,69 @@
   
 
 
-<time datetime="2012-11-17T06:05:00+09:00" pubdate data-updated="true">Nov 17<span>th</span>, 2012</time>
+<time datetime="2012-11-29T00:10:00+09:00" pubdate data-updated="true">Nov 29<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>プライベートなリポジトリにBitbucketを使っているんですが、なんだかんだで使いにくい。そこで、お手軽とはいかないけど人気のGitHubクローンということで、GitLab使ってみます。</p>
+<div class="entry-content"><p>なかなかお気に入りのOctopressですが、<code>rake preview</code>が妙に遅いのと「Could not determine&#8230;」ってログが鬱陶しいのが気になってました。</p>
 
-<p><a href="https://github.com/gitlabhq/gitlabhq/blob/stable/doc/installation.md">プロジェクトページの手順</a>の通りにやればいいんだけど、ちょっと手を抜いて違う手順でインストールしたのでメモ。</p>
+<p>どうしたものかとググってみるとけっこう簡単に対策できるみたい。これはやらねばなるまい、というわけでメモ。</p>
 
 <!-- more -->
 
 
-<h2>構成</h2>
+<h2>やること</h2>
 
-<ul>
-<li>CentOS 6.2</li>
-<li>Ruby 1.9.3-p194</li>
-<li>Gitolite 3.2</li>
-<li>GitLab 3.0.3</li>
-</ul>
+<p>どうやら遅いのも邪魔なログも原因はWEBrickらしい。WEBrickやめてthinを使うためにGemfileに追加します。</p>
 
-
-<h2>準備</h2>
-
-<p>とりあえず必要そうなのを入れます。足りない物があればbundle installで怒られると思うので都度入れていけばいいと思います。</p>
-
-<pre><code>$ sudo yum install libxml2-devel libxslt-devel libicu-devel sqlite-devel redis
-</code></pre>
-
-<p>Redisを起動＋自動起動。いわゆるNoSQLってやつで、使うのは今回が初めて。</p>
-
-<pre><code>$ sudo chkconfig redis on
-$ sudo service redis start
-</code></pre>
-
-<p>GitoliteとGitLabのユーザを分けずにgitユーザだけで設定します。ここから先はgitユーザで作業します。</p>
-
-<pre><code>$ sudo useradd git
-$ sudo passwd git
-$ su - git
-</code></pre>
-
-<p>rbenv派です。GitLabに合うバージョンのRubyが導入済みの場合は読み飛ばしてください。</p>
-
-<pre><code>$ git clone http://github.com/sstephenson/rbenv.git ~/.rbenv
-$ git clone http://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-</code></pre>
-
-<figure class='code'><figcaption><span>~/.bash_profile</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Gemfile.diff</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>PATH=$HOME/.rbenv/bin:$PATH:$HOME/bin
-</span><span class='line'>export PATH
-</span><span class='line'>eval &quot;$(rbenv init -)&quot;
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='diff'><span class='line'><span class="gh">diff --git a/Gemfile b/Gemfile</span>
+</span><span class='line'><span class="gh">index be2518b..2df250f 100644</span>
+</span><span class='line'><span class="gd">--- a/Gemfile</span>
+</span><span class='line'><span class="gi">+++ b/Gemfile</span>
+</span><span class='line'><span class="gu">@@ -13,6 +13,7 @@ group :development do</span>
+</span><span class='line'>   gem &#39;rb-fsevent&#39;, &#39;~&gt; 0.9&#39;
+</span><span class='line'>   gem &#39;stringex&#39;, &#39;~&gt; 1.4.0&#39;
+</span><span class='line'>   gem &#39;liquid&#39;, &#39;~&gt; 2.3.0&#39;
+</span><span class='line'><span class="gi">+  gem &#39;thin&#39;</span>
+</span><span class='line'> end
+</span><span class='line'>
+</span><span class='line'> gem &#39;sinatra&#39;, &#39;~&gt; 1.3.2&#39;
 </span></code></pre></td></tr></table></div></figure>
 
 
-<pre><code>$ rbenv install 1.9.3-p194
-$ rbenv global 1.9.3-p194
-$ gem install bundler
-$ rbenv rehash
+<p>thinを導入してパスを通します。</p>
+
+<pre><code>$ bundle install
+$ exec $SHELL
 </code></pre>
 
-<h2>Gitoliteインストール</h2>
+<p>参考ページでは<code>thin start</code>で起動するかRakefile修正が必要な様ですが、いつも通りプレビューするだけでいけました。(バージョンが違うから？)</p>
 
-<p>SSHの鍵はgitlabとか分かりやすい名前にした方がいいかも。</p>
-
-<pre><code>$ git config --global user.email "git@example.com"
-$ git config --global user.name "gitadmin"
-$ git clone git://github.com/sitaramc/gitolite
-$ ssh-keygen -t rsa -N ""
-$ gitolite/install
-$ gitolite/src/gitolite setup -pk ~/.ssh/id_rsa.pub
-$ chmod -R g+rwX repositories/
+<pre><code>$ rake preview
 </code></pre>
 
-<figure class='code'><figcaption><span>~/.gitolite.rc</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>UMASK                       =&gt;  0007, # 0077 -&gt; 0007
-</span><span class='line'>GIT_CONFIG_KEYS             =&gt;  &#39;.*&#39;, # &#39;&#39; -&gt; &#39;.*&#39;
-</span></code></pre></td></tr></table></div></figure>
+<h2>参考ページ</h2>
 
+<ul>
+<li><a href="http://qiita.com/items/3cd2e2c84e7dcecbc22a">Octopressのプレビューにthinを使う #Octopress #Github - Qiita</a></li>
+<li><a href="http://blog.glidenote.com/blog/2012/10/31/thin-octopress/">OctopressのRake Previewにthinを利用してプレビューを高速化する - Glide Note - グライドノート</a></li>
+</ul>
 
-
-
-<figure class='code'><figcaption><span>~/.ssh/config</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>Host localhost
-</span><span class='line'>    Port &lt;SSHのポート番号&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<pre><code>$ chmod 600 ~/.ssh/config
-</code></pre>
-
-<h2>GitLabインストール</h2>
-
-<p>SQLite大好きなのでDBはSQLiteを使います。たぶんMySQL使う人が多いだろうけど。</p>
-
-<pre><code>$ git clone -b stable git://github.com/gitlabhq/gitlabhq.git
-$ cd gitlabhq
-$ cp config/gitlab.yml.example config/gitlab.yml
-$ cp config/database.yml.sqlite config/database.yml
-</code></pre>
-
-<p>環境に合わせてgitlab.ymlとdatabase.ymlを編集したらセットアップ。</p>
-
-<pre><code>$ bundle install --without development test mysql postgres --deployment
-$ bundle exec rake gitlab:app:setup RAILS_ENV=production
-$ cp ./lib/hooks/post-receive ~/.gitolite/hooks/common/post-receive
-$ chmod 750 /home/git/.gitolite
-$ ./resque.sh
-</code></pre>
-
-<p>あとは手順どおりにWebサーバや起動スクリプトを設定すればOKです。</p>
 </div>
 
 
@@ -235,12 +181,12 @@ $ ./resque.sh
   
 
 
-<time datetime="2012-11-17T06:05:00+09:00" pubdate data-updated="true">Nov 17<span>th</span>, 2012</time>
+<time datetime="2012-11-29T00:10:00+09:00" pubdate data-updated="true">Nov 29<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/vps/'>vps</a>
+    <a class='category' href='/blog/categories/octopress/'>octopress</a>
   
 </span>
 
@@ -249,7 +195,7 @@ $ ./resque.sh
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2012/11/17/vps-gitlab-install/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2012/11/17/vps-gitlab-install/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -262,10 +208,8 @@ $ ./resque.sh
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/11/13/vps-logwatch/" title="Previous Post: VPSにログ監視ツールlogwatchをインストール">&laquo; VPSにログ監視ツールlogwatchをインストール</a>
+        <a class="basic-alignment left" href="/blog/2012/11/28/playframework-and-yahoo-auction-api/" title="Previous Post: PlayFramework2とYahoo!オークションAPIを使ってみた">&laquo; PlayFramework2とYahoo!オークションAPIを使ってみた</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/11/28/playframework-and-yahoo-auction-api/" title="Next Post: PlayFramework2とYahoo!オークションAPIを使ってみた">PlayFramework2とYahoo!オークションAPIを使ってみた &raquo;</a>
       
     </p>
   </footer>
@@ -348,8 +292,8 @@ $ ./resque.sh
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.withweb.info/blog/2012/11/17/vps-gitlab-install/';
-        var disqus_url = 'http://blog.withweb.info/blog/2012/11/17/vps-gitlab-install/';
+        var disqus_identifier = 'http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/';
+        var disqus_url = 'http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/';
         var disqus_script = 'embed.js';
       
     (function () {

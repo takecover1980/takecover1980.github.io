@@ -4,7 +4,7 @@
   <title><![CDATA[Category: octopress | withweb]]></title>
   <link href="http://blog.withweb.info/blog/categories/octopress/atom.xml" rel="self"/>
   <link href="http://blog.withweb.info/"/>
-  <updated>2012-11-28T02:55:26+09:00</updated>
+  <updated>2012-11-29T00:10:59+09:00</updated>
   <id>http://blog.withweb.info/</id>
   <author>
     <name><![CDATA[takecover1980]]></name>
@@ -12,6 +12,58 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Octopressのプレビューにthinを使うと速くて快適になった]]></title>
+    <link href="http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/"/>
+    <updated>2012-11-29T00:10:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin</id>
+    <content type="html"><![CDATA[<p>なかなかお気に入りのOctopressですが、<code>rake preview</code>が妙に遅いのと「Could not determine...」ってログが鬱陶しいのが気になってました。</p>
+
+<p>どうしたものかとググってみるとけっこう簡単に対策できるみたい。これはやらねばなるまい、というわけでメモ。</p>
+
+<!-- more -->
+
+
+<h2>やること</h2>
+
+<p>どうやら遅いのも邪魔なログも原因はWEBrickらしい。WEBrickやめてthinを使うためにGemfileに追加します。</p>
+
+<p>``` diff Gemfile.diff
+diff --git a/Gemfile b/Gemfile
+index be2518b..2df250f 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -13,6 +13,7 @@ group :development do
+   gem 'rb-fsevent', '~> 0.9'
+   gem 'stringex', '~> 1.4.0'
+   gem 'liquid', '~> 2.3.0'
++  gem 'thin'
+ end</p>
+
+<p> gem 'sinatra', '~> 1.3.2'
+```</p>
+
+<p>thinを導入してパスを通します。</p>
+
+<pre><code>$ bundle install
+$ exec $SHELL
+</code></pre>
+
+<p>参考ページでは<code>thin start</code>で起動するかRakefile修正が必要な様ですが、いつも通りプレビューするだけでいけました。(バージョンが違うから？)</p>
+
+<pre><code>$ rake preview
+</code></pre>
+
+<h2>参考ページ</h2>
+
+<ul>
+<li><a href="http://qiita.com/items/3cd2e2c84e7dcecbc22a">Octopressのプレビューにthinを使う #Octopress #Github - Qiita</a></li>
+<li><a href="http://blog.glidenote.com/blog/2012/10/31/thin-octopress/">OctopressのRake Previewにthinを利用してプレビューを高速化する - Glide Note - グライドノート</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Octopressでブログしよう]]></title>

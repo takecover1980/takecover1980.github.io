@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Octopressでブログしよう - withweb</title>
+  <title>JSONフォーマッタを公開してみた - withweb</title>
   <meta name="author" content="takecover1980">
 
   
-  <meta name="description" content="普通のブログってやつがとても面倒なんです。 CMSにログインしたり画像アップロードしたり謎エディタで記事書いたり公開ボタン押したりバックアップするのにプラグイン入れたりとか、やってられない。 手元のエディタで記事を書いてコマンド打ったら公開。そんな感じで楽したいのでOctopressに移行します。 &hellip;">
+  <meta name="description" content="ローカルのツールを外でも使えるように公開してみました。 JSON formatter jQueryを使った簡単なJSONフォーマッタです。（エラー処理とか細かい事はほとんどしてませんが&#8230;） 作ろうとした理由 以前Yahoo!オークションAPIで遊ぼうとした時に、 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.withweb.info/blog/2012/10/04/octopress/">
+  <link rel="canonical" href="http://blog.withweb.info/blog/2012/12/04/json-formatter/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -80,7 +80,7 @@
   
   <header>
     
-      <h1 class="entry-title">Octopressでブログしよう</h1>
+      <h1 class="entry-title">JSONフォーマッタを公開してみた</h1>
     
     
       <p class="meta">
@@ -96,121 +96,42 @@
   
 
 
-<time datetime="2012-10-04T23:00:00+09:00" pubdate data-updated="true">Oct 4<span>th</span>, 2012</time>
+<time datetime="2012-12-04T22:40:00+09:00" pubdate data-updated="true">Dec 4<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>普通のブログってやつがとても面倒なんです。</p>
+<div class="entry-content"><p>ローカルのツールを外でも使えるように公開してみました。</p>
 
-<p>CMSにログインしたり画像アップロードしたり謎エディタで記事書いたり公開ボタン押したりバックアップするのにプラグイン入れたりとか、やってられない。</p>
+<ul>
+<li><a href="http://jsonformatter.withweb.info">JSON formatter</a></li>
+</ul>
 
-<p>手元のエディタで記事を書いてコマンド打ったら公開。そんな感じで楽したいのでOctopressに移行します。いまさら感が半端ないけどね。</p>
+
+<p><img src="/images/20121204-jsonformatter-withweb-info.png" title="jsonformatter.withweb.info" alt="image jsonformatter.withweb.info" /></p>
+
+<p>jQueryを使った簡単なJSONフォーマッタです。（エラー処理とか細かい事はほとんどしてませんが&#8230;）</p>
 
 <!-- more -->
 
 
-<h2>構成</h2>
+<h2>作ろうとした理由</h2>
 
-<ul>
-<li>Octopress ブログエンジン。Markdownで記事を書いてhtmlに出力する。</li>
-<li>Bitbucket ソース管理。Octopressのディレクトリを管理する。</li>
-<li>GitHub サイトの公開場所。Octopressで出力したhtmlなどを置く。</li>
-</ul>
+<p>以前Yahoo!オークションAPIで遊ぼうとした時に、日本語がエンコードされたままだと中身が見づらかったんです。</p>
 
+<p>さらっとデータの中身を見たかったので、JSONPを返してくるサービスならJavascriptをそのまま展開しちゃえばいいや。ということで作りました。</p>
 
-<p>ソースはとりあえずBitbucketのプライベートリポジトリに置くことにします。なんとなくですが。</p>
+<p>ついでにJSONを貼り付けたら適当にフォーマットして読みやすくしようかな、と。フォーマッタがおまけです。</p>
 
-<h2>GitHub Pagesの準備</h2>
+<h2>使い方</h2>
 
-<p>gitのインストール、SSH Keysの登録が終わっている前提で、<a href="https://github.com/new">Create a New Repo</a>でUSERNAME.github.comの名前でリポジトリを作ります。</p>
+<p>リンク先のAboutに書いてあるんですが、[JSON Data]か[JSONP Data URL]に入力して[Process]ボタンを押すと結果が下に表示されます。</p>
 
-<p>USERNAMEは各自置き換えてくださいね。</p>
+<p>実行結果は[Close]ボタンで消したり、[Collapse]ボタンでたためます。実行結果が積まれていくのでパターン別に何度も実行するような使い方に便利だと思います。</p>
 
-<h2>Octopressインストール</h2>
-
-<p>まずは、USERNAME.github.comでアクセスできるようにするところまで。</p>
-
-<pre><code>$ git clone git://github.com/imathis/octopress.git octopress
-$ cd octopress
-$ sudo gem install bundler
-$ sudo bundle install
-$ rake install
-
-$ rake setup_github_pages
-# Enter the read/write url for your repository:
-# git@github.com:USERNAME/USERNAME.github.com.gitを入力します。
-
-$ rake generate
-$ rake deploy
-</code></pre>
-
-<p>独自ドメイン（サブドメイン）で運用したいので、ドメイン会社のサイトでDNSの設定をしておきます。</p>
-
-<pre><code>サブドメイン：blog
-種別：CNAME
-内容：USERNAME.github.com
-</code></pre>
-
-<p>OctopressにCNAMEファイルを作ります。_config.ymlも書き換えて、タイトルやURLなどちゃんとしたものに設定しておきましょう。</p>
-
-<pre><code>$ echo 'blog.withweb.info' &gt; source/CNAME
-$ rake generate
-$ rake deploy
-</code></pre>
-
-<p>あとは、記事をどんどん追加していくだけ。</p>
-
-<h2>記事を書いて投稿する</h2>
-
-<p>これだけ覚えておけばだいたいいける。記事やページの追加はコマンド打たなくてもsource/_postsの中にMarkdownのファイルを突っ込むだけでいけるみたい。</p>
-
-<pre><code>$ rake new_post["title"] # 新規記事を作成
-$ rake new_page["title"] # 新規ページを作成
-$ rake generate          # 記事をhtmlに変換
-$ rake preview           # プレビュー(localhost:4000)
-$ rake deploy            # 記事を公開(GitHub Pagesにデプロイ)
-</code></pre>
-
-<h2>サイトの運用</h2>
-
-<p>ソースはBitbucketにするのでリモートリポジトリを追加します。</p>
-
-<pre><code>$ git remote add bitbucket git@bitbucket.org:USERNAME/octopress.git
-$ git push -u bitbucket source
-</code></pre>
-
-<p>あとはpushしていけば記事のバックアップをとっていけます。</p>
-
-<pre><code>$ git add .
-$ git commit -m 'commit message'
-$ git push
-</code></pre>
-
-<h2>Octopressの更新</h2>
-
-<p>Octopress自体を更新する場合は、本家の更新を取り込んでマージします。その後、ソースとスタイルを更新してpush、デプロイします。</p>
-
-<pre><code>$ git fetch octopress
-$ git pull octopress master
-$ bundle install
-$ rake update_source
-$ rake update_style
-$ rm -rf sass.old
-$ rm -rf source.old
-$ git push
-$ rake deploy
-</code></pre>
-
-<h2>参考ページ</h2>
-
-<ul>
-<li><a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">Octopressのインストールから運用管理まで - T.I.D.</a></li>
-<li><a href="http://blog.glidenote.com/blog/2011/11/07/install-octopress-on-github/">GithubとOctopressでモダンな技術系ブログを作ってみる - Glide Note - グライドノート</a></li>
-</ul>
-
+<p>ただ、実行結果をクリップボードにコピーしたり、バリデーションする機能はありません。</p>
 </div>
 
 
@@ -233,12 +154,12 @@ $ rake deploy
   
 
 
-<time datetime="2012-10-04T23:00:00+09:00" pubdate data-updated="true">Oct 4<span>th</span>, 2012</time>
+<time datetime="2012-12-04T22:40:00+09:00" pubdate data-updated="true">Dec 4<span>th</span>, 2012</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/octopress/'>octopress</a>
+    <a class='category' href='/blog/categories/webservice/'>webservice</a>
   
 </span>
 
@@ -246,9 +167,9 @@ $ rake deploy
     </p>
     
       <div class="sharing">
-<a href="http://b.hatena.ne.jp/entry/http://blog.withweb.info/blog/2012/10/04/octopress/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加"><img src="http://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="http://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+<a href="http://b.hatena.ne.jp/entry/http://blog.withweb.info/blog/2012/12/04/json-formatter/" class="hatena-bookmark-button" data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加"><img src="http://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="http://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2012/10/04/octopress/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2012/10/04/octopress/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.withweb.info/blog/2012/12/04/json-formatter/" data-via="takecover1980" data-counturl="http://blog.withweb.info/blog/2012/12/04/json-formatter/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -261,10 +182,8 @@ $ rake deploy
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2012/05/22/vps-iptables/" title="Previous Post: VPSのファイアウォール設定を見直す">&laquo; VPSのファイアウォール設定を見直す</a>
+        <a class="basic-alignment left" href="/blog/2012/11/29/octopress-preview-use-thin/" title="Previous Post: Octopressのプレビューにthinを使うと速くて快適になった">&laquo; Octopressのプレビューにthinを使うと速くて快適になった</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2012/10/05/scala-playframework/" title="Next Post: Scala+PlayFramework2はじめました">Scala+PlayFramework2はじめました &raquo;</a>
       
     </p>
   </footer>
@@ -347,8 +266,8 @@ $ rake deploy
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.withweb.info/blog/2012/10/04/octopress/';
-        var disqus_url = 'http://blog.withweb.info/blog/2012/10/04/octopress/';
+        var disqus_identifier = 'http://blog.withweb.info/blog/2012/12/04/json-formatter/';
+        var disqus_url = 'http://blog.withweb.info/blog/2012/12/04/json-formatter/';
         var disqus_script = 'embed.js';
       
     (function () {

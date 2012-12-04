@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: webservice | withweb]]></title>
+  <link href="http://blog.withweb.info/blog/categories/webservice/atom.xml" rel="self"/>
+  <link href="http://blog.withweb.info/"/>
+  <updated>2012-12-04T23:17:10+09:00</updated>
+  <id>http://blog.withweb.info/</id>
+  <author>
+    <name><![CDATA[takecover1980]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[JSONフォーマッタを公開してみた]]></title>
+    <link href="http://blog.withweb.info/blog/2012/12/04/json-formatter/"/>
+    <updated>2012-12-04T22:40:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/12/04/json-formatter</id>
+    <content type="html"><![CDATA[<p>ローカルのツールを外でも使えるように公開してみました。</p>
+
+<ul>
+<li><a href="http://jsonformatter.withweb.info">JSON formatter</a></li>
+</ul>
+
+
+<p><img src="/images/20121204-jsonformatter-withweb-info.png" title="jsonformatter.withweb.info" alt="image jsonformatter.withweb.info" /></p>
+
+<p>jQueryを使った簡単なJSONフォーマッタです。（エラー処理とか細かい事はほとんどしてませんが...）</p>
+
+<!-- more -->
+
+
+<h2>作ろうとした理由</h2>
+
+<p>以前Yahoo!オークションAPIで遊ぼうとした時に、日本語がエンコードされたままだと中身が見づらかったんです。</p>
+
+<p>さらっとデータの中身を見たかったので、JSONPを返してくるサービスならJavascriptをそのまま展開しちゃえばいいや。ということで作りました。</p>
+
+<p>ついでにJSONを貼り付けたら適当にフォーマットして読みやすくしようかな、と。フォーマッタがおまけです。</p>
+
+<h2>使い方</h2>
+
+<p>リンク先のAboutに書いてあるんですが、[JSON Data]か[JSONP Data URL]に入力して[Process]ボタンを押すと結果が下に表示されます。</p>
+
+<p>実行結果は[Close]ボタンで消したり、[Collapse]ボタンでたためます。実行結果が積まれていくのでパターン別に何度も実行するような使い方に便利だと思います。</p>
+
+<p>ただ、実行結果をクリップボードにコピーしたり、バリデーションする機能はありません。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[PlayFramework2とYahoo!オークションAPIを使ってみた]]></title>
+    <link href="http://blog.withweb.info/blog/2012/11/28/playframework-and-yahoo-auction-api/"/>
+    <updated>2012-11-28T02:30:00+09:00</updated>
+    <id>http://blog.withweb.info/blog/2012/11/28/playframework-and-yahoo-auction-api</id>
+    <content type="html"><![CDATA[<p>Yahoo!オークションAPIを使ってみたくなったので、とりあえず動くものを作ってみました。</p>
+
+<ul>
+<li><a href="http://auction.drive7.info">いまYahoo!オークションで人気の商品はコレ！</a></li>
+</ul>
+
+
+<p><img src="/images/20121128-auction-drive7-info.png" title="auction.drive7.info" alt="image auction.drive7.info" /></p>
+
+<p>いかにもアフィリエイトっぽくてアレな感じのタイトルですね。実際アフィリエイトID使っています。</p>
+
+<p>適当に用意したカテゴリから検索した結果をパネルっぽく表示して、クリックするとオークションのページに飛べます。</p>
+
+<!-- more -->
+
+
+<h2>準備</h2>
+
+<p>だいたいの流れはYahoo!デベロッパーネットワークの<a href="http://developer.yahoo.co.jp/start/">ご利用ガイド</a>に手順が書いてありますが、他に必要になりそうなドキュメントはこのへんです。</p>
+
+<ol>
+<li><a href="http://developer.yahoo.co.jp/webapi/auctions/">APIドキュメント</a></li>
+<li><a href="http://developer.yahoo.co.jp/sample/auctions/">サンプルコード</a></li>
+<li><a href="http://developer.yahoo.co.jp/attribution/">クレジット表示</a></li>
+</ol>
+
+
+<p>2のサンプルコードのページにサンプルリクエストURLが載っているので、ブラウザのURLバーに入れる等で試せます。</p>
+
+<p>アフィリエイトIDの確認と使い方は<a href="http://developer.yahoo.co.jp/appendix/auctions/affiliate.html">アフィリエイトプログラム</a>に書いてあります。Yahoo!ポイントで受け取るか、バリューコマースを使うか選べるようです。</p>
+
+<h2>APIを使う</h2>
+
+<p>JavascriptにアプリケーションIDを直書きするのはよくないかなぁと思ったので、Webサービスを作ります。</p>
+
+<p>それだけならYahoo! Pipesで十分だと思いますが、今回は使いたいのでPlay使います。おおまかにはこんな感じです。</p>
+
+<h3>Playframework2</h3>
+
+<p><code>text conf/routes
+GET /yapi controllers.YahooAPI.auction(q: String ?= "book")
+</code></p>
+
+<p>``` scala controllers/YahooAPI.scala
+package controllers</p>
+
+<p>import play.api.<em>
+import play.api.mvc.</em>
+import play.api.libs.<em>
+import play.api.libs.json.</em>
+import play.api.libs.ws._</p>
+
+<p>object YahooAPI extends Controller {
+  def auction(q: String) = Action { request =></p>
+
+<pre><code>val appid = "YOUR_APPID"
+val baseurl = "http://auctions.yahooapis.jp/AuctionWebService/V2/json/search"
+val url = baseurl + "?appid=" + appid + "&amp;query=" + q
+
+Async {
+  WS.url(url).get().map { response =&gt;
+    Ok(response.body).as("application/json")
+  }
+}
+</code></pre>
+
+<p>  }
+```</p>
+
+<p><code>http://example.com/yapi?q=book</code>にアクセスするとbookの検索結果がJSONで返ってきます。</p>
+
+<h3>jQuery</h3>
+
+<p>``` javascript script.js
+// API呼び出し
+$.ajax({
+  url: "http://example.com/yapi",
+  data: {</p>
+
+<pre><code>"q":"ほげほげ"
+</code></pre>
+
+<p>  },
+  dataType: "jsonp",
+  complete: function() {</p>
+
+<pre><code>// 終了時の処理
+</code></pre>
+
+<p>  }
+});</p>
+
+<p>// コールバック
+function loaded(json) {
+  // API呼び出しの結果をゴニョゴニョする
+}
+```</p>
+
+<p>取得した商品情報をレイアウトすれば完成です。</p>
+
+<p>いろいろ手を抜いてます。アクセスが多いならYahooのサーバに優しくしておいた方がいいと思います。リクエストをキューでコントロールするとか、同一クエリは数秒キャッシュするとか、複数のアプリケーションIDでローテーションするとか。あ、最後のは違うか。</p>
+]]></content>
+  </entry>
+  
+</feed>

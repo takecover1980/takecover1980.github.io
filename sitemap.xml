@@ -86,11 +86,15 @@
     </url>
     <url>
         <loc>http://blog.withweb.info/blog/2012/11/28/playframework-and-yahoo-auction-api/</loc>
-        <lastmod>2012-11-28T05:35:17+09:00</lastmod>
+        <lastmod>2012-12-04T23:16:47+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/</loc>
         <lastmod>2012-11-29T00:10:30+09:00</lastmod>
+    </url>
+    <url>
+        <loc>http://blog.withweb.info/blog/2012/12/04/json-formatter/</loc>
+        <lastmod>2012-12-04T23:16:20+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.withweb.info/about/</loc>
@@ -98,10 +102,10 @@
     </url>
     <url>
         <loc>http://blog.withweb.info/blog/archives/</loc>
-        <lastmod>2012-11-29T00:10:30+09:00</lastmod>
+        <lastmod>2012-12-04T23:16:47+09:00</lastmod>
     </url>
     <url>
         <loc>http://blog.withweb.info/</loc>
-        <lastmod>2012-11-29T00:10:30+09:00</lastmod>
+        <lastmod>2012-12-04T23:16:47+09:00</lastmod>
     </url>
 </urlset>

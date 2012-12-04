@@ -9,7 +9,7 @@
   <meta name="author" content="takecover1980">
 
   
-  <meta name="description" content="なかなかお気に入りのOctopressですが、rake previewが妙に遅いのと「Could not determine&#8230;」ってログが鬱陶しいのが気になってました。 どうしたものかとググってみるとけっこう簡単に対策できるみたい。これはやらねばなるまい、というわけでメモ。 ">
+  <meta name="description" content="ローカルのツールを外でも使えるように公開してみました。 JSON formatter jQueryを使った簡単なJSONフォーマッタです。（エラー処理とか細かい事はほとんどしてませんが&#8230;） ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,56 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/04/json-formatter/">JSONフォーマッタを公開してみた</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-04T22:40:00+09:00" pubdate data-updated="true">Dec 4<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>ローカルのツールを外でも使えるように公開してみました。</p>
+
+<ul>
+<li><a href="http://jsonformatter.withweb.info">JSON formatter</a></li>
+</ul>
+
+
+<p><img src="/images/20121204-jsonformatter-withweb-info.png" title="jsonformatter.withweb.info" alt="image jsonformatter.withweb.info" /></p>
+
+<p>jQueryを使った簡単なJSONフォーマッタです。（エラー処理とか細かい事はほとんどしてませんが&#8230;）</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2012/12/04/json-formatter/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -261,64 +311,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/10/06/script-enable-sudo-in-cron/">Cronの中でsudoを使う方法</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-10-06T19:30:00+09:00" pubdate data-updated="true">Oct 6<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。</p>
-
-<p>こんな感じで設定しました。</p>
-
-<figure class='code'><figcaption><span>ユーザ:jenkinsをtty(コンソール)無しでsudoさせる</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>$ sudo /usr/sbin/visudo
-</span><span class='line'>
-</span><span class='line'>#Defaults requiretty           # tty無しの場合sudoさせない(コメントアウト)
-</span><span class='line'>Defaults:jenkins !requiretty   # ユーザjenkinsはtty無しでsudo可能
-</span><span class='line'>jenkins ALL=(ALL) NOPASSWD:ALL # ユーザjenkinsはパスワード無しでsudo可能
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2012/10/06/script-enable-sudo-in-cron/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -334,6 +326,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/12/04/json-formatter/">JSONフォーマッタを公開してみた</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/11/29/octopress-preview-use-thin/">Octopressのプレビューにthinを使うと速くて快適になった</a>
       </li>
     
@@ -347,10 +343,6 @@
     
       <li class="post">
         <a href="/blog/2012/11/13/vps-logwatch/">VPSにログ監視ツールlogwatchをインストール</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/06/script-enable-sudo-in-cron/">cronの中でsudoを使う方法</a>
       </li>
     
   </ul>

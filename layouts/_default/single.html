@@ -12,11 +12,12 @@
 			</section>
 			<!-- google ads -->
 			{{if eq .Section "archives" }}{{ with .Site.Params.adsGoogle }}<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-			<!-- blog-page-footer-big -->
+			<!-- withweb-blog-page-footer -->
 			<ins class="adsbygoogle"
-				 style="display:inline-block;width:{{ .width }}px;height:{{ .height }}px"
-				 data-ad-client="{{ .client }}"
-				 data-ad-slot="{{ .slot }}"></ins>
+			     style="display:block"
+			     data-ad-client="{{ .client }}"
+			     data-ad-slot="{{ .slot }}"
+			     data-ad-format="auto"></ins>
 			<script>
 			(adsbygoogle = window.adsbygoogle || []).push({});
 			</script>{{ end }}{{ end }}

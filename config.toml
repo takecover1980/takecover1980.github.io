@@ -24,9 +24,7 @@ defaultLayout = "archives"
   trackingId = "UA-25619310-1"
 [params.adsGoogle]
   client = "ca-pub-8327324847265548"
-  slot = "8436320854"
-  width = "728"
-  height = "90"
+  slot = "8936827656"
 [params.disqus]
   shortName = "withweb"
 [params.github]

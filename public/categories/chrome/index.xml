@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Chrome on withweb</title>
+    <link>http://blog.withweb.info/categories/chrome/</link>
+    <description>Recent content in Chrome on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Tue, 20 Sep 2011 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/categories/chrome/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Google Chromeがいつの間にかLionのフルスクリーンに対応していた</title>
+      <link>http://blog.withweb.info/blog/2011/09/20/google-chrome-lion/</link>
+      <pubDate>Tue, 20 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/09/20/google-chrome-lion/</guid>
+      <description>
+
+&lt;p&gt;何の気なしにウィンドウを最大化した時に気が付いたんですが、いつの間にかMac OS X Lionのフルスクリーンに対応していたみたいです。&lt;/p&gt;
+
+&lt;p&gt;アップデートでは例のごとくいろいろと改善されたようですが、Lionユーザ向けには目立った機能として2つ盛り込まれたようです。&lt;/p&gt;
+
+&lt;h2 id=&#34;フルスクリーンに対応した:4722db6ee5681a699249381aa73eeea6&#34;&gt;フルスクリーンに対応した&lt;/h2&gt;
+
+&lt;p&gt;LionユーザにはおなじみのフルスクリーンがChromeでもできるようになりました。&lt;/p&gt;
+
+&lt;p&gt;ウィンドウがニュイーンと広がってMission Controlのデスクトップから独立するアレですね。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20110920-chrome-fullscreen.png&#34; alt=&#34;image chrome fullscreen&#34; title=&#34;chrome fullscreen&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;ウィンドウ右上の矢印ボタンをクリックするか、Cmd+Control+Fでフルスクリーンになります。&lt;/p&gt;
+
+&lt;p&gt;私のiMac 24インチ(1920x1200)だと&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20110920-imac-view.png&#34; alt=&#34;image imac view&#34; title=&#34;imac view&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;こんな感じです。&lt;/p&gt;
+
+&lt;p&gt;余白だらけですね。もっと広い解像度だとほとんど余白になりそうです。&lt;/p&gt;
+
+&lt;p&gt;個人的にはあまり使うことはなさそうですが、ブラウザをフルスクリーンで使う人にはなんとなくうれしいのではないでしょうか。&lt;/p&gt;
+
+&lt;h2 id=&#34;スクロール時のみスクロールバーが表示される:4722db6ee5681a699249381aa73eeea6&#34;&gt;スクロール時のみスクロールバーが表示される&lt;/h2&gt;
+
+&lt;p&gt;これは&lt;a href=&#34;http://googlejapan.blogspot.com/2011/09/google-chrome.html&#34;&gt;GoogleJapanのブログ&lt;/a&gt;を見て知ったのですが、スクロールした時だけウィンドウ右側にスクロールバーが表示されます。iPhoneやiPadユーザにはおなじみなので、よりMacらしさ(Appleらしさ？)が出た感じです。&lt;/p&gt;
+
+&lt;p&gt;フルスクリーンもそうですが、こういう細かいインタフェースがデフォルトアプリに近づくことで違和感なく乗り換えられるようになったのではないかと思います。&lt;/p&gt;
+
+&lt;p&gt;それにしても、Chromeは自動でアップデートされるので、いつ何が変わったのか意外と気付かないものですね。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

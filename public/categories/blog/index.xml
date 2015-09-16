@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Blog on withweb</title>
+    <link>http://blog.withweb.info/categories/blog/</link>
+    <description>Recent content in Blog on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Wed, 16 Sep 2015 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/categories/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>ブログをOctopressからHugoに移行してみた</title>
+      <link>http://blog.withweb.info/blog/2015/09/16/migrate-blog-octopress-to-hugo/</link>
+      <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2015/09/16/migrate-blog-octopress-to-hugo/</guid>
+      <description>
+
+&lt;p&gt;「ブログの更新が面倒」という理由でWordPressをやめてOctopressを使うようにしてました。&lt;/p&gt;
+
+&lt;p&gt;でも、Octopressも面倒になりました。rubyだったりpython(pygments)だったりのバージョンを合わせたり、テーマの構成がよく分からなくてちょっとした変更も辛くなってきて、、&lt;/p&gt;
+
+&lt;p&gt;そこで、最近人気があるらしいHugoにしてみました。動作が速くて構造がシンプルみたい。&lt;/p&gt;
+
+&lt;h2 id=&#34;インストール:a83ba35589dc155b4148020205967001&#34;&gt;インストール&lt;/h2&gt;
+
+&lt;p&gt;Golangの環境はあるので、&lt;code&gt;go get&lt;/code&gt;でインストールします。Macの人はbrew、Linuxの人はyumやdpkgなんかでも入れられると思います。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;go get -v github.com/spf13/hugo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;移行:a83ba35589dc155b4148020205967001&#34;&gt;移行&lt;/h2&gt;
+
+&lt;p&gt;記事と画像ファイルをコピーして、front matterのフォーマットをyamlからtomlに変更したくらいです。&lt;/p&gt;
+
+&lt;p&gt;OctopressからHugoに移行する際、日付フォーマットや画像タグの変更が必要みたいですが、私の場合は元々Hugoに合っていたので変更しなくてもOKでした。&lt;/p&gt;
+
+&lt;p&gt;また、テーマは&lt;a href=&#34;https://github.com/spf13/hugoThemes/&#34;&gt;公式&lt;/a&gt;にまとめられているみたいです。全部、個別どちらでも簡単に導入できます。今回は&lt;a href=&#34;https://github.com/rakuishi/hugo-zen&#34;&gt;hugo-zen&lt;/a&gt;と&lt;a href=&#34;http://rakuishi.com/&#34;&gt;作者さんのサイト&lt;/a&gt;を参考にして、&lt;code&gt;[my_blog]/layouts&lt;/code&gt;に適当に作りました。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;hugo server -w&lt;/code&gt;でプレビューしながら記事やレイアウトを作って、この時点でのHugoのディレクトリはこんな感じ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;tree -L 1 [my_blog]
+
+[my_blog]
+├── README.md
+├── archetypes
+├── config.toml
+├── content
+├── data
+├── layouts
+├── public
+└── static
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ホスティング:a83ba35589dc155b4148020205967001&#34;&gt;ホスティング&lt;/h2&gt;
+
+&lt;p&gt;既存のGithubのユーザーページのリポジトリ([username].github.io.git)を使います。&lt;/p&gt;
+
+&lt;p&gt;Octopressの時は&lt;code&gt;source&lt;/code&gt;ブランチはBitbucketにしていたのですが、別に分ける必要ないかなと思ったので両方Githubにまとめます。&lt;/p&gt;
+
+&lt;p&gt;やり方は自信ない。あってるのかなぁ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# Octopressで生成していたサイトのデータを取得
+git clone git@github.com:[username]/[username].github.io.git
+
+# 全部消す
+cd [username].github.io.git]
+rm -rf ./*
+
+# とりあえずREADME.mdを入れておく
+touch README.md
+
+# masterブランチをコミット
+git add -A
+git commit -m &#39;delete octopress&#39;
+git push origin master
+
+# sourceブランチを作る
+git checkout -b source
+
+# Hugoで生成したサイトのデータをコピーしてくる
+cp -a [my_blog]/* ./
+rm -rf public
+
+# sourceブランチをコミット
+git add -A
+git commit -m &#39;initial commit hugo&#39;
+git push origin source
+
+# Hugoの公開ディレクトリをsubtreeでmasterブランチに切り出す
+git subtree add --prefix=public --squash origin master
+git subtree pull --prefix=public --squash origin master
+
+# 記事生成（publicディレクトリが作られる）
+hugo
+
+# publicの内容をsource、masterブランチにコミット
+git add -A
+git commit -m &#39;subtree public directory&#39;
+git push origin source
+git subtree push --prefix=public origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;記事を書いて更新していく:a83ba35589dc155b4148020205967001&#34;&gt;記事を書いて更新していく&lt;/h2&gt;
+
+&lt;p&gt;以下のコマンドを実行する。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;hugo
+git add -A
+git commit -m &#39;xxxxxx&#39;
+git push origin source
+git subtree push --prefix=public origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://gohugo.io/tutorials/github-pages-blog/&#34;&gt;Hugoのチュートリアル&lt;/a&gt;にデプロイスクリプトがあったのでそれを元に作る。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
+
+echo -e &amp;quot;\033[0;32mDeploying updates to GitHub...\033[0m&amp;quot;
+
+# Build the project.
+hugo
+
+# Add changes to git.
+git add -A
+
+# Commit changes.
+msg=&amp;quot;rebuilding site `date`&amp;quot;
+if [ $# -eq 1 ]
+  then msg=&amp;quot;$1&amp;quot;
+fi
+git commit -m &amp;quot;$msg&amp;quot;
+
+# Push source and build repos.
+git push origin source
+git subtree push --prefix=public origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;参考ページ:a83ba35589dc155b4148020205967001&#34;&gt;参考ページ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/overview/introduction/&#34;&gt;Introduction to Hugo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://yet.unresolved.xyz/blog/2015/01/04/migrate-blog-to-hugo-from-octopress/&#34;&gt;ブログをOctopressからHugoに移行した | Unresolved&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/12/25/hugo/&#34;&gt;OctopressからHugoへ移行した | SOTA&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://rakuishi.com/archives/hugo-zen/&#34;&gt;Hugo Zen: これから Hugo を始める人向けのミニマムなテーマを作りました - rakuishi.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.syati.info/post/create_hugo_2/&#34;&gt;Hugo で github にブログを立ち上げる Part 2 - Syati.info&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

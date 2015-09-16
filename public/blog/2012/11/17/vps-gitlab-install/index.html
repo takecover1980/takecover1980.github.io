@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VPSにGitLabをインストール - withweb</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/github.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato%3a900" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://blog.withweb.info/assets/css/style.css">
+<link rel="alternate" href="http://blog.withweb.info/index.xml" type="application/rss+xml" title="withweb">
+</head>
+
+<body>
+  <header>
+    <h1 class="column"><a href="http://blog.withweb.info/">withweb</a></h1>
+    <nav role="navigation" class="column">
+      <ul>
+        <li><a href="http://blog.withweb.info/about/">About</a></li>
+        <li><a href="http://blog.withweb.info/archives/">Archives</a></li>
+        <li><a href="http://blog.withweb.info/index.xml" type="application/rss+xml"><span class="fa-stack fa-lg"><i class="fa fa-rss fa-stack-1x"></i></span>
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">VPSにGitLabをインストール</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="2012-11-17">November 17, 2012</time>
+              <a class="category" href="http://blog.withweb.info/categories/vps">#vps</a>
+            </span>
+			<section itemprop="entry-text">
+				
+
+<p>プライベートなリポジトリにBitbucketを使っているんですが、なんだかんだで使いにくい。そこで、お手軽とはいかないけど人気のGitHubクローンということで、GitLab使ってみます。</p>
+
+<p><a href="https://github.com/gitlabhq/gitlabhq/blob/stable/doc/installation.md">プロジェクトページの手順</a>の通りにやればいいんだけど、ちょっと手を抜いて違う手順でインストールしたのでメモ。</p>
+
+<h2 id="構成:b2ff91b7e84828be0aaed437ac6e7a77">構成</h2>
+
+<ul>
+<li>CentOS 6.2</li>
+<li>Ruby 1.9.3-p194</li>
+<li>Gitolite 3.2</li>
+<li>GitLab 3.0.3</li>
+</ul>
+
+<h2 id="準備:b2ff91b7e84828be0aaed437ac6e7a77">準備</h2>
+
+<p>とりあえず必要そうなのを入れます。足りない物があればbundle installで怒られると思うので都度入れていけばいいと思います。</p>
+
+<pre><code class="language-bash">sudo yum install libxml2-devel libxslt-devel libicu-devel sqlite-devel redis
+</code></pre>
+
+<p>Redisを起動＋自動起動。いわゆるNoSQLってやつで、使うのは今回が初めて。</p>
+
+<pre><code class="language-bash">sudo chkconfig redis on
+sudo service redis start
+</code></pre>
+
+<p>GitoliteとGitLabのユーザを分けずにgitユーザだけで設定します。ここから先はgitユーザで作業します。</p>
+
+<pre><code class="language-bash">sudo useradd git
+sudo passwd git
+su - git
+</code></pre>
+
+<p>rbenv派です。GitLabに合うバージョンのRubyが導入済みの場合は読み飛ばしてください。</p>
+
+<pre><code class="language-bash">git clone http://github.com/sstephenson/rbenv.git ~/.rbenv
+git clone http://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+</code></pre>
+
+<p>~/.bash_profile</p>
+
+<pre><code class="language-bash">PATH=$HOME/.rbenv/bin:$PATH:$HOME/bin
+export PATH
+eval &quot;$(rbenv init -)&quot;
+</code></pre>
+
+<pre><code class="language-bash">rbenv install 1.9.3-p194
+rbenv global 1.9.3-p194
+gem install bundler
+rbenv rehash
+</code></pre>
+
+<h2 id="gitoliteインストール:b2ff91b7e84828be0aaed437ac6e7a77">Gitoliteインストール</h2>
+
+<p>SSHの鍵はgitlabとか分かりやすい名前にした方がいいかも。</p>
+
+<pre><code class="language-bash">git config --global user.email &quot;git@example.com&quot;
+git config --global user.name &quot;gitadmin&quot;
+git clone git://github.com/sitaramc/gitolite
+ssh-keygen -t rsa -N &quot;&quot;
+gitolite/install
+gitolite/src/gitolite setup -pk ~/.ssh/id_rsa.pub
+chmod -R g+rwX repositories/
+</code></pre>
+
+<p>~/.gitolite.rc</p>
+
+<pre><code class="language-bash">UMASK                       =&gt;  0007, # 0077 -&gt; 0007
+GIT_CONFIG_KEYS             =&gt;  '.*', # '' -&gt; '.*'
+</code></pre>
+
+<p>~/.ssh/config</p>
+
+<pre><code class="language-bash">Host localhost
+    Port &lt;SSHのポート番号&gt;
+</code></pre>
+
+<pre><code class="language-bash">chmod 600 ~/.ssh/config
+</code></pre>
+
+<h2 id="gitlabインストール:b2ff91b7e84828be0aaed437ac6e7a77">GitLabインストール</h2>
+
+<p>SQLite大好きなのでDBはSQLiteを使います。たぶんMySQL使う人が多いだろうけど。</p>
+
+<pre><code class="language-bash">git clone -b stable git://github.com/gitlabhq/gitlabhq.git
+cd gitlabhq
+cp config/gitlab.yml.example config/gitlab.yml
+cp config/database.yml.sqlite config/database.yml
+</code></pre>
+
+<p>環境に合わせてgitlab.ymlとdatabase.ymlを編集したらセットアップ。</p>
+
+<pre><code class="language-bash">bundle install --without development test mysql postgres --deployment
+bundle exec rake gitlab:app:setup RAILS_ENV=production
+cp ./lib/hooks/post-receive ~/.gitolite/hooks/common/post-receive
+chmod 750 /home/git/.gitolite
+./resque.sh
+</code></pre>
+
+<p>あとは手順どおりにWebサーバや起動スクリプトを設定すればOKです。</p>
+
+			</section>
+			
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:728px;height:90px"
+				 data-ad-client="ca-pub-8327324847265548"
+				 data-ad-slot="8436320854"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			
+			<section class="social">
+				<a href="//twitter.com/share?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f11%2f17%2fvps-gitlab-install%2f&text=VPS%e3%81%abGitLab%e3%82%92%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f11%2f17%2fvps-gitlab-install%2f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f11%2f17%2fvps-gitlab-install%2f&title=VPS%e3%81%abGitLab%e3%82%92%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>
+			
+ 			
+			<script type="text/javascript" async="async">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + 'withweb' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</article>
+	</main>
+
+  <footer role="contentinfo">
+    <p class="copyright">&copy; withweb</p>
+  </footer>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-25619310-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/languages/scala.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
+

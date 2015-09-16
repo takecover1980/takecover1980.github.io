@@ -1,0 +1,197 @@
+html {
+  font-size: 1.2rem;
+}
+
+body {
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #fefefe;
+  background-image: -webkit-gradient(linear, 0 0, 100% 100%,
+    color-stop(.25, #ffffff),
+    color-stop(.25, transparent),
+    color-stop(.5, transparent),
+    color-stop(.5, #ffffff),
+    color-stop(.75, #ffffff),
+    color-stop(.75, transparent),to(transparent));
+  -webkit-background-size: 3px 3px;
+  color: #555;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+}
+
+a,
+a:link,
+a:visited,
+a:active {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+article img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+  border-radius: 4px;
+  box-shadow: rgba(0,0,0,0.15) 0 1px 4px;
+  box-sizing: border-box;
+}
+
+header,main,footer {
+  max-width: 40rem;
+}
+
+main {
+  margin: 3rem auto 0;
+}
+header {
+  margin: 0 auto;
+}
+header {
+  height: 3rem;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 0.8rem;
+}
+footer {
+  margin: 0.5rem auto;
+  font-size: 0.8rem;
+}
+header nav ul {
+  text-align: right;
+  height: 3rem;
+  margin: 0;
+}
+header nav ul, header nav li {
+  list-style: none;
+  height: 3rem;
+}
+header nav li {
+  display: inline-block;
+}
+header {
+  font-family: "Lato", "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+header h1 a,
+header nav li a {
+  display:table-cell;
+  vertical-align: middle;
+  line-height: 3rem;
+}
+header nav li a {
+  text-transform: uppercase;
+  padding: 0 0.5rem;
+}
+header a {
+  display: block;
+}
+
+header a:link,
+header a:visited,
+header a:active {
+  color: #555;
+}
+header a:hover {
+  border-bottom: 0.2rem solid orange;
+  text-decoration: none;
+}
+header .column {
+  float: left;
+  width: 50%;
+}
+
+header h1 {
+  margin: 0;
+  line-height: 3rem;
+  font-size: 2rem;
+}
+
+footer {
+  text-align: center;
+}
+
+
+/* 記事一覧 */
+.list-title {
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+.list-title, .entry-meta, .entry-meta a {
+  color: #7f929c;
+}
+.list-entry, .list-entry .entry-title {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.list-entry li:first-child {
+  border-top: 2px solid #E9ECED;
+}
+.list-entry li {
+  padding: 1rem 0;
+  border-bottom: 2px solid #E9ECED;
+}
+/* 記事のメタ情報 */
+.entry-meta {
+  font-size: 0.8rem;
+}
+.entry-meta .category {
+  margin-left: 0.5rem;
+}
+/* 記事一覧のタイトル */
+.list-entry .entry-title {
+  font-weight: normal;
+  font-size: 1rem;
+}
+/* 記事個別のタイトル */
+article .entry-title {
+  margin: 0;
+  font-size: 1.8rem;
+}
+article h2 {
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #E9ECED;
+}
+article p {
+  margin: 1.5rem 0;
+  line-height: 1.5rem;
+}
+article code {
+  font-family: Menlo,Monaco,"Andale Mono","lucida console","Courier New",monospace;
+  margin: 0 .2rem;
+  padding: .1rem .5rem;
+  border-radius: 4px;
+  background: whitesmoke;
+}
+/* アーカイブへリンク */
+.view-more-posts {
+  margin: 0;
+  padding: 1rem 0;
+  text-align: center;
+  border-bottom: 2px solid #E9ECED;
+}
+.view-more-posts a {
+  display: block;
+  font-weight: bold;
+}
+/* ソーシャルリンク */
+.social {
+  padding: 0.5rem 0;
+  border-top: 2px solid #E9ECED;
+  border-bottom: 2px solid #E9ECED;
+  text-align: right;
+}
+.social a,
+.social a:link,
+.social a:visited,
+.social a:active,
+.social a:hover {
+  text-decoration: none;
+}
+.social a {
+  color: #555;
+}
+.social a:hover {
+  color: orange;
+}

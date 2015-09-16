@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VPSにログ監視ツールlogwatchをインストール - withweb</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/github.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato%3a900" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://blog.withweb.info/assets/css/style.css">
+<link rel="alternate" href="http://blog.withweb.info/index.xml" type="application/rss+xml" title="withweb">
+</head>
+
+<body>
+  <header>
+    <h1 class="column"><a href="http://blog.withweb.info/">withweb</a></h1>
+    <nav role="navigation" class="column">
+      <ul>
+        <li><a href="http://blog.withweb.info/about/">About</a></li>
+        <li><a href="http://blog.withweb.info/archives/">Archives</a></li>
+        <li><a href="http://blog.withweb.info/index.xml" type="application/rss+xml"><span class="fa-stack fa-lg"><i class="fa fa-rss fa-stack-1x"></i></span>
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">VPSにログ監視ツールlogwatchをインストール</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="2012-11-13">November 13, 2012</time>
+              <a class="category" href="http://blog.withweb.info/categories/vps">#vps</a>
+            </span>
+			<section itemprop="entry-text">
+				
+
+<p>Linuxサーバのログを整形して管理者(root)に1日1回メール送信してくれるツールです。</p>
+
+<p>メール送信なのでMTAが必要です。既に設定済の場合は読み飛ばしてください。</p>
+
+<p>今回は個人的なサーバなので正直sSMTPで十分ですが、最近のLinuxならPostfixが標準だと思うのでそっちを使います。また、ドメインは信頼と実績のexample.comなので適時読み替えてください。外部からの受信、転送はしないのでDNSは触りません。</p>
+
+<h2 id="インストール:8c0225624c2dc7594b2f1accc06b672f">インストール</h2>
+
+<p>yumでサクッとインストール。</p>
+
+<pre><code class="language-bash">sudo yum install -y postfix logwatch
+</code></pre>
+
+<h2 id="postfixの設定:8c0225624c2dc7594b2f1accc06b672f">Postfixの設定</h2>
+
+<p>ローカルと外向きにメール送信できるように以下を編集します。メールボックスはMaildir形式。</p>
+
+<p>/etc/postfix/main.cf</p>
+
+<pre><code class="language-bash">myhostname = mail.example.com                                           // 自FQDN名
+mydomain = example.com                                                  // 自ドメイン名
+myorigin = $mydomain                                                    // 送信元ドメイン名
+inet_interfaces = localhost                                             // 待ち受けるネットワークインタフェース
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain  // ローカルで受信するドメイン名
+home_mailbox = Maildir/                                                 // メールボックス形式
+smtpd_banner = $myhostname ESMTP unknown                                // バージョン非表示
+</code></pre>
+
+<p>Maildir形式のメールボックスを使うので、新規ユーザ用にスケルトンを作っておく。既存ユーザのメールボックスを移行する場合はググればすぐ見つかります。</p>
+
+<pre><code class="language-bash">sudo mkdir -p /etc/skel/Maildir/{new,cur,tmp}
+sudo chmod -R 700 /etc/skel/Maildir/
+</code></pre>
+
+<p>メール送信できるか確認</p>
+
+<pre><code class="language-bash">echo &quot;test message.&quot; | mail -s test &lt;受信確認用の外部のメールアドレス&gt;
+echo &quot;test message.&quot; | mail -s test &lt;受信確認用のローカルユーザ&gt;
+</code></pre>
+
+<p>外部のメールアドレスにメールが届くのと、ローカルユーザの$HOME/Maildir/newにメールが届いていることを確認します。</p>
+
+<h2 id="logwatchの設定:8c0225624c2dc7594b2f1accc06b672f">logwatchの設定</h2>
+
+<p>と言っても、今回はlogwatch自体は設定しません。ログレベルやアーカイブ有無など設定したい場合は/etc/logwatch/conf/logwatch.confを編集します。</p>
+
+<p>設定するのはこっち。logwatchはデフォルトでroot宛てのメール転送先を設定します。</p>
+
+<p>/etc/aliases</p>
+
+<pre><code class="language-bash">root: example@example.com
+</code></pre>
+
+<p>logwatchをインストールすると/etc/cron.daily/00logwatchも作られるので、ほっといても1日1回メール送信されます。が、コマンドでメール送信できるので確認しておきます。</p>
+
+<pre><code class="language-bash">logwatch --mailto root
+</code></pre>
+
+<p>とりあえずこれで簡単にログ監視できます。</p>
+
+			</section>
+			
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:728px;height:90px"
+				 data-ad-client="ca-pub-8327324847265548"
+				 data-ad-slot="8436320854"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			
+			<section class="social">
+				<a href="//twitter.com/share?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f11%2f13%2fvps-logwatch%2f&text=VPS%e3%81%ab%e3%83%ad%e3%82%b0%e7%9b%a3%e8%a6%96%e3%83%84%e3%83%bc%e3%83%ablogwatch%e3%82%92%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f11%2f13%2fvps-logwatch%2f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f11%2f13%2fvps-logwatch%2f&title=VPS%e3%81%ab%e3%83%ad%e3%82%b0%e7%9b%a3%e8%a6%96%e3%83%84%e3%83%bc%e3%83%ablogwatch%e3%82%92%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>
+			
+ 			
+			<script type="text/javascript" async="async">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + 'withweb' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</article>
+	</main>
+
+  <footer role="contentinfo">
+    <p class="copyright">&copy; withweb</p>
+  </footer>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-25619310-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/languages/scala.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
+

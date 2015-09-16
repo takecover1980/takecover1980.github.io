@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on withweb</title>
+    <link>http://blog.withweb.info/categories/linux/</link>
+    <description>Recent content in Linux on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Tue, 13 Sep 2011 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>後で泣かないための個人的なWeb開発環境の作り方</title>
+      <link>http://blog.withweb.info/blog/2011/09/13/web-develop/</link>
+      <pubDate>Tue, 13 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/09/13/web-develop/</guid>
+      <description>
+
+&lt;p&gt;開発環境はしばらく使っていくと設定ファイルのゴミなどで散らかってしまいます。パソコンを買い換えたりサーバ環境を壊した時に構築し直すのもかなり面倒です。&lt;/p&gt;
+
+&lt;p&gt;運用も復旧も移行も楽にしたい。でも「開発サーバで動くのに本番サーバで動かない」なんてことにはなりたくない。&lt;/p&gt;
+
+&lt;p&gt;そんな風に考えたエンジニアが個人的なWeb開発環境を構築してみました。そのまとめです。&lt;/p&gt;
+
+&lt;h2 id=&#34;仮想化する:2dc8fd14061b08b6cebe33889e15fc37&#34;&gt;仮想化する&lt;/h2&gt;
+
+&lt;p&gt;VirtualBoxを使ってLinuxとWindowsを仮想化します。&lt;/p&gt;
+
+&lt;p&gt;仮想化しておけば作業用PCとサーバ環境を分られるのでゴミファイルが邪魔になりません。物理的な場所もとらない。&lt;/p&gt;
+
+&lt;p&gt;設定ファイルをいじってサーバ環境を壊してもスナップショットから簡単に戻せます。マシン移行、バックアップ、レストアなんかもファイルコピーだけなので簡単です。&lt;/p&gt;
+
+&lt;p&gt;Linuxは開発サーバでいろいろ入ってます。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Webサーバ(Apache)&lt;/li&gt;
+&lt;li&gt;DBサーバ(MySQL/SQLite)&lt;/li&gt;
+&lt;li&gt;内部DNSサーバ(BIND)&lt;/li&gt;
+&lt;li&gt;APサーバ(WordPress/Redmine/etc)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;WindowsはIEの動作確認用に入れています。&lt;/p&gt;
+
+&lt;p&gt;サービスを追加する時はローカル用のドメイン、バーチャルホスト、DBを追加すれば開発を始められます。&lt;/p&gt;
+
+&lt;h2 id=&#34;xamppやmampは使わない:2dc8fd14061b08b6cebe33889e15fc37&#34;&gt;XAMPPやMAMPは使わない&lt;/h2&gt;
+
+&lt;p&gt;Web上で動くものはたいていLinuxサーバで動いています。&lt;/p&gt;
+
+&lt;p&gt;そこを軽く見ていると後で泣きをみます。開発サーバと本番サーバは似ていれば似ているほど後が楽です。&lt;/p&gt;
+
+&lt;p&gt;個人的にはユニットテストまでならアリだと思いますが、この環境でテストしたつもりになるのはやめておいた方がいいと思います。会社で「テスト終わりました」とか言うと間違いなく怒られます。&lt;/p&gt;
+
+&lt;p&gt;AMP(Apache/MySQL/PHP)環境の雰囲気を知りたい人やローカルでWordPress等を動かしてみたい人がとっかかりに使うのは凄くいいと思います。&lt;/p&gt;
+
+&lt;p&gt;また、他の言語、ライブラリ、フレームワークを使おうとすると非常に手間がかかり逆に不便です。あくまでもXAMPP、MAMPが提供している範囲で簡単に導入できるようになるソフトです。&lt;/p&gt;
+
+&lt;h2 id=&#34;内部dnsサーバを立てておく:2dc8fd14061b08b6cebe33889e15fc37&#34;&gt;内部DNSサーバを立てておく&lt;/h2&gt;
+
+&lt;p&gt;これは本当に便利です。&lt;/p&gt;
+
+&lt;p&gt;ルータに内部DNS、プロバイダのDNSを使うように設定します。&lt;/p&gt;
+
+&lt;p&gt;これでLAN内のWindows/Mac/iPhoneどこからでも同じURLで開発サーバへアクセスできます。わざわざドメインを取得する必要もないし、hostsファイルにいちいち追加する必要もありません。&lt;/p&gt;
+
+&lt;p&gt;Web/DBサーバと比べるとDNSサーバは構築自体の敷居が高いですが、内部向けならあまりやることは無いしネットワークの勉強になると思います。&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ:2dc8fd14061b08b6cebe33889e15fc37&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;要は企業が社内で使うイントラネットの簡易版です。&lt;/p&gt;
+
+&lt;p&gt;例えばブログをレンタルサーバ＋独自ドメインで使っている人がこういう環境を構築すると、今まで各サービスの管理画面に参考サイトからコピペしていたものが何だったのかよく分かると思います。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

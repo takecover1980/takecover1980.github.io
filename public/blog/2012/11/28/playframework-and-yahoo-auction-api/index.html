@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PlayFramework2とYahoo!オークションAPIを使ってみた - withweb</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/github.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato%3a900" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://blog.withweb.info/assets/css/style.css">
+<link rel="alternate" href="http://blog.withweb.info/index.xml" type="application/rss+xml" title="withweb">
+</head>
+
+<body>
+  <header>
+    <h1 class="column"><a href="http://blog.withweb.info/">withweb</a></h1>
+    <nav role="navigation" class="column">
+      <ul>
+        <li><a href="http://blog.withweb.info/about/">About</a></li>
+        <li><a href="http://blog.withweb.info/archives/">Archives</a></li>
+        <li><a href="http://blog.withweb.info/index.xml" type="application/rss+xml"><span class="fa-stack fa-lg"><i class="fa fa-rss fa-stack-1x"></i></span>
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">PlayFramework2とYahoo!オークションAPIを使ってみた</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="2012-11-28">November 28, 2012</time>
+              <a class="category" href="http://blog.withweb.info/categories/webservice">#webservice</a><a class="category" href="http://blog.withweb.info/categories/hogehoge">#hogehoge</a>
+            </span>
+			<section itemprop="entry-text">
+				
+
+<p>Yahoo!オークションAPIを使ってみたくなったので、とりあえず動くものを作ってみました。</p>
+
+<ul>
+<li><a href="http://auction.drive7.info">いまYahoo!オークションで人気の商品はコレ！</a></li>
+</ul>
+
+<p><img src="http://blog.withweb.info/images/20121128-auction-drive7-info.png" alt="image auction.drive7.info" title="auction.drive7.info" /></p>
+
+<p>いかにもアフィリエイトっぽくてアレな感じのタイトルですね。実際アフィリエイトID使っています。</p>
+
+<p>適当に用意したカテゴリから検索した結果をパネルっぽく表示して、クリックするとオークションのページに飛べます。</p>
+
+<h2 id="準備:2071ee04fd874a7c6fb7692c5452e3b1">準備</h2>
+
+<p>だいたいの流れはYahoo!デベロッパーネットワークの<a href="http://developer.yahoo.co.jp/start/">ご利用ガイド</a>に手順が書いてありますが、他に必要になりそうなドキュメントはこのへんです。</p>
+
+<ol>
+<li><a href="http://developer.yahoo.co.jp/webapi/auctions/">APIドキュメント</a></li>
+<li><a href="http://developer.yahoo.co.jp/sample/auctions/">サンプルコード</a></li>
+<li><a href="http://developer.yahoo.co.jp/attribution/">クレジット表示</a></li>
+</ol>
+
+<p>2のサンプルコードのページにサンプルリクエストURLが載っているので、ブラウザのURLバーに入れる等で試せます。</p>
+
+<p>アフィリエイトIDの確認と使い方は<a href="http://developer.yahoo.co.jp/appendix/auctions/affiliate.html">アフィリエイトプログラム</a>に書いてあります。Yahoo!ポイントで受け取るか、バリューコマースを使うか選べるようです。</p>
+
+<h2 id="apiを使う:2071ee04fd874a7c6fb7692c5452e3b1">APIを使う</h2>
+
+<p>JavascriptにアプリケーションIDを直書きするのはよくないかなぁと思ったので、Webサービスを作ります。</p>
+
+<p>それだけならYahoo! Pipesで十分だと思いますが、今回は使いたいのでPlay使います。おおまかにはこんな感じです。</p>
+
+<h3 id="playframework2:2071ee04fd874a7c6fb7692c5452e3b1">Playframework2</h3>
+
+<p>conf/routes</p>
+
+<pre><code>GET /yapi controllers.YahooAPI.auction(q: String ?= &quot;book&quot;)
+</code></pre>
+
+<p>controllers/YahooAPI.scala</p>
+
+<pre><code class="language-scala">package controllers
+
+import play.api._
+import play.api.mvc._
+import play.api.libs._
+import play.api.libs.json._
+import play.api.libs.ws._
+
+object YahooAPI extends Controller {
+  def auction(q: String) = Action { request =&gt;
+    val appid = &quot;YOUR_APPID&quot;
+    val baseurl = &quot;http://auctions.yahooapis.jp/AuctionWebService/V2/json/search&quot;
+    val url = baseurl + &quot;?appid=&quot; + appid + &quot;&amp;query=&quot; + q
+
+    Async {
+      WS.url(url).get().map { response =&gt;
+        Ok(response.body).as(&quot;application/json&quot;)
+      }
+    }
+  }
+</code></pre>
+
+<p><code>http://example.com/yapi?q=book</code>にアクセスするとbookの検索結果がJSONで返ってきます。</p>
+
+<h3 id="jquery:2071ee04fd874a7c6fb7692c5452e3b1">jQuery</h3>
+
+<p>script.js</p>
+
+<pre><code class="language-javascript">// API呼び出し
+$.ajax({
+  url: &quot;http://example.com/yapi&quot;,
+  data: {
+    &quot;q&quot;:&quot;ほげほげ&quot;
+  },
+  dataType: &quot;jsonp&quot;,
+  complete: function() {
+    // 終了時の処理
+  }
+});
+
+// コールバック
+function loaded(json) {
+  // API呼び出しの結果をゴニョゴニョする
+}
+</code></pre>
+
+<p>取得した商品情報をレイアウトすれば完成です。</p>
+
+<p>いろいろ手を抜いてます。アクセスが多いならYahooのサーバに優しくしておいた方がいいと思います。リクエストをキューでコントロールするとか、同一クエリは数秒キャッシュするとか、複数のアプリケーションIDでローテーションするとか。あ、最後のは違うか。</p>
+
+			</section>
+			
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:728px;height:90px"
+				 data-ad-client="ca-pub-8327324847265548"
+				 data-ad-slot="8436320854"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			
+			<section class="social">
+				<a href="//twitter.com/share?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f11%2f28%2fplayframework-and-yahoo-auction-api%2f&text=PlayFramework2%e3%81%a8Yahoo%21%e3%82%aa%e3%83%bc%e3%82%af%e3%82%b7%e3%83%a7%e3%83%b3API%e3%82%92%e4%bd%bf%e3%81%a3%e3%81%a6%e3%81%bf%e3%81%9f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f11%2f28%2fplayframework-and-yahoo-auction-api%2f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f11%2f28%2fplayframework-and-yahoo-auction-api%2f&title=PlayFramework2%e3%81%a8Yahoo%21%e3%82%aa%e3%83%bc%e3%82%af%e3%82%b7%e3%83%a7%e3%83%b3API%e3%82%92%e4%bd%bf%e3%81%a3%e3%81%a6%e3%81%bf%e3%81%9f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>
+			
+ 			
+			<script type="text/javascript" async="async">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + 'withweb' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</article>
+	</main>
+
+  <footer role="contentinfo">
+    <p class="copyright">&copy; withweb</p>
+  </footer>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-25619310-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/languages/scala.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
+

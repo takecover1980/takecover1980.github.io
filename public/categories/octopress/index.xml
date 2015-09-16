@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Octopress on withweb</title>
+    <link>http://blog.withweb.info/categories/octopress/</link>
+    <description>Recent content in Octopress on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Wed, 16 Sep 2015 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/categories/octopress/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>ブログをOctopressからHugoに移行してみた</title>
+      <link>http://blog.withweb.info/blog/2015/09/16/migrate-blog-octopress-to-hugo/</link>
+      <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2015/09/16/migrate-blog-octopress-to-hugo/</guid>
+      <description>
+
+&lt;p&gt;「ブログの更新が面倒」という理由でWordPressをやめてOctopressを使うようにしてました。&lt;/p&gt;
+
+&lt;p&gt;でも、Octopressも面倒になりました。rubyだったりpython(pygments)だったりのバージョンを合わせたり、テーマの構成がよく分からなくてちょっとした変更も辛くなってきて、、&lt;/p&gt;
+
+&lt;p&gt;そこで、最近人気があるらしいHugoにしてみました。動作が速くて構造がシンプルみたい。&lt;/p&gt;
+
+&lt;h2 id=&#34;インストール:a83ba35589dc155b4148020205967001&#34;&gt;インストール&lt;/h2&gt;
+
+&lt;p&gt;Golangの環境はあるので、&lt;code&gt;go get&lt;/code&gt;でインストールします。Macの人はbrew、Linuxの人はyumやdpkgなんかでも入れられると思います。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;go get -v github.com/spf13/hugo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;移行:a83ba35589dc155b4148020205967001&#34;&gt;移行&lt;/h2&gt;
+
+&lt;p&gt;記事と画像ファイルをコピーして、front matterのフォーマットをyamlからtomlに変更したくらいです。&lt;/p&gt;
+
+&lt;p&gt;OctopressからHugoに移行する際、日付フォーマットや画像タグの変更が必要みたいですが、私の場合は元々Hugoに合っていたので変更しなくてもOKでした。&lt;/p&gt;
+
+&lt;p&gt;また、テーマは&lt;a href=&#34;https://github.com/spf13/hugoThemes/&#34;&gt;公式&lt;/a&gt;にまとめられているみたいです。全部、個別どちらでも簡単に導入できます。今回は&lt;a href=&#34;https://github.com/rakuishi/hugo-zen&#34;&gt;hugo-zen&lt;/a&gt;と&lt;a href=&#34;http://rakuishi.com/&#34;&gt;作者さんのサイト&lt;/a&gt;を参考にして、&lt;code&gt;[my_blog]/layouts&lt;/code&gt;に適当に作りました。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;hugo server -w&lt;/code&gt;でプレビューしながら記事やレイアウトを作って、この時点でのHugoのディレクトリはこんな感じ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;tree -L 1 [my_blog]
+
+[my_blog]
+├── README.md
+├── archetypes
+├── config.toml
+├── content
+├── data
+├── layouts
+├── public
+└── static
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ホスティング:a83ba35589dc155b4148020205967001&#34;&gt;ホスティング&lt;/h2&gt;
+
+&lt;p&gt;既存のGithubのユーザーページのリポジトリ([username].github.io.git)を使います。&lt;/p&gt;
+
+&lt;p&gt;Octopressの時は&lt;code&gt;source&lt;/code&gt;ブランチはBitbucketにしていたのですが、別に分ける必要ないかなと思ったので両方Githubにまとめます。&lt;/p&gt;
+
+&lt;p&gt;やり方は自信ない。あってるのかなぁ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# Octopressで生成していたサイトのデータを取得
+git clone git@github.com:[username]/[username].github.io.git
+
+# 全部消す
+cd [username].github.io.git]
+rm -rf ./*
+
+# とりあえずREADME.mdを入れておく
+touch README.md
+
+# masterブランチをコミット
+git add -A
+git commit -m &#39;delete octopress&#39;
+git push origin master
+
+# sourceブランチを作る
+git checkout -b source
+
+# Hugoで生成したサイトのデータをコピーしてくる
+cp -a [my_blog]/* ./
+rm -rf public
+
+# sourceブランチをコミット
+git add -A
+git commit -m &#39;initial commit hugo&#39;
+git push origin source
+
+# Hugoの公開ディレクトリをsubtreeでmasterブランチに切り出す
+git subtree add --prefix=public --squash origin master
+git subtree pull --prefix=public --squash origin master
+
+# 記事生成（publicディレクトリが作られる）
+hugo
+
+# publicの内容をsource、masterブランチにコミット
+git add -A
+git commit -m &#39;subtree public directory&#39;
+git push origin source
+git subtree push --prefix=public origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;記事を書いて更新していく:a83ba35589dc155b4148020205967001&#34;&gt;記事を書いて更新していく&lt;/h2&gt;
+
+&lt;p&gt;以下のコマンドを実行する。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;hugo
+git add -A
+git commit -m &#39;xxxxxx&#39;
+git push origin source
+git subtree push --prefix=public origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://gohugo.io/tutorials/github-pages-blog/&#34;&gt;Hugoのチュートリアル&lt;/a&gt;にデプロイスクリプトがあったのでそれを元に作る。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
+
+echo -e &amp;quot;\033[0;32mDeploying updates to GitHub...\033[0m&amp;quot;
+
+# Build the project.
+hugo
+
+# Add changes to git.
+git add -A
+
+# Commit changes.
+msg=&amp;quot;rebuilding site `date`&amp;quot;
+if [ $# -eq 1 ]
+  then msg=&amp;quot;$1&amp;quot;
+fi
+git commit -m &amp;quot;$msg&amp;quot;
+
+# Push source and build repos.
+git push origin source
+git subtree push --prefix=public origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;参考ページ:a83ba35589dc155b4148020205967001&#34;&gt;参考ページ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/overview/introduction/&#34;&gt;Introduction to Hugo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://yet.unresolved.xyz/blog/2015/01/04/migrate-blog-to-hugo-from-octopress/&#34;&gt;ブログをOctopressからHugoに移行した | Unresolved&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/12/25/hugo/&#34;&gt;OctopressからHugoへ移行した | SOTA&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://rakuishi.com/archives/hugo-zen/&#34;&gt;Hugo Zen: これから Hugo を始める人向けのミニマムなテーマを作りました - rakuishi.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.syati.info/post/create_hugo_2/&#34;&gt;Hugo で github にブログを立ち上げる Part 2 - Syati.info&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Octopressのプレビューにthinを使うと速くて快適になった</title>
+      <link>http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/</link>
+      <pubDate>Thu, 29 Nov 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/</guid>
+      <description>
+
+&lt;p&gt;なかなかお気に入りのOctopressですが、&lt;code&gt;rake preview&lt;/code&gt;が妙に遅いのと「Could not determine&amp;hellip;」ってログが鬱陶しいのが気になってました。&lt;/p&gt;
+
+&lt;p&gt;どうしたものかとググってみるとけっこう簡単に対策できるみたい。これはやらねばなるまい、というわけでメモ。&lt;/p&gt;
+
+&lt;h2 id=&#34;やること:814b0a41ea5cb12459ece38e80d0bb47&#34;&gt;やること&lt;/h2&gt;
+
+&lt;p&gt;どうやら遅いのも邪魔なログも原因はWEBrickらしい。WEBrickやめてthinを使うためにGemfileに追加します。&lt;/p&gt;
+
+&lt;p&gt;Gemfile.diff&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-diff&#34;&gt;diff --git a/Gemfile b/Gemfile
+
+index be2518b..2df250f 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -13,6 +13,7 @@ group :development do
+   gem &#39;rb-fsevent&#39;, &#39;~&amp;gt; 0.9&#39;
+   gem &#39;stringex&#39;, &#39;~&amp;gt; 1.4.0&#39;
+   gem &#39;liquid&#39;, &#39;~&amp;gt; 2.3.0&#39;
++  gem &#39;thin&#39;
+ end
+
+ gem &#39;sinatra&#39;, &#39;~&amp;gt; 1.3.2&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;thinを導入してパスを通します。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;bundle install
+exec $SHELL
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;参考ページでは&lt;code&gt;thin start&lt;/code&gt;で起動するかRakefile修正が必要な様ですが、いつも通りプレビューするだけでいけました。(バージョンが違うから？)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;rake preview
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;参考ページ:814b0a41ea5cb12459ece38e80d0bb47&#34;&gt;参考ページ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://qiita.com/items/3cd2e2c84e7dcecbc22a&#34;&gt;Octopressのプレビューにthinを使う #Octopress #Github - Qiita&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.glidenote.com/blog/2012/10/31/thin-octopress/&#34;&gt;OctopressのRake Previewにthinを利用してプレビューを高速化する - Glide Note - グライドノート&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Octopressでブログしよう</title>
+      <link>http://blog.withweb.info/blog/2012/10/04/octopress/</link>
+      <pubDate>Thu, 04 Oct 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/10/04/octopress/</guid>
+      <description>
+
+&lt;p&gt;普通のブログってやつがとても面倒なんです。&lt;/p&gt;
+
+&lt;p&gt;CMSにログインしたり画像アップロードしたり謎エディタで記事書いたり公開ボタン押したりバックアップするのにプラグイン入れたりとか、やってられない。&lt;/p&gt;
+
+&lt;p&gt;手元のエディタで記事を書いてコマンド打ったら公開。そんな感じで楽したいのでOctopressに移行します。いまさら感が半端ないけどね。&lt;/p&gt;
+
+&lt;h2 id=&#34;構成:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;構成&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Octopress ブログエンジン。Markdownで記事を書いてhtmlに出力する。&lt;/li&gt;
+&lt;li&gt;Bitbucket ソース管理。Octopressのディレクトリを管理する。&lt;/li&gt;
+&lt;li&gt;GitHub サイトの公開場所。Octopressで出力したhtmlなどを置く。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ソースはとりあえずBitbucketのプライベートリポジトリに置くことにします。なんとなくですが。&lt;/p&gt;
+
+&lt;h2 id=&#34;github-pagesの準備:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;GitHub Pagesの準備&lt;/h2&gt;
+
+&lt;p&gt;gitのインストール、SSH Keysの登録が終わっている前提で、&lt;a href=&#34;https://github.com/new&#34;&gt;Create a New Repo&lt;/a&gt;でUSERNAME.github.comの名前でリポジトリを作ります。&lt;/p&gt;
+
+&lt;p&gt;USERNAMEは各自置き換えてくださいね。&lt;/p&gt;
+
+&lt;h2 id=&#34;octopressインストール:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;Octopressインストール&lt;/h2&gt;
+
+&lt;p&gt;まずは、USERNAME.github.comでアクセスできるようにするところまで。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone git://github.com/imathis/octopress.git octopress
+cd octopress
+sudo gem install bundler
+sudo bundle install
+rake install
+
+rake setup_github_pages
+Enter the read/write url for your repository:
+git@github.com:USERNAME/USERNAME.github.com.gitを入力します。
+
+rake generate
+rake deploy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;独自ドメイン（サブドメイン）で運用したいので、ドメイン会社のサイトでDNSの設定をしておきます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;サブドメイン：blog
+種別：CNAME
+内容：USERNAME.github.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;OctopressにCNAMEファイルを作ります。_config.ymlも書き換えて、タイトルやURLなどちゃんとしたものに設定しておきましょう。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;echo &#39;blog.withweb.info&#39; &amp;gt; source/CNAME
+rake generate
+rake deploy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;あとは、記事をどんどん追加していくだけ。&lt;/p&gt;
+
+&lt;h2 id=&#34;記事を書いて投稿する:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;記事を書いて投稿する&lt;/h2&gt;
+
+&lt;p&gt;これだけ覚えておけばだいたいいける。記事やページの追加はコマンド打たなくてもsource/_postsの中にMarkdownのファイルを突っ込むだけでいけるみたい。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;rake new_post[&amp;quot;title&amp;quot;] # 新規記事を作成
+rake new_page[&amp;quot;title&amp;quot;] # 新規ページを作成
+rake generate          # 記事をhtmlに変換
+rake preview           # プレビュー(localhost:4000)
+rake deploy            # 記事を公開(GitHub Pagesにデプロイ)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;サイトの運用:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;サイトの運用&lt;/h2&gt;
+
+&lt;p&gt;ソースはBitbucketにするのでリモートリポジトリを追加します。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git remote add bitbucket git@bitbucket.org:USERNAME/octopress.git
+git push -u bitbucket source
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;あとはpushしていけば記事のバックアップをとっていけます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git add .
+git commit -m &#39;commit message&#39;
+git push
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;octopressの更新:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;Octopressの更新&lt;/h2&gt;
+
+&lt;p&gt;Octopress自体を更新する場合は、本家の更新を取り込んでマージします。その後、ソースとスタイルを更新してpush、デプロイします。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git fetch octopress
+git pull octopress master
+bundle install
+rake update_source
+rake update_style
+rm -rf sass.old
+rm -rf source.old
+git push
+rake deploy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;参考ページ:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;参考ページ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/&#34;&gt;Octopressのインストールから運用管理まで - T.I.D.&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.glidenote.com/blog/2011/11/07/install-octopress-on-github/&#34;&gt;GithubとOctopressでモダンな技術系ブログを作ってみる - Glide Note - グライドノート&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -62,7 +62,8 @@
 				</a>{{ end }}
 			 </section>{{ end }}
  			<!-- disqus -->
-			{{if eq .Section "archives" }}{{ with .Site.Params.disqus }}<script type="text/javascript" async="async">
+			{{if eq .Section "archives" }}{{ with .Site.Params.disqus }}<div id="disqus_thread"></div>
+			<script type="text/javascript">
 			(function() {
 			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
 			  dsq.src = '//' + '{{ .shortName }}' + '.disqus.com/embed.js';

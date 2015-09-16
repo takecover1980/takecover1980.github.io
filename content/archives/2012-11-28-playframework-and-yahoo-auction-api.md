@@ -2,7 +2,7 @@
 title = "PlayFramework2とYahoo!オークションAPIを使ってみた"
 slug = "playframework-and-yahoo-auction-api"
 date = "2012-11-28"
-categories = [ "webservice", "hogehoge" ]
+categories = [ "webservice" ]
 +++
 
 Yahoo!オークションAPIを使ってみたくなったので、とりあえず動くものを作ってみました。

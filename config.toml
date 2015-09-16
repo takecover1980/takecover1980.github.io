@@ -1,0 +1,37 @@
+contentdir = "content"
+layoutdir = "layouts"
+publishdir = "public"
+builddrafts = false
+baseurl = "http://blog.withweb.info/"
+canonifyurls = true
+
+title = "withweb"
+languageCode = "jp"
+countryCode = "jp"
+defaultLayout = "archives"
+
+[taxonomies]
+  category = "categories"
+
+[params]
+  author = "takecover1980"
+
+[permalinks]
+  archives = "/blog/:year/:month/:day/:slug/"
+
+
+[params.analyticsGoogle]
+  trackingId = "UA-25619310-1"
+[params.adsGoogle]
+  client = "ca-pub-8327324847265548"
+  slot = "8436320854"
+  width = "728"
+  height = "90"
+[params.disqus]
+  shortName = "withweb"
+[params.github]
+  id = "takecover1980"
+[params.facebook]
+  id = "withweb.info"
+[params.twitter]
+  id = "takecover1980"

@@ -1,0 +1,76 @@
+{{ partial "header.html" . }}
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">{{ .Title }}</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 02, 2006" }}</time>
+              {{ if .Params.categories }}{{ range .Params.categories }}<a class="category" href="/categories/{{ . | urlize }}">#{{ . }}</a>{{ end }}{{ end }}
+            </span>
+			<section itemprop="entry-text">
+				{{ .Content }}
+			</section>
+			<!-- google ads -->
+			{{if eq .Section "archives" }}{{ with .Site.Params.adsGoogle }}<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			<!-- blog-page-footer-big -->
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:{{ .width }}px;height:{{ .height }}px"
+				 data-ad-client="{{ .client }}"
+				 data-ad-slot="{{ .slot }}"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>{{ end }}{{ end }}
+			<!-- share -->
+			{{ if eq .Section "archives" }}<section class="social">
+				<a href="//twitter.com/share?url={{ .Permalink }}&text={{ .Title }}" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u={{ .Permalink }}" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url={{ .Permalink }}&title={{ .Title }}" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>{{ end }}
+			{{ if eq .Section "" }}<section class="social">
+				{{ with .Site.Params.twitter }}<a href="//twitter.com/{{ .id }}" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>{{ end }}
+				{{ with .Site.Params.facebook }}<a href="//www.facebook.com/{{ .id }}" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>{{ end }}
+				{{ with .Site.Params.github }}<a href="//github.com/{{ .id }}" class="github">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-github fa-stack-1x"></i>
+					</span>
+				</a>{{ end }}
+			 </section>{{ end }}
+ 			<!-- disqus -->
+			{{if eq .Section "archives" }}{{ with .Site.Params.disqus }}<script type="text/javascript" async="async">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + '{{ .shortName }}' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>{{ end }}{{ end }}
+		</article>
+	</main>
+
+{{ partial "footer.html" . }}

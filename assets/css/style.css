@@ -136,8 +136,11 @@ footer {
 .entry-meta {
   font-size: 0.8rem;
 }
+.entry-meta time {
+  margin-right: 0.5rem;
+}
 .entry-meta .category {
-  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 /* 記事一覧のタイトル */
 .list-entry .entry-title {

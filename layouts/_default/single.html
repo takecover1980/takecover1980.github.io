@@ -11,7 +11,8 @@
 				{{ .Content }}
 			</section>
 			<!-- google ads -->
-			{{if eq .Section "archives" }}{{ with .Site.Params.adsGoogle }}<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			{{if eq .Section "archives" }}{{ with .Site.Params.adsGoogle }}<section class="ads">
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 			<!-- withweb-blog-page-footer -->
 			<ins class="adsbygoogle"
 			     style="display:block"
@@ -20,7 +21,8 @@
 			     data-ad-format="auto"></ins>
 			<script>
 			(adsbygoogle = window.adsbygoogle || []).push({});
-			</script>{{ end }}{{ end }}
+			</script>
+			</section>{{ end }}{{ end }}
 			<!-- share -->
 			{{ if eq .Section "archives" }}<section class="social">
 				<a href="//twitter.com/share?url={{ .Permalink }}&text={{ .Title }}" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">

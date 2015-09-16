@@ -175,6 +175,10 @@ article code {
   display: block;
   font-weight: bold;
 }
+/* 広告 */
+.ads {
+  padding: 0.5rem 0;
+}
 /* ソーシャルリンク */
 .social {
   padding: 0.5rem 0;

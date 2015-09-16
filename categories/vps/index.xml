@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Vps on withweb</title>
+    <link>http://blog.withweb.info/categories/vps/</link>
+    <description>Recent content in Vps on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Sat, 17 Nov 2012 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/categories/vps/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>VPSにGitLabをインストール</title>
+      <link>http://blog.withweb.info/blog/2012/11/17/vps-gitlab-install/</link>
+      <pubDate>Sat, 17 Nov 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/11/17/vps-gitlab-install/</guid>
+      <description>
+
+&lt;p&gt;プライベートなリポジトリにBitbucketを使っているんですが、なんだかんだで使いにくい。そこで、お手軽とはいかないけど人気のGitHubクローンということで、GitLab使ってみます。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/gitlabhq/gitlabhq/blob/stable/doc/installation.md&#34;&gt;プロジェクトページの手順&lt;/a&gt;の通りにやればいいんだけど、ちょっと手を抜いて違う手順でインストールしたのでメモ。&lt;/p&gt;
+
+&lt;h2 id=&#34;構成:b2ff91b7e84828be0aaed437ac6e7a77&#34;&gt;構成&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;CentOS 6.2&lt;/li&gt;
+&lt;li&gt;Ruby 1.9.3-p194&lt;/li&gt;
+&lt;li&gt;Gitolite 3.2&lt;/li&gt;
+&lt;li&gt;GitLab 3.0.3&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;準備:b2ff91b7e84828be0aaed437ac6e7a77&#34;&gt;準備&lt;/h2&gt;
+
+&lt;p&gt;とりあえず必要そうなのを入れます。足りない物があればbundle installで怒られると思うので都度入れていけばいいと思います。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo yum install libxml2-devel libxslt-devel libicu-devel sqlite-devel redis
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Redisを起動＋自動起動。いわゆるNoSQLってやつで、使うのは今回が初めて。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo chkconfig redis on
+sudo service redis start
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;GitoliteとGitLabのユーザを分けずにgitユーザだけで設定します。ここから先はgitユーザで作業します。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo useradd git
+sudo passwd git
+su - git
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;rbenv派です。GitLabに合うバージョンのRubyが導入済みの場合は読み飛ばしてください。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone http://github.com/sstephenson/rbenv.git ~/.rbenv
+git clone http://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;~/.bash_profile&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;PATH=$HOME/.rbenv/bin:$PATH:$HOME/bin
+export PATH
+eval &amp;quot;$(rbenv init -)&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;rbenv install 1.9.3-p194
+rbenv global 1.9.3-p194
+gem install bundler
+rbenv rehash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;gitoliteインストール:b2ff91b7e84828be0aaed437ac6e7a77&#34;&gt;Gitoliteインストール&lt;/h2&gt;
+
+&lt;p&gt;SSHの鍵はgitlabとか分かりやすい名前にした方がいいかも。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git config --global user.email &amp;quot;git@example.com&amp;quot;
+git config --global user.name &amp;quot;gitadmin&amp;quot;
+git clone git://github.com/sitaramc/gitolite
+ssh-keygen -t rsa -N &amp;quot;&amp;quot;
+gitolite/install
+gitolite/src/gitolite setup -pk ~/.ssh/id_rsa.pub
+chmod -R g+rwX repositories/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;~/.gitolite.rc&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;UMASK                       =&amp;gt;  0007, # 0077 -&amp;gt; 0007
+GIT_CONFIG_KEYS             =&amp;gt;  &#39;.*&#39;, # &#39;&#39; -&amp;gt; &#39;.*&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;~/.ssh/config&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Host localhost
+    Port &amp;lt;SSHのポート番号&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;chmod 600 ~/.ssh/config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;gitlabインストール:b2ff91b7e84828be0aaed437ac6e7a77&#34;&gt;GitLabインストール&lt;/h2&gt;
+
+&lt;p&gt;SQLite大好きなのでDBはSQLiteを使います。たぶんMySQL使う人が多いだろうけど。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone -b stable git://github.com/gitlabhq/gitlabhq.git
+cd gitlabhq
+cp config/gitlab.yml.example config/gitlab.yml
+cp config/database.yml.sqlite config/database.yml
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;環境に合わせてgitlab.ymlとdatabase.ymlを編集したらセットアップ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;bundle install --without development test mysql postgres --deployment
+bundle exec rake gitlab:app:setup RAILS_ENV=production
+cp ./lib/hooks/post-receive ~/.gitolite/hooks/common/post-receive
+chmod 750 /home/git/.gitolite
+./resque.sh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;あとは手順どおりにWebサーバや起動スクリプトを設定すればOKです。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>VPSにログ監視ツールlogwatchをインストール</title>
+      <link>http://blog.withweb.info/blog/2012/11/13/vps-logwatch/</link>
+      <pubDate>Tue, 13 Nov 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/11/13/vps-logwatch/</guid>
+      <description>
+
+&lt;p&gt;Linuxサーバのログを整形して管理者(root)に1日1回メール送信してくれるツールです。&lt;/p&gt;
+
+&lt;p&gt;メール送信なのでMTAが必要です。既に設定済の場合は読み飛ばしてください。&lt;/p&gt;
+
+&lt;p&gt;今回は個人的なサーバなので正直sSMTPで十分ですが、最近のLinuxならPostfixが標準だと思うのでそっちを使います。また、ドメインは信頼と実績のexample.comなので適時読み替えてください。外部からの受信、転送はしないのでDNSは触りません。&lt;/p&gt;
+
+&lt;h2 id=&#34;インストール:8c0225624c2dc7594b2f1accc06b672f&#34;&gt;インストール&lt;/h2&gt;
+
+&lt;p&gt;yumでサクッとインストール。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo yum install -y postfix logwatch
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;postfixの設定:8c0225624c2dc7594b2f1accc06b672f&#34;&gt;Postfixの設定&lt;/h2&gt;
+
+&lt;p&gt;ローカルと外向きにメール送信できるように以下を編集します。メールボックスはMaildir形式。&lt;/p&gt;
+
+&lt;p&gt;/etc/postfix/main.cf&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;myhostname = mail.example.com                                           // 自FQDN名
+mydomain = example.com                                                  // 自ドメイン名
+myorigin = $mydomain                                                    // 送信元ドメイン名
+inet_interfaces = localhost                                             // 待ち受けるネットワークインタフェース
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain  // ローカルで受信するドメイン名
+home_mailbox = Maildir/                                                 // メールボックス形式
+smtpd_banner = $myhostname ESMTP unknown                                // バージョン非表示
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Maildir形式のメールボックスを使うので、新規ユーザ用にスケルトンを作っておく。既存ユーザのメールボックスを移行する場合はググればすぐ見つかります。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo mkdir -p /etc/skel/Maildir/{new,cur,tmp}
+sudo chmod -R 700 /etc/skel/Maildir/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;メール送信できるか確認&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;echo &amp;quot;test message.&amp;quot; | mail -s test &amp;lt;受信確認用の外部のメールアドレス&amp;gt;
+echo &amp;quot;test message.&amp;quot; | mail -s test &amp;lt;受信確認用のローカルユーザ&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;外部のメールアドレスにメールが届くのと、ローカルユーザの$HOME/Maildir/newにメールが届いていることを確認します。&lt;/p&gt;
+
+&lt;h2 id=&#34;logwatchの設定:8c0225624c2dc7594b2f1accc06b672f&#34;&gt;logwatchの設定&lt;/h2&gt;
+
+&lt;p&gt;と言っても、今回はlogwatch自体は設定しません。ログレベルやアーカイブ有無など設定したい場合は/etc/logwatch/conf/logwatch.confを編集します。&lt;/p&gt;
+
+&lt;p&gt;設定するのはこっち。logwatchはデフォルトでroot宛てのメール転送先を設定します。&lt;/p&gt;
+
+&lt;p&gt;/etc/aliases&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;root: example@example.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;logwatchをインストールすると/etc/cron.daily/00logwatchも作られるので、ほっといても1日1回メール送信されます。が、コマンドでメール送信できるので確認しておきます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;logwatch --mailto root
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;とりあえずこれで簡単にログ監視できます。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>cronの中でsudoを使う方法</title>
+      <link>http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/</link>
+      <pubDate>Sat, 06 Oct 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/</guid>
+      <description>
+
+&lt;p&gt;jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。&lt;/p&gt;
+
+&lt;p&gt;ユーザ:jenkinsをtty(コンソール)無しでsudoさせるため、こんな感じで設定しました。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo /usr/sbin/visudo
+
+#Defaults requiretty           # tty無しの場合sudoさせない(コメントアウト)
+Defaults:jenkins !requiretty   # ユーザjenkinsはtty無しでsudo可能
+jenkins ALL=(ALL) NOPASSWD:ALL # ユーザjenkinsはパスワード無しでsudo可能
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ちょっと解説:202d89dff242d7247ade7a5bbac7390f&#34;&gt;ちょっと解説&lt;/h2&gt;
+
+&lt;p&gt;sshコマンドやcronの中でsudoを使うスクリプトを使う場合によくあるケースなんですが&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo: sorry, you must have a tty to run sudo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;こんなエラーで止まることがあります。これは、/etc/sudoersの設定でtty(コンソール)とつながってないsudoが禁止されているためです。&lt;/p&gt;
+
+&lt;p&gt;/etc/sudoersの下の行をコメントアウトするか、!requirettyを指定するとこの設定を無効化できます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Defaults requiretty
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;が、クラッキング目的で進入したソフト等からsudoされないようにするのが目的なので、安易に外すのもいかがなものかと思うわけです。(効果があるかどうかは置いといて)&lt;/p&gt;
+
+&lt;p&gt;というわけで、今回は特定のユーザのみsudoを許可する設定を行いました。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>VPSのファイアウォール設定を見直す</title>
+      <link>http://blog.withweb.info/blog/2012/05/22/vps-iptables/</link>
+      <pubDate>Tue, 22 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/05/22/vps-iptables/</guid>
+      <description>
+
+&lt;p&gt;自分しか使わないサーバとはいえ、あんまり考えずに設定をしてたので見直し。&lt;/p&gt;
+
+&lt;h2 id=&#34;ポリシー:482f337740c3447f41b3f0b1c079da45&#34;&gt;ポリシー&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;受信パケットは原則破棄&lt;/li&gt;
+&lt;li&gt;送信パケットは原則通過&lt;/li&gt;
+&lt;li&gt;転送パケットは原則破棄&lt;/li&gt;
+&lt;li&gt;ローカルループバックからの受信を許可&lt;/li&gt;
+&lt;li&gt;セッションが確立した後の受信を許可&lt;/li&gt;
+&lt;li&gt;SYN Cookies有効&lt;/li&gt;
+&lt;li&gt;ブロードキャスト宛のPINGに応答しない&lt;/li&gt;
+&lt;li&gt;ICMP Redirectパケットを破棄&lt;/li&gt;
+&lt;li&gt;Source Routedパケットを破棄&lt;/li&gt;
+&lt;li&gt;フラグメント化されたパケットを破棄&lt;/li&gt;
+&lt;li&gt;NetBIOS関連のパケットを破棄&lt;/li&gt;
+&lt;li&gt;1秒間に4回を超えるPINGを破棄&lt;/li&gt;
+&lt;li&gt;ブロードキャスト、マルチキャスト宛のパケットを破棄&lt;/li&gt;
+&lt;li&gt;113番ポート(IDENT)の受信は拒否応答&lt;/li&gt;
+&lt;li&gt;指定サービスの受信を許可&lt;/li&gt;
+&lt;li&gt;その他のアクセスはログ記録して破棄&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ひとまず特定の国やIPはブロックしていませんが、後で手を入れていくことになると思うのでこんな感じのスクリプトにしてます。&lt;/p&gt;
+
+&lt;h2 id=&#34;スクリプト:482f337740c3447f41b3f0b1c079da45&#34;&gt;スクリプト&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
+
+########################################
+# 前処理
+########################################
+
+# ファイアウォール停止
+/etc/rc.d/init.d/iptables stop
+
+########################################
+# 基本設定
+########################################
+
+# デフォルトルール
+iptables -P INPUT DROP
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD DROP
+
+# 自ホストからのアクセスを許可
+iptables -A INPUT -i lo -j ACCEPT
+
+# セッションが確立した後は許可
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+########################################
+# 攻撃対策
+########################################
+
+# SYN Cookies有効(TCP SYN Flood攻撃対策)
+sysctl -w net.ipv4.tcp_syncookies=1 &amp;gt; /dev/null
+sed -i &#39;/net.ipv4.tcp_syncookies/d&#39; /etc/sysctl.conf
+echo &amp;quot;net.ipv4.tcp_syncookies=1&amp;quot; &amp;gt;&amp;gt; /etc/sysctl.conf
+
+# ブロードキャストアドレス宛pingには応答しない(Smurf攻撃対策)
+sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=1 &amp;gt; /dev/null
+sed -i &#39;/net.ipv4.icmp_echo_ignore_broadcasts/d&#39; /etc/sysctl.conf
+echo &amp;quot;net.ipv4.icmp_echo_ignore_broadcasts=1&amp;quot; &amp;gt;&amp;gt; /etc/sysctl.conf
+
+# ICMP Redirectパケットは拒否
+sed -i &#39;/net.ipv4.conf.*.accept_redirects/d&#39; /etc/sysctl.conf
+for dev in `ls /proc/sys/net/ipv4/conf/`
+do
+    sysctl -w net.ipv4.conf.$dev.accept_redirects=0 &amp;gt; /dev/null
+    echo &amp;quot;net.ipv4.conf.$dev.accept_redirects=0&amp;quot; &amp;gt;&amp;gt; /etc/sysctl.conf
+done
+
+# Source Routedパケットは拒否
+sed -i &#39;/net.ipv4.conf.*.accept_source_route/d&#39; /etc/sysctl.conf
+for dev in `ls /proc/sys/net/ipv4/conf/`
+do
+    sysctl -w net.ipv4.conf.$dev.accept_source_route=0 &amp;gt; /dev/null
+    echo &amp;quot;net.ipv4.conf.$dev.accept_source_route=0&amp;quot; &amp;gt;&amp;gt; /etc/sysctl.conf
+done
+
+# フラグメント化されたパケットは破棄
+iptables -A INPUT -f -j LOG --log-prefix &#39;[IPTABLES FRAGMENT] : &#39;
+iptables -A INPUT -f -j DROP
+
+# NetBIOS関連のアクセスは破棄
+iptables -A INPUT -p tcp -m multiport --dports 135,137,138,139,445 -j DROP
+iptables -A INPUT -p udp -m multiport --dports 135,137,138,139,445 -j DROP
+iptables -A OUTPUT -p tcp -m multiport --sports 135,137,138,139,445 -j DROP
+iptables -A OUTPUT -p udp -m multiport --sports 135,137,138,139,445 -j DROP
+
+# 1秒間に4回を超えるpingは破棄(Ping of Death攻撃対策)
+iptables -N LOG_PINGDEATH
+iptables -A LOG_PINGDEATH -m limit --limit 1/s --limit-burst 4 -j ACCEPT
+iptables -A LOG_PINGDEATH -j LOG --log-prefix &#39;[IPTABLES PINGDEATH] : &#39;
+iptables -A LOG_PINGDEATH -j DROP
+iptables -A INPUT -p icmp --icmp-type echo-request -j LOG_PINGDEATH
+
+# 全ホスト(ブロードキャストアドレス、マルチキャストアドレス)宛パケットは破棄
+iptables -A INPUT -d 255.255.255.255 -j DROP
+iptables -A INPUT -d 224.0.0.1 -j DROP
+
+# 113番ポート(IDENT)へのアクセスには拒否応答(メールサーバ等のレスポンス低下防止)
+iptables -A INPUT -p tcp --dport 113 -j REJECT --reject-with tcp-reset
+
+########################################
+# 各種サービス設定
+########################################
+
+# SSH
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# HTTP, HTTPS
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+########################################
+# その他
+########################################
+
+# 上記のルールにマッチしなかったアクセスはログを記録して破棄
+iptables -A INPUT -m limit --limit 1/s -j LOG --log-prefix &#39;[IPTABLES INPUT] : &#39;
+iptables -A INPUT -j DROP
+iptables -A FORWARD -m limit --limit 1/s -j LOG --log-prefix &#39;[IPTABLES FORWARD] : &#39;
+iptables -A FORWARD -j DROP
+
+########################################
+# 後処理
+########################################
+
+# サーバー再起動時にも上記設定が有効となるようにルールを保存
+/etc/rc.d/init.d/iptables save
+
+# ファイアウォール起動
+/etc/rc.d/init.d/iptables start
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;何か変なことしてたらツッコミお願いします。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>さくらのVPS 2G(CentOS6)で最初にやったことメモ</title>
+      <link>http://blog.withweb.info/blog/2012/05/20/sakura-vps2g-centos6/</link>
+      <pubDate>Sun, 20 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/05/20/sakura-vps2g-centos6/</guid>
+      <description>
+
+&lt;p&gt;さくらのVPS 2Gを借りたので、最初にやったことをメモ。どこかに書かないと忘れちゃう。&lt;/p&gt;
+
+&lt;h2 id=&#34;ユーザ:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;ユーザ&lt;/h2&gt;
+
+&lt;p&gt;まずはrootのパスワードを変更。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;passwd
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;直接rootでログインしたくないので一般ユーザをwheelグループで作る。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;useradd &amp;lt;ユーザID&amp;gt; -g wheel
+passwd &amp;lt;ユーザID&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;wheelグループをパスワードなしでsudoできるようにする。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;visudo
+
+%wheel ALL=(ALL) NOPASSWD:ALL
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ssh:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;SSH&lt;/h2&gt;
+
+&lt;p&gt;一般ユーザの公開鍵を登録。authorized_keysの中身はローカルPCで作った公開鍵からコピペ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /home/&amp;lt;ユーザID&amp;gt;
+mkdir .ssh
+chmod 700 .ssh
+vi .ssh/authorized_keys
+
+chmod 600 .ssh/authorized_keys
+chown -R &amp;lt;ユーザID&amp;gt;:wheel .ssh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;SSHの設定。ポート番号を変えて、rootログイン禁止、パスワード認証を止めて鍵交換方式で認証する。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;vi /etc/ssh/sshd_config
+
+Port &amp;lt;SSHのポート番号&amp;gt;
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ひと通り設定したらサービスを再起動。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;service sshd restart
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ファイアウォール:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;ファイアウォール&lt;/h2&gt;
+
+&lt;p&gt;とりあえずHTTPとSSHを通す。色々なサイトで紹介されているものをベースにしてます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;vi /etc/sysconfig/iptables
+
+*filter
+:INPUT   ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT  ACCEPT [0:0]
+:RH-Firewall-1-INPUT - [0:0]
+-A INPUT -j RH-Firewall-1-INPUT
+-A FORWARD -j RH-Firewall-1-INPUT
+-A RH-Firewall-1-INPUT -i lo -j ACCEPT
+-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
+-A RH-Firewall-1-INPUT -p 50 -j ACCEPT
+-A RH-Firewall-1-INPUT -p 51 -j ACCEPT
+-A RH-Firewall-1-INPUT -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT
+-A RH-Firewall-1-INPUT -p udp -m udp --dport 631 -j ACCEPT
+-A RH-Firewall-1-INPUT -p tcp -m tcp --dport 631 -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+# HTTP, SSH
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80    -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport &amp;lt;SSHのポート番号&amp;gt; -j ACCEPT
+-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
+COMMIT
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;不要なサービスの停止:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;不要なサービスの停止&lt;/h2&gt;
+
+&lt;p&gt;わざわざ止めるほどサービスが起動していなかったけど、いくつか止めておいた。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;chkconfig lvm2-monitor off
+chkconfig yum-updateonboot off
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;メモリ使用量を確認:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;メモリ使用量を確認&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;free
+
+	             total       used       free     shared    buffers     cached
+	Mem:       2054808     139612    1915196          0       8312      57288
+	-/+ buffers/cache:      74012    1980796
+	Swap:      2096472          0    2096472
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;メモリ使用量は140MBくらい。素の状態ならこんなもんでしょう。&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;ひとまず使い始める前の設定は最低限できたかな。ログ監視くらいはこの時点で入れておけばよかったかも。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

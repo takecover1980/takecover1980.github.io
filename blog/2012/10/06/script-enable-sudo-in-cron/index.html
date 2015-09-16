@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cronの中でsudoを使う方法 - withweb</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/github.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato%3a900" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://blog.withweb.info/assets/css/style.css">
+<link rel="alternate" href="http://blog.withweb.info/index.xml" type="application/rss+xml" title="withweb">
+</head>
+
+<body>
+  <header>
+    <h1 class="column"><a href="http://blog.withweb.info/">withweb</a></h1>
+    <nav role="navigation" class="column">
+      <ul>
+        <li><a href="http://blog.withweb.info/about/">About</a></li>
+        <li><a href="http://blog.withweb.info/archives/">Archives</a></li>
+        <li><a href="http://blog.withweb.info/index.xml" type="application/rss+xml"><span class="fa-stack fa-lg"><i class="fa fa-rss fa-stack-1x"></i></span>
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">cronの中でsudoを使う方法</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="2012-10-06">October 06, 2012</time>
+              <a class="category" href="http://blog.withweb.info/categories/vps">#vps</a>
+            </span>
+			<section itemprop="entry-text">
+				
+
+<p>jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。</p>
+
+<p>ユーザ:jenkinsをtty(コンソール)無しでsudoさせるため、こんな感じで設定しました。</p>
+
+<pre><code class="language-bash">sudo /usr/sbin/visudo
+
+#Defaults requiretty           # tty無しの場合sudoさせない(コメントアウト)
+Defaults:jenkins !requiretty   # ユーザjenkinsはtty無しでsudo可能
+jenkins ALL=(ALL) NOPASSWD:ALL # ユーザjenkinsはパスワード無しでsudo可能
+</code></pre>
+
+<h2 id="ちょっと解説:202d89dff242d7247ade7a5bbac7390f">ちょっと解説</h2>
+
+<p>sshコマンドやcronの中でsudoを使うスクリプトを使う場合によくあるケースなんですが</p>
+
+<pre><code class="language-bash">sudo: sorry, you must have a tty to run sudo
+</code></pre>
+
+<p>こんなエラーで止まることがあります。これは、/etc/sudoersの設定でtty(コンソール)とつながってないsudoが禁止されているためです。</p>
+
+<p>/etc/sudoersの下の行をコメントアウトするか、!requirettyを指定するとこの設定を無効化できます。</p>
+
+<pre><code class="language-bash">Defaults requiretty
+</code></pre>
+
+<p>が、クラッキング目的で進入したソフト等からsudoされないようにするのが目的なので、安易に外すのもいかがなものかと思うわけです。(効果があるかどうかは置いといて)</p>
+
+<p>というわけで、今回は特定のユーザのみsudoを許可する設定を行いました。</p>
+
+			</section>
+			
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:728px;height:90px"
+				 data-ad-client="ca-pub-8327324847265548"
+				 data-ad-slot="8436320854"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			
+			<section class="social">
+				<a href="//twitter.com/share?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f10%2f06%2fscript-enable-sudo-in-cron%2f&text=cron%e3%81%ae%e4%b8%ad%e3%81%a7sudo%e3%82%92%e4%bd%bf%e3%81%86%e6%96%b9%e6%b3%95" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f10%2f06%2fscript-enable-sudo-in-cron%2f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f10%2f06%2fscript-enable-sudo-in-cron%2f&title=cron%e3%81%ae%e4%b8%ad%e3%81%a7sudo%e3%82%92%e4%bd%bf%e3%81%86%e6%96%b9%e6%b3%95" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>
+			
+ 			
+			<script type="text/javascript" async="async">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + 'withweb' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</article>
+	</main>
+
+  <footer role="contentinfo">
+    <p class="copyright">&copy; withweb</p>
+  </footer>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-25619310-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/languages/scala.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
+

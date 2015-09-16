@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ブログをOctopressからHugoに移行してみた - withweb</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/github.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato%3a900" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://blog.withweb.info/assets/css/style.css">
+<link rel="alternate" href="http://blog.withweb.info/index.xml" type="application/rss+xml" title="withweb">
+</head>
+
+<body>
+  <header>
+    <h1 class="column"><a href="http://blog.withweb.info/">withweb</a></h1>
+    <nav role="navigation" class="column">
+      <ul>
+        <li><a href="http://blog.withweb.info/about/">About</a></li>
+        <li><a href="http://blog.withweb.info/archives/">Archives</a></li>
+        <li><a href="http://blog.withweb.info/index.xml" type="application/rss+xml"><span class="fa-stack fa-lg"><i class="fa fa-rss fa-stack-1x"></i></span>
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">ブログをOctopressからHugoに移行してみた</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="2015-09-16">September 16, 2015</time>
+              <a class="category" href="http://blog.withweb.info/categories/blog">#blog</a><a class="category" href="http://blog.withweb.info/categories/hugo">#hugo</a><a class="category" href="http://blog.withweb.info/categories/octopress">#octopress</a>
+            </span>
+			<section itemprop="entry-text">
+				
+
+<p>「ブログの更新が面倒」という理由でWordPressをやめてOctopressを使うようにしてました。</p>
+
+<p>でも、Octopressも面倒になりました。rubyだったりpython(pygments)だったりのバージョンを合わせたり、テーマの構成がよく分からなくてちょっとした変更も辛くなってきて、、</p>
+
+<p>そこで、最近人気があるらしいHugoにしてみました。動作が速くて構造がシンプルみたい。</p>
+
+<h2 id="インストール:a83ba35589dc155b4148020205967001">インストール</h2>
+
+<p>Golangの環境はあるので、<code>go get</code>でインストールします。Macの人はbrew、Linuxの人はyumやdpkgなんかでも入れられると思います。</p>
+
+<pre><code class="language-bash">go get -v github.com/spf13/hugo
+</code></pre>
+
+<h2 id="移行:a83ba35589dc155b4148020205967001">移行</h2>
+
+<p>記事と画像ファイルをコピーして、front matterのフォーマットをyamlからtomlに変更したくらいです。</p>
+
+<p>OctopressからHugoに移行する際、日付フォーマットや画像タグの変更が必要みたいですが、私の場合は元々Hugoに合っていたので変更しなくてもOKでした。</p>
+
+<p>また、テーマは<a href="https://github.com/spf13/hugoThemes/">公式</a>にまとめられているみたいです。全部、個別どちらでも簡単に導入できます。今回は<a href="https://github.com/rakuishi/hugo-zen">hugo-zen</a>と<a href="http://rakuishi.com/">作者さんのサイト</a>を参考にして、<code>[my_blog]/layouts</code>に適当に作りました。</p>
+
+<p><code>hugo server -w</code>でプレビューしながら記事やレイアウトを作って、この時点でのHugoのディレクトリはこんな感じ。</p>
+
+<pre><code class="language-bash">tree -L 1 [my_blog]
+
+[my_blog]
+├── README.md
+├── archetypes
+├── config.toml
+├── content
+├── data
+├── layouts
+├── public
+└── static
+</code></pre>
+
+<h2 id="ホスティング:a83ba35589dc155b4148020205967001">ホスティング</h2>
+
+<p>既存のGithubのユーザーページのリポジトリ([username].github.io.git)を使います。</p>
+
+<p>Octopressの時は<code>source</code>ブランチはBitbucketにしていたのですが、別に分ける必要ないかなと思ったので両方Githubにまとめます。</p>
+
+<p>やり方は自信ない。あってるのかなぁ。</p>
+
+<pre><code class="language-bash"># Octopressで生成していたサイトのデータを取得
+git clone git@github.com:[username]/[username].github.io.git
+
+# 全部消す
+cd [username].github.io.git]
+rm -rf ./*
+
+# とりあえずREADME.mdを入れておく
+touch README.md
+
+# masterブランチをコミット
+git add -A
+git commit -m 'delete octopress'
+git push origin master
+
+# sourceブランチを作る
+git checkout -b source
+
+# Hugoで生成したサイトのデータをコピーしてくる
+cp -a [my_blog]/* ./
+rm -rf public
+
+# sourceブランチをコミット
+git add -A
+git commit -m 'initial commit hugo'
+git push origin source
+
+# Hugoの公開ディレクトリをsubtreeでmasterブランチに切り出す
+git subtree add --prefix=public --squash origin master
+git subtree pull --prefix=public --squash origin master
+
+# 記事生成（publicディレクトリが作られる）
+hugo
+
+# publicの内容をsource、masterブランチにコミット
+git add -A
+git commit -m 'subtree public directory'
+git push origin source
+git subtree push --prefix=public origin master
+</code></pre>
+
+<h2 id="記事を書いて更新していく:a83ba35589dc155b4148020205967001">記事を書いて更新していく</h2>
+
+<p>以下のコマンドを実行する。</p>
+
+<pre><code class="language-bash">hugo
+git add -A
+git commit -m 'xxxxxx'
+git push origin source
+git subtree push --prefix=public origin master
+</code></pre>
+
+<p><a href="http://gohugo.io/tutorials/github-pages-blog/">Hugoのチュートリアル</a>にデプロイスクリプトがあったのでそれを元に作る。</p>
+
+<pre><code class="language-bash">#!/bin/bash
+
+echo -e &quot;\033[0;32mDeploying updates to GitHub...\033[0m&quot;
+
+# Build the project.
+hugo
+
+# Add changes to git.
+git add -A
+
+# Commit changes.
+msg=&quot;rebuilding site `date`&quot;
+if [ $# -eq 1 ]
+  then msg=&quot;$1&quot;
+fi
+git commit -m &quot;$msg&quot;
+
+# Push source and build repos.
+git push origin source
+git subtree push --prefix=public origin master
+</code></pre>
+
+<h2 id="参考ページ:a83ba35589dc155b4148020205967001">参考ページ</h2>
+
+<ul>
+<li><a href="https://gohugo.io/overview/introduction/">Introduction to Hugo</a></li>
+<li><a href="http://yet.unresolved.xyz/blog/2015/01/04/migrate-blog-to-hugo-from-octopress/">ブログをOctopressからHugoに移行した | Unresolved</a></li>
+<li><a href="http://deeeet.com/writing/2014/12/25/hugo/">OctopressからHugoへ移行した | SOTA</a></li>
+<li><a href="http://rakuishi.com/archives/hugo-zen/">Hugo Zen: これから Hugo を始める人向けのミニマムなテーマを作りました - rakuishi.com</a></li>
+<li><a href="http://blog.syati.info/post/create_hugo_2/">Hugo で github にブログを立ち上げる Part 2 - Syati.info</a></li>
+</ul>
+
+			</section>
+			
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:728px;height:90px"
+				 data-ad-client="ca-pub-8327324847265548"
+				 data-ad-slot="8436320854"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			
+			<section class="social">
+				<a href="//twitter.com/share?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2015%2f09%2f16%2fmigrate-blog-octopress-to-hugo%2f&text=%e3%83%96%e3%83%ad%e3%82%b0%e3%82%92Octopress%e3%81%8b%e3%82%89Hugo%e3%81%ab%e7%a7%bb%e8%a1%8c%e3%81%97%e3%81%a6%e3%81%bf%e3%81%9f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u=http%3a%2f%2fblog.withweb.info%2fblog%2f2015%2f09%2f16%2fmigrate-blog-octopress-to-hugo%2f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2015%2f09%2f16%2fmigrate-blog-octopress-to-hugo%2f&title=%e3%83%96%e3%83%ad%e3%82%b0%e3%82%92Octopress%e3%81%8b%e3%82%89Hugo%e3%81%ab%e7%a7%bb%e8%a1%8c%e3%81%97%e3%81%a6%e3%81%bf%e3%81%9f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>
+			
+ 			
+			<script type="text/javascript" async="async">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + 'withweb' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</article>
+	</main>
+
+  <footer role="contentinfo">
+    <p class="copyright">&copy; withweb</p>
+  </footer>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-25619310-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/languages/scala.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
+

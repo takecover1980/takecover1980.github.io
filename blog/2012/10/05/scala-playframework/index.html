@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scala&#43;PlayFramework2はじめました - withweb</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/github.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato%3a900" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://blog.withweb.info/assets/css/style.css">
+<link rel="alternate" href="http://blog.withweb.info/index.xml" type="application/rss+xml" title="withweb">
+</head>
+
+<body>
+  <header>
+    <h1 class="column"><a href="http://blog.withweb.info/">withweb</a></h1>
+    <nav role="navigation" class="column">
+      <ul>
+        <li><a href="http://blog.withweb.info/about/">About</a></li>
+        <li><a href="http://blog.withweb.info/archives/">Archives</a></li>
+        <li><a href="http://blog.withweb.info/index.xml" type="application/rss+xml"><span class="fa-stack fa-lg"><i class="fa fa-rss fa-stack-1x"></i></span>
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">Scala&#43;PlayFramework2はじめました</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="2012-10-05">October 05, 2012</time>
+              <a class="category" href="http://blog.withweb.info/categories/develop">#develop</a>
+            </span>
+			<section itemprop="entry-text">
+				
+
+<p>最近Scalaが人気あるみたいですね。Twitterがバックエンドで使ってることも話題になりました。そんなScalaに興味がでてきたので、とっかかりが簡単そうなPlay Framework2と合わせて触ってみます。</p>
+
+<p>ドキュメントが充実してるからわざわざ書くことはあんまりないんだけど、最初は大まかな流れが分かればいいんじゃないかと思います。</p>
+
+<h2 id="インストール:9279a50bdb686ba80ff971f0efdbd6e9">インストール</h2>
+
+<p>JDK6以降が前提です。あとは特に何も言う事が無いくらい簡単。<a href="http://playdocja.appspot.com/">日本語公式サイト</a>からzipファイルをダウンロードして、展開してパスを通すだけです。</p>
+
+<p>今回はMacのHomebrewにパッケージがあったのでそっちでインストールします。</p>
+
+<pre><code class="language-bash">brew install play
+</code></pre>
+
+<h2 id="アプリ作成の流れ:9279a50bdb686ba80ff971f0efdbd6e9">アプリ作成の流れ</h2>
+
+<p>大まかな流れはこんな感じ。分かりやすくていい感じ。</p>
+
+<ol>
+<li>playコマンドでアプリケーションを作成する</li>
+<li>URLとコントローラを対応付ける</li>
+<li>コントローラ(+モデル)を実装する</li>
+<li>2〜3の繰り返し</li>
+</ol>
+
+<h2 id="playコマンドでアプリケーションを作成する:9279a50bdb686ba80ff971f0efdbd6e9">playコマンドでアプリケーションを作成する</h2>
+
+<pre><code class="language-bash">play new sample
+</code></pre>
+
+<p>対話式にアプリケーション名とテンプレートの選択をします。テンプレートは下の3つから選びますが、今回はScalaを使いたいので1を選びます。</p>
+
+<ol>
+<li>Scalaアプリケーション</li>
+<li>Javaアプリケーション</li>
+<li>空のアプリケーション</li>
+</ol>
+
+<p>この時点で起動できます。やり方はこんな感じ。</p>
+
+<pre><code class="language-bash">play  # playコンソール起動
+run   # playコンソール内でアプリケーション起動
+</code></pre>
+
+<p><code>http://localhost:9000</code>にアクセスするとwelcome画面が表示されます。サーバ起動しっぱなしでもソース変更すれば反映されるので、止めずにこのまま進めます。</p>
+
+<p><img src="http://blog.withweb.info/images/20121005-playframework-welcome.png" alt="image playframework welcome" title="playframework welcome" /></p>
+
+<h2 id="urlとコントローラを対応付ける:9279a50bdb686ba80ff971f0efdbd6e9">URLとコントローラを対応付ける</h2>
+
+<p>conf/routesにルートを追加します。このURLにアクセスした時に対応したコントローラのメソッドが実行されます。</p>
+
+<p>とりあえずGETで/helloを追加。Applicationクラスにメソッドを追加してみます。</p>
+
+<p>conf/routes</p>
+
+<pre><code># Home page
+GET     /                       controllers.Application.index
+
+# Hello
+GET     /hello                  controllers.Application.hello
+</code></pre>
+
+<h2 id="コントローラ-モデル-を実装する:9279a50bdb686ba80ff971f0efdbd6e9">コントローラ(+モデル)を実装する</h2>
+
+<p>とりあえずモデルは置いといて、Application.scalaに追記します。</p>
+
+<p>Application.scala</p>
+
+<pre><code class="language-scala">package controllers
+
+import play.api._
+import play.api.mvc._
+
+object Application extends Controller {
+
+  def index = Action {
+    Ok(views.html.index(&quot;Your new application is ready.&quot;))
+  }
+
+  // 信頼と実績のアレ
+  def hello = Action {
+    Ok(&quot;Hello, world!&quot;)
+  }
+
+}
+</code></pre>
+
+<p><code>http://localhost:9000/hello</code>にアクセスすると、「Hello, world!」が表示されます。</p>
+
+<p><img src="http://blog.withweb.info/images/20121005-playframework-hello.png" alt="image playframework hello" title="playframework hello" /></p>
+
+<p>とりあえず触ってみるレベルではとても簡単です。J2EEでの作り方とはずいぶん違いますね。XML地獄が無いだけでもすごくありがたい。</p>
+
+<p>ScalaもPlay Framework2もいろいろ作ってみるのはこれからになりますが、なかなか楽しそうです。</p>
+
+<h2 id="参考ページ:9279a50bdb686ba80ff971f0efdbd6e9">参考ページ</h2>
+
+<ul>
+<li><a href="http://playdocja.appspot.com/documentation/2.0.3/Home">Documentation: Home — Playframework</a></li>
+<li><a href="https://github.com/playframework-ja/Play20/wiki">Play 2.0 ドキュメント · playframework-ja/Play20 Wiki · GitHub</a></li>
+</ul>
+
+			</section>
+			
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:728px;height:90px"
+				 data-ad-client="ca-pub-8327324847265548"
+				 data-ad-slot="8436320854"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			
+			<section class="social">
+				<a href="//twitter.com/share?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f10%2f05%2fscala-playframework%2f&text=Scala%2bPlayFramework2%e3%81%af%e3%81%98%e3%82%81%e3%81%be%e3%81%97%e3%81%9f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f10%2f05%2fscala-playframework%2f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f10%2f05%2fscala-playframework%2f&title=Scala%2bPlayFramework2%e3%81%af%e3%81%98%e3%82%81%e3%81%be%e3%81%97%e3%81%9f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>
+			
+ 			
+			<script type="text/javascript" async="async">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + 'withweb' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</article>
+	</main>
+
+  <footer role="contentinfo">
+    <p class="copyright">&copy; withweb</p>
+  </footer>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-25619310-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/languages/scala.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
+

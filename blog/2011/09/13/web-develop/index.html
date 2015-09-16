@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>後で泣かないための個人的なWeb開発環境の作り方 - withweb</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/github.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato%3a900" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://blog.withweb.info/assets/css/style.css">
+<link rel="alternate" href="http://blog.withweb.info/index.xml" type="application/rss+xml" title="withweb">
+</head>
+
+<body>
+  <header>
+    <h1 class="column"><a href="http://blog.withweb.info/">withweb</a></h1>
+    <nav role="navigation" class="column">
+      <ul>
+        <li><a href="http://blog.withweb.info/about/">About</a></li>
+        <li><a href="http://blog.withweb.info/archives/">Archives</a></li>
+        <li><a href="http://blog.withweb.info/index.xml" type="application/rss+xml"><span class="fa-stack fa-lg"><i class="fa fa-rss fa-stack-1x"></i></span>
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">後で泣かないための個人的なWeb開発環境の作り方</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="2011-09-13">September 13, 2011</time>
+              <a class="category" href="http://blog.withweb.info/categories/linux">#linux</a>
+            </span>
+			<section itemprop="entry-text">
+				
+
+<p>開発環境はしばらく使っていくと設定ファイルのゴミなどで散らかってしまいます。パソコンを買い換えたりサーバ環境を壊した時に構築し直すのもかなり面倒です。</p>
+
+<p>運用も復旧も移行も楽にしたい。でも「開発サーバで動くのに本番サーバで動かない」なんてことにはなりたくない。</p>
+
+<p>そんな風に考えたエンジニアが個人的なWeb開発環境を構築してみました。そのまとめです。</p>
+
+<h2 id="仮想化する:2dc8fd14061b08b6cebe33889e15fc37">仮想化する</h2>
+
+<p>VirtualBoxを使ってLinuxとWindowsを仮想化します。</p>
+
+<p>仮想化しておけば作業用PCとサーバ環境を分られるのでゴミファイルが邪魔になりません。物理的な場所もとらない。</p>
+
+<p>設定ファイルをいじってサーバ環境を壊してもスナップショットから簡単に戻せます。マシン移行、バックアップ、レストアなんかもファイルコピーだけなので簡単です。</p>
+
+<p>Linuxは開発サーバでいろいろ入ってます。</p>
+
+<ul>
+<li>Webサーバ(Apache)</li>
+<li>DBサーバ(MySQL/SQLite)</li>
+<li>内部DNSサーバ(BIND)</li>
+<li>APサーバ(WordPress/Redmine/etc)</li>
+</ul>
+
+<p>WindowsはIEの動作確認用に入れています。</p>
+
+<p>サービスを追加する時はローカル用のドメイン、バーチャルホスト、DBを追加すれば開発を始められます。</p>
+
+<h2 id="xamppやmampは使わない:2dc8fd14061b08b6cebe33889e15fc37">XAMPPやMAMPは使わない</h2>
+
+<p>Web上で動くものはたいていLinuxサーバで動いています。</p>
+
+<p>そこを軽く見ていると後で泣きをみます。開発サーバと本番サーバは似ていれば似ているほど後が楽です。</p>
+
+<p>個人的にはユニットテストまでならアリだと思いますが、この環境でテストしたつもりになるのはやめておいた方がいいと思います。会社で「テスト終わりました」とか言うと間違いなく怒られます。</p>
+
+<p>AMP(Apache/MySQL/PHP)環境の雰囲気を知りたい人やローカルでWordPress等を動かしてみたい人がとっかかりに使うのは凄くいいと思います。</p>
+
+<p>また、他の言語、ライブラリ、フレームワークを使おうとすると非常に手間がかかり逆に不便です。あくまでもXAMPP、MAMPが提供している範囲で簡単に導入できるようになるソフトです。</p>
+
+<h2 id="内部dnsサーバを立てておく:2dc8fd14061b08b6cebe33889e15fc37">内部DNSサーバを立てておく</h2>
+
+<p>これは本当に便利です。</p>
+
+<p>ルータに内部DNS、プロバイダのDNSを使うように設定します。</p>
+
+<p>これでLAN内のWindows/Mac/iPhoneどこからでも同じURLで開発サーバへアクセスできます。わざわざドメインを取得する必要もないし、hostsファイルにいちいち追加する必要もありません。</p>
+
+<p>Web/DBサーバと比べるとDNSサーバは構築自体の敷居が高いですが、内部向けならあまりやることは無いしネットワークの勉強になると思います。</p>
+
+<h2 id="まとめ:2dc8fd14061b08b6cebe33889e15fc37">まとめ</h2>
+
+<p>要は企業が社内で使うイントラネットの簡易版です。</p>
+
+<p>例えばブログをレンタルサーバ＋独自ドメインで使っている人がこういう環境を構築すると、今まで各サービスの管理画面に参考サイトからコピペしていたものが何だったのかよく分かると思います。</p>
+
+			</section>
+			
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:728px;height:90px"
+				 data-ad-client="ca-pub-8327324847265548"
+				 data-ad-slot="8436320854"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			
+			<section class="social">
+				<a href="//twitter.com/share?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2011%2f09%2f13%2fweb-develop%2f&text=%e5%be%8c%e3%81%a7%e6%b3%a3%e3%81%8b%e3%81%aa%e3%81%84%e3%81%9f%e3%82%81%e3%81%ae%e5%80%8b%e4%ba%ba%e7%9a%84%e3%81%aaWeb%e9%96%8b%e7%99%ba%e7%92%b0%e5%a2%83%e3%81%ae%e4%bd%9c%e3%82%8a%e6%96%b9" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u=http%3a%2f%2fblog.withweb.info%2fblog%2f2011%2f09%2f13%2fweb-develop%2f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2011%2f09%2f13%2fweb-develop%2f&title=%e5%be%8c%e3%81%a7%e6%b3%a3%e3%81%8b%e3%81%aa%e3%81%84%e3%81%9f%e3%82%81%e3%81%ae%e5%80%8b%e4%ba%ba%e7%9a%84%e3%81%aaWeb%e9%96%8b%e7%99%ba%e7%92%b0%e5%a2%83%e3%81%ae%e4%bd%9c%e3%82%8a%e6%96%b9" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>
+			
+ 			
+			<script type="text/javascript" async="async">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + 'withweb' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</article>
+	</main>
+
+  <footer role="contentinfo">
+    <p class="copyright">&copy; withweb</p>
+  </footer>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-25619310-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/languages/scala.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
+

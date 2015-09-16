@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mac on withweb</title>
+    <link>http://blog.withweb.info/categories/mac/</link>
+    <description>Recent content in Mac on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Sat, 05 Nov 2011 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/categories/mac/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>MacBook Air 13インチ (mid 2011) を買いました</title>
+      <link>http://blog.withweb.info/blog/2011/11/05/macbook-air/</link>
+      <pubDate>Sat, 05 Nov 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/11/05/macbook-air/</guid>
+      <description>
+
+&lt;p&gt;新しいMacBook Airが欲しいけどいつ買おうか。何となく決め手が無い。&lt;/p&gt;
+
+&lt;p&gt;7月21日に発売されてから3ヶ月以上も迷った末に、結局買いました。&lt;/p&gt;
+
+&lt;h2 id=&#34;引っ越しの荷物を減らしたい:b2c48a88930496e2a1e3a5cd3e985d6d&#34;&gt;引っ越しの荷物を減らしたい&lt;/h2&gt;
+
+&lt;p&gt;買う決心をした理由はこれです。というか、これだけです。&lt;/p&gt;
+
+&lt;p&gt;東京から広島へ引越すことになり「荷物を減らしたいなー」ということで、iMacから乗り換えるべく注文していたMacBook Airが届きました。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20111105-macbook-air-package.png&#34; alt=&#34;image macbook air package&#34; title=&#34;macbook air package&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;なんかもう箱からして薄い。&lt;/p&gt;
+
+&lt;p&gt;前に使っていたiMac(early 2009)はまだまだ普通に使えますが、リセールバリューを考えると3年半使ったのは長過ぎた気がします。売れるうちに売ってしまいます。&lt;/p&gt;
+
+&lt;h2 id=&#34;スペックは適当に選んだ:b2c48a88930496e2a1e3a5cd3e985d6d&#34;&gt;スペックは適当に選んだ&lt;/h2&gt;
+
+&lt;p&gt;今回買ったスペックは13インチの高い方です。キーボードだけカスタマイズしています。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;サイズ：13インチ&lt;/li&gt;
+&lt;li&gt;CPU：1.7GHz i5&lt;/li&gt;
+&lt;li&gt;メモリ：4GB&lt;/li&gt;
+&lt;li&gt;ストレージ：256GB&lt;/li&gt;
+&lt;li&gt;キーボード：US&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;利用シーンが単純なのでスペックも単純に決めました。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;家で使う&lt;/li&gt;
+&lt;li&gt;メインマシン（これ1台）&lt;/li&gt;
+&lt;li&gt;外に持ち出すことがあるかも（ないかも）&lt;/li&gt;
+&lt;li&gt;Webサービスやアプリの開発をする&lt;/li&gt;
+&lt;li&gt;だいたい2年くらいで買い替える&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;スペック選びは悩む人が多いと思いますが、どのくらいの期間使うか決めておけば案外割り切って選べると思います。&lt;/p&gt;
+
+&lt;p&gt;キーボードは慣れでUSにしています。打つ時は見ないのでこだわりはありません。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20111105-macbook-air-keyboard.png&#34; alt=&#34;image macbook air keyboard&#34; title=&#34;macbook air keyboard&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;ファンクションキーの列もLion仕様になってます。写ってないけど右端のイジェクトキーも電源キーに変わっています。&lt;/p&gt;
+
+&lt;h2 id=&#34;使い勝手:b2c48a88930496e2a1e3a5cd3e985d6d&#34;&gt;使い勝手&lt;/h2&gt;
+
+&lt;p&gt;そろそろ聞き飽きてきた頃ですが、SSDのおかげで全体的に静かで速いです。&lt;/p&gt;
+
+&lt;p&gt;今のところアプリの起動も操作も「待たされる感」がありません。VirtualBoxでWindowsを起動した時なんてもう意味が分からないレベルです。&lt;/p&gt;
+
+&lt;p&gt;あと関係ないけど、MacBook Airって大根とか切れそうなくらい薄いですね。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Google Chromeがいつの間にかLionのフルスクリーンに対応していた</title>
+      <link>http://blog.withweb.info/blog/2011/09/20/google-chrome-lion/</link>
+      <pubDate>Tue, 20 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/09/20/google-chrome-lion/</guid>
+      <description>
+
+&lt;p&gt;何の気なしにウィンドウを最大化した時に気が付いたんですが、いつの間にかMac OS X Lionのフルスクリーンに対応していたみたいです。&lt;/p&gt;
+
+&lt;p&gt;アップデートでは例のごとくいろいろと改善されたようですが、Lionユーザ向けには目立った機能として2つ盛り込まれたようです。&lt;/p&gt;
+
+&lt;h2 id=&#34;フルスクリーンに対応した:4722db6ee5681a699249381aa73eeea6&#34;&gt;フルスクリーンに対応した&lt;/h2&gt;
+
+&lt;p&gt;LionユーザにはおなじみのフルスクリーンがChromeでもできるようになりました。&lt;/p&gt;
+
+&lt;p&gt;ウィンドウがニュイーンと広がってMission Controlのデスクトップから独立するアレですね。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20110920-chrome-fullscreen.png&#34; alt=&#34;image chrome fullscreen&#34; title=&#34;chrome fullscreen&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;ウィンドウ右上の矢印ボタンをクリックするか、Cmd+Control+Fでフルスクリーンになります。&lt;/p&gt;
+
+&lt;p&gt;私のiMac 24インチ(1920x1200)だと&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20110920-imac-view.png&#34; alt=&#34;image imac view&#34; title=&#34;imac view&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;こんな感じです。&lt;/p&gt;
+
+&lt;p&gt;余白だらけですね。もっと広い解像度だとほとんど余白になりそうです。&lt;/p&gt;
+
+&lt;p&gt;個人的にはあまり使うことはなさそうですが、ブラウザをフルスクリーンで使う人にはなんとなくうれしいのではないでしょうか。&lt;/p&gt;
+
+&lt;h2 id=&#34;スクロール時のみスクロールバーが表示される:4722db6ee5681a699249381aa73eeea6&#34;&gt;スクロール時のみスクロールバーが表示される&lt;/h2&gt;
+
+&lt;p&gt;これは&lt;a href=&#34;http://googlejapan.blogspot.com/2011/09/google-chrome.html&#34;&gt;GoogleJapanのブログ&lt;/a&gt;を見て知ったのですが、スクロールした時だけウィンドウ右側にスクロールバーが表示されます。iPhoneやiPadユーザにはおなじみなので、よりMacらしさ(Appleらしさ？)が出た感じです。&lt;/p&gt;
+
+&lt;p&gt;フルスクリーンもそうですが、こういう細かいインタフェースがデフォルトアプリに近づくことで違和感なく乗り換えられるようになったのではないかと思います。&lt;/p&gt;
+
+&lt;p&gt;それにしても、Chromeは自動でアップデートされるので、いつ何が変わったのか意外と気付かないものですね。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

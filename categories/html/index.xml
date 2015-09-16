@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Html on withweb</title>
+    <link>http://blog.withweb.info/categories/html/</link>
+    <description>Recent content in Html on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Fri, 16 Sep 2011 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/categories/html/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>とてもシンプルなHTML5のサンプルコード</title>
+      <link>http://blog.withweb.info/blog/2011/09/16/simple-html5-sample/</link>
+      <pubDate>Fri, 16 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/09/16/simple-html5-sample/</guid>
+      <description>
+
+&lt;p&gt;HTML5のサンプルコードを探している時にたまたま見つけたのでちょっと紹介します。&lt;/p&gt;
+
+&lt;p&gt;少し古い記事ですがHTMLに記述する各要素についても簡単に説明されているのでイメージしやすく、これから始めてみようという人にもおすすめです。&lt;/p&gt;
+
+&lt;p&gt;そんなに難しい英語じゃないし機械翻訳でも意味は分かると思います。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://css-tricks.com/121-what-beautiful-html-code-looks-like/&#34;&gt;&lt;img src=&#34;http://blog.withweb.info/images/20110916-css-trick.png&#34; alt=&#34;link image css trick&#34; title=&#34;css trick&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;HTML5はXHTML1.1よりもきれいに書けるよ。だからソースコードを更新したぜ！&lt;/p&gt;
+
+&lt;p&gt;ということみたいです。&lt;/p&gt;
+
+&lt;p&gt;Webデザイン関係でたまに見に行くサイトなんですが、単にCSSトリックというよりWebデザインに関するものがいろいろ紹介されています。&lt;/p&gt;
+
+&lt;p&gt;おもしろいサイトも紹介されているので何かと参考になると思います。&lt;/p&gt;
+
+&lt;h2 id=&#34;シンプルなソースコードは大切:3a8b416da7df9c47818cc2b6f9ea35d2&#34;&gt;シンプルなソースコードは大切&lt;/h2&gt;
+
+&lt;p&gt;HTMLやCSSはW3Cが段階的に仕様を決めていき、各ブラウザのベンダーはその仕様を少し先取りして実装しています。&lt;/p&gt;
+
+&lt;p&gt;そのせいか、相応の対応をしないと同じソースコードでもブラウザよって表示に差異がでます。&lt;/p&gt;
+
+&lt;p&gt;私見ですが、モダンブラウザだとWebkit系のSafariやChromeはわりと素直で、Gecko系のFireFoxがちょっとバギーな気がします。Operaはよく分かりません。IEはもはや何も言うことがありません。&lt;/p&gt;
+
+&lt;p&gt;そのため、修正や運用後のメンテナンスをしやすくするためにもシンプルなソースコードは大切です。&lt;/p&gt;
+
+&lt;p&gt;プログラムは「書かなければバグは出ない」のと同じように、分かりやすく書くだけでなく余計な事を書かないのも気をつけたいですね。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

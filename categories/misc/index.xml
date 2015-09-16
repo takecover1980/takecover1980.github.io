@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Misc on withweb</title>
+    <link>http://blog.withweb.info/categories/misc/</link>
+    <description>Recent content in Misc on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Wed, 28 Dec 2011 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/categories/misc/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>URoad-8000が802.11nに対応</title>
+      <link>http://blog.withweb.info/blog/2011/12/28/uroad-8000/</link>
+      <pubDate>Wed, 28 Dec 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/12/28/uroad-8000/</guid>
+      <description>
+
+&lt;p&gt;何となくURoad-8000の自動アップデートをしてみたら2011/12/26のアップデートで802.11nに対応したようです。私はあまり気にしていなかったのですが、URoad-8000ユーザは待っていた人も多いんじゃないでしょうか。&lt;/p&gt;
+
+&lt;h2 id=&#34;ieee-802-11nって何:ef9f4eadf55d3dfe3fdc8cb3f7ee8447&#34;&gt;IEEE 802.11Nって何？&lt;/h2&gt;
+
+&lt;p&gt;簡単に言うと、IEEEという学会が決めた無線LANの規格です。802.11g、802.11a、802.11bあたりとまとめて802シリーズなんて呼ばれたりします。 他の802シリーズと比較すると&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;速い&lt;/li&gt;
+&lt;li&gt;安定している&lt;/li&gt;
+&lt;li&gt;カバーエリアが広い&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;という特徴があります。&lt;/p&gt;
+
+&lt;p&gt;イマドキのルータはだいたい対応していそうなので、知らないうちにご家庭の無線LANが11nということも多いかと思います。&lt;/p&gt;
+
+&lt;h2 id=&#34;macで通信規格を確認する方法:ef9f4eadf55d3dfe3fdc8cb3f7ee8447&#34;&gt;Macで通信規格を確認する方法&lt;/h2&gt;
+
+&lt;p&gt;ネットワークユーティリティで確認できますが、もっと簡単な方法があります。&lt;/p&gt;
+
+&lt;p&gt;メニューバーのAirMacアイコンをoptionキーを押しながらクリックすると詳細情報が表示されます。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20111228-mac-network-config-view.png&#34; alt=&#34;image mac network config view&#34; title=&#34;mac network config view&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;通信規格、セキュリティなどいろいろ表示されるので今何を使っているのか簡単に確認できます。（近所にWi-Fiを使っている人が多いのか、たくさん表示されてますがそこは気にしないで）&lt;/p&gt;
+
+&lt;p&gt;この「optionキーを押しながらクリック」は他のメニューにも使えます。&lt;/p&gt;
+
+&lt;p&gt;例えば、Bluetoothならアドレスの確認、サウンドなら入出力装置の切り替えなどの項目が追加されます。いちいちシステム環境設定を起動しなくてすむので便利ですね。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Webデザイナーとエンジニアにとってのフレームワークは違うもの？</title>
+      <link>http://blog.withweb.info/blog/2011/10/02/framework/</link>
+      <pubDate>Sun, 02 Oct 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/10/02/framework/</guid>
+      <description>
+
+&lt;p&gt;Webデザイナーの方と話している時に話がかみ合わないことがありました。&lt;/p&gt;
+
+&lt;p&gt;どうやら両者の間では「フレームワーク」という言葉の意味するところが微妙に違うようです。&lt;/p&gt;
+
+&lt;p&gt;ちょっとしたことでしたが、こういうのは意外と戸惑いますね。&lt;/p&gt;
+
+&lt;h2 id=&#34;何が違うのか:41dde08773f66456053b96d997f721e9&#34;&gt;何が違うのか&lt;/h2&gt;
+
+&lt;p&gt;大雑把に言うと、Webデザイナーにとっての「フレームワーク」はエンジニアにとっての「テンプレート」のことのようです。&lt;/p&gt;
+
+&lt;p&gt;広い意味ではテンプレートもフレームワークに含まれるかもしれないので、どちらが正しいという話では無いかなと思います。&lt;/p&gt;
+
+&lt;p&gt;ただ、エンジニアにとっては別物という印象があるので話がかみ合わなくなるみたいですね。&lt;/p&gt;
+
+&lt;h2 id=&#34;エンジニアにとってのフレームワーク:41dde08773f66456053b96d997f721e9&#34;&gt;エンジニアにとってのフレームワーク&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://e-words.jp/w/E38395E383ACE383BCE383A0E383AFE383BCE382AF.html&#34;&gt;IT用語辞典&lt;/a&gt;に詳しく載っていますが、アプリ開発で必要になる汎用的な機能を仕組みとして提供してくれるものです。&lt;/p&gt;
+
+&lt;p&gt;MVC分離、O/Rマッピング、ページ遷移など、アプリケーションの基盤や汎用的な処理部品はフレームワークに任せることで、開発者はビジネスロジックの実装に注力できる。というものですね。&lt;/p&gt;
+
+&lt;p&gt;Web系の開発で使われるものだと、このあたりが有名でしょうか。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Struts&lt;/li&gt;
+&lt;li&gt;cakePHP&lt;/li&gt;
+&lt;li&gt;Django&lt;/li&gt;
+&lt;li&gt;Ruby on Rails&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;webデザイナーにとってのフレームワーク:41dde08773f66456053b96d997f721e9&#34;&gt;Webデザイナーにとってのフレームワーク&lt;/h2&gt;
+
+&lt;p&gt;Webデザイナーの方との会話で聞いたのはこのあたりです。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;G5 Frameworkなどのグリッドシステム&lt;/li&gt;
+&lt;li&gt;WordPressなどでのあまりCSS設定されていないテーマ&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;基本的にHTML、CSSなどのテンプレートのようですね。それを基に手を入れていく感じでしょうか。&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ:41dde08773f66456053b96d997f721e9&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;おそらくエンジニアが違和感を感じるポイントは「&amp;rdquo;直接編集するもの&amp;rdquo;をフレームワークと呼んでいる」ところだと思います。&lt;/p&gt;
+
+&lt;p&gt;ただ、あくまでも私の経験というか感覚によるものなので、もちろん一概に言えることではありません。&lt;/p&gt;
+
+&lt;p&gt;この記事はかなり偏った視点になっていると思います。できればいろんな方のご意見を聞きたいですね。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>タバコをやめる前に試してみたこと</title>
+      <link>http://blog.withweb.info/blog/2011/09/25/try-stop-smoking/</link>
+      <pubDate>Sun, 25 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/09/25/try-stop-smoking/</guid>
+      <description>
+
+&lt;p&gt;以前からタバコをやめようと思っていました。&lt;/p&gt;
+
+&lt;p&gt;増税による値上がりや健康に悪いなど理由はいくらでもありますが、そんなのは後からついてくるもの。今回は「自分でやめると決めたからやめる」という単純かつ強力なものです。&lt;/p&gt;
+
+&lt;p&gt;せっかくなので、やめる前に自分の体でちょっとした実験をしてみました。&lt;/p&gt;
+
+&lt;h2 id=&#34;はじめに:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;はじめに&lt;/h2&gt;
+
+&lt;p&gt;この記事は私の体で試してみた結果です。&lt;/p&gt;
+
+&lt;p&gt;これから禁煙を始めてみようと思う方への参考になるかもしれませんが、あくまでも1例です。他の方にも当てはまるとは限りません。&lt;/p&gt;
+
+&lt;h2 id=&#34;実験の前に:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;実験の前に&lt;/h2&gt;
+
+&lt;p&gt;禁煙を始めた人に立ちはだかるのが「離脱症状」です。&lt;/p&gt;
+
+&lt;p&gt;これは、ニコチンに依存していた身体の中から、ニコチンが抜けていく過程で起こるさまざまな症状です。&lt;/p&gt;
+
+&lt;p&gt;症状自体も期間もかなり個人差があるようですが、このあたりが良くある症状みたいです。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;体がだるい&lt;/li&gt;
+&lt;li&gt;眠い&lt;/li&gt;
+&lt;li&gt;イライラする&lt;/li&gt;
+&lt;li&gt;頭痛がする&lt;/li&gt;
+&lt;li&gt;落ち着かない&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;当たり前のように私にも立ちはだかりました。&lt;/p&gt;
+
+&lt;h2 id=&#34;被験者のスペック:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;被験者のスペック&lt;/h2&gt;
+
+&lt;p&gt;だいたいこんな感じです。平均よりタバコの量が多いですかね。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;喫煙期間は10年以上&lt;/li&gt;
+&lt;li&gt;量は1日3〜4箱(60〜80本)&lt;/li&gt;
+&lt;li&gt;銘柄はマールボロ・ライト・メンソール(タール8mg/ニコチン0.8mg)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;実験内容:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;実験内容&lt;/h2&gt;
+
+&lt;p&gt;ある期間を禁煙した後で、タバコを吸った前後の感想を記録します。&lt;/p&gt;
+
+&lt;p&gt;禁煙した人がどんな状況になるのか、その後タバコを吸うとどんな気持ちになるのか。本格的に禁煙する前に知っておきたくなったんです。&lt;/p&gt;
+
+&lt;p&gt;ただ、あまり長期間やると実際に禁煙するころには心が折れているかもしれないので、適当に短期間にします。&lt;/p&gt;
+
+&lt;p&gt;そこで、一般に失敗しやすい期間と言われている「離脱症状のピーク3日間」と「1週間」を実験期間とします。&lt;/p&gt;
+
+&lt;h2 id=&#34;実験結果:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;実験結果&lt;/h2&gt;
+
+&lt;h3 id=&#34;1日間禁煙-9-6:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;1日間禁煙(&lt;sup&gt;9&lt;/sup&gt;&amp;frasl;&lt;sub&gt;6&lt;/sub&gt;)&lt;/h3&gt;
+
+&lt;p&gt;なんてことありません。ミント系のガムを噛むなり冷たい水を飲むなりでどうにでもなります。&lt;/p&gt;
+
+&lt;p&gt;タバコを吸った時の感想もちょっと時間が開いた時と変わりませんね。&lt;/p&gt;
+
+&lt;h3 id=&#34;2日間禁煙-9-8-9-9:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;2日間禁煙(9/8〜9/9)&lt;/h3&gt;
+
+&lt;p&gt;じわじわと落ち着きが無くなってきます。コンビニで買ったボトルガムが半分くらい減りました。&lt;/p&gt;
+
+&lt;p&gt;タバコを吸った瞬間は臭くていやな感じがしますが、すぐに慣れて懐かしい気持ちになります。&lt;/p&gt;
+
+&lt;h3 id=&#34;3日間禁煙-9-11-9-13:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;3日間禁煙(9/11〜9/13)&lt;/h3&gt;
+
+&lt;p&gt;意味が分かりませんがなんだか焦ります。2つ目のボトルガムが無くなりました。&lt;/p&gt;
+
+&lt;p&gt;タバコを吸いたいというよりも、手持ち無沙汰な感じです。&lt;/p&gt;
+
+&lt;p&gt;タバコを吸った瞬間はかなり臭くて、しばらく気持ち悪くなりました。&lt;/p&gt;
+
+&lt;h3 id=&#34;7日間禁煙-9-15-9-21:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;7日間禁煙(9/15〜9/21)&lt;/h3&gt;
+
+&lt;p&gt;「タバコが無い」ということが普通に感じます。なんとなくご飯がおいしくなった気もします。&lt;/p&gt;
+
+&lt;p&gt;タバコを吸う必要が感じられず、吸うと頭がくらくらします。初めてタバコを吸った日を思い出しました。&lt;/p&gt;
+
+&lt;p&gt;吸った後はいやな感じだけが残り、「もう捨ててしまえ」という気持ちでいっぱいです。&lt;/p&gt;
+
+&lt;h2 id=&#34;実験を終えて:99818abe6bee590aca1c7b1fe76eacb8&#34;&gt;実験を終えて&lt;/h2&gt;
+
+&lt;p&gt;やらなきゃ良かった。1週間禁煙した時点でそのままやめちゃえば良かったです。&lt;/p&gt;
+
+&lt;p&gt;短期間に繰り返しているので離脱症状は大小ありましたが、1ヶ月間に4回も体験するのは精神的にも肉体的にもかなり辛いですね。&lt;/p&gt;
+
+&lt;p&gt;なんだか違う理由になった気がしますが結果的にもう吸いたくありません。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Wimax通信障害で思ったこと</title>
+      <link>http://blog.withweb.info/blog/2011/09/23/wimax/</link>
+      <pubDate>Fri, 23 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/09/23/wimax/</guid>
+      <description>
+
+&lt;p&gt;9月21日の17時45分ごろから9月22日の13時ごろまで、東日本エリアで通信障害によりインターネット接続ができない状況が続きました。&lt;/p&gt;
+
+&lt;p&gt;この記事を書いている現在は普通につながりますが、ちょっと思ったことを書いてみます。&lt;/p&gt;
+
+&lt;h2 id=&#34;何があったのか:2fbbc7040816208e9279274c2301f0b7&#34;&gt;何があったのか&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.uqwimax.jp/service/information/maintenance/post-4074.html&#34;&gt;UQWimaxの発表&lt;/a&gt;や各種ニュースによると東日本の16都道府県で約20時間インターネットに繋がらない状況がつづきました。&lt;/p&gt;
+
+&lt;p&gt;台風の影響ではなく通信設備の障害のようで、100万件以上のユーザに影響があったようです。&lt;/p&gt;
+
+&lt;h2 id=&#34;ルータが赤く点滅すると不安になる:2fbbc7040816208e9279274c2301f0b7&#34;&gt;ルータが赤く点滅すると不安になる&lt;/h2&gt;
+
+&lt;p&gt;いままで経験したことがなかったのでルータが壊れたのかと思ってしまいました&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;マニュアルや管理ページで圏外なのはすぐ分かったので、とりあえず待つことにしましたが赤く点滅されると少し不安になりますね。&lt;/p&gt;
+
+&lt;p&gt;すぐ気づけるのでいいんですが。&lt;/p&gt;
+
+&lt;h2 id=&#34;iphoneで良かった:2fbbc7040816208e9279274c2301f0b7&#34;&gt;iPhoneで良かった&lt;/h2&gt;
+
+&lt;p&gt;前回の記事&lt;a href=&#34;http://blog.withweb.info/blog/2011/09/21/iphone-cost/&#34;&gt;iPhoneの請求額がものすごく安くなった&lt;/a&gt;を書いたあとで、iPod Touchでもいいんじゃないかという気持ちになっていました。&lt;/p&gt;
+
+&lt;p&gt;iPod Touchだと通話はSkypeになるんですが、今回のような通信障害があると通話もできなくなってしまいます。&lt;/p&gt;
+
+&lt;p&gt;iPhoneはデータ通信をオフにしていても通話とSMSはできるので、連絡手段がなくなるという状況になることもなく、とりあえずの安心感があったのでこのままiPhoneを使おうと思います。&lt;/p&gt;
+
+&lt;h2 id=&#34;実はそんなに困らなかった:2fbbc7040816208e9279274c2301f0b7&#34;&gt;実はそんなに困らなかった&lt;/h2&gt;
+
+&lt;p&gt;個人的には1日程度ならたいして困りませんでした。一時的に3G回線に切り替えればメールくらいは見れますしね。&lt;/p&gt;
+
+&lt;p&gt;不便というか不快だったのは、たまっていたSMSの迷惑メールが大量にきたことくらいですw&lt;/p&gt;
+
+&lt;p&gt;このあたりをどう思うかは個人差があると思います。ずっとつながっていたい人はきっと大変ですね。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>ブログでも書いてみようじゃないか</title>
+      <link>http://blog.withweb.info/blog/2011/09/09/blog-post/</link>
+      <pubDate>Fri, 09 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/09/09/blog-post/</guid>
+      <description>&lt;p&gt;何となくというか、気の迷いというか、&lt;/p&gt;
+
+&lt;p&gt;「ブログでもはじめてみようかなー」&lt;/p&gt;
+
+&lt;p&gt;と、ふいに思ったわけです。そんなわけで目的も志も無いままに始めてみようと思います。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

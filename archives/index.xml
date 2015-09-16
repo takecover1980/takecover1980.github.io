@@ -1,0 +1,1284 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Archives on withweb</title>
+    <link>http://blog.withweb.info/archives/</link>
+    <description>Recent content in Archives on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Wed, 16 Sep 2015 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/archives/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>ブログをOctopressからHugoに移行してみた</title>
+      <link>http://blog.withweb.info/blog/2015/09/16/migrate-blog-octopress-to-hugo/</link>
+      <pubDate>Wed, 16 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2015/09/16/migrate-blog-octopress-to-hugo/</guid>
+      <description>
+
+&lt;p&gt;「ブログの更新が面倒」という理由でWordPressをやめてOctopressを使うようにしてました。&lt;/p&gt;
+
+&lt;p&gt;でも、Octopressも面倒になりました。rubyだったりpython(pygments)だったりのバージョンを合わせたり、テーマの構成がよく分からなくてちょっとした変更も辛くなってきて、、&lt;/p&gt;
+
+&lt;p&gt;そこで、最近人気があるらしいHugoにしてみました。動作が速くて構造がシンプルみたい。&lt;/p&gt;
+
+&lt;h2 id=&#34;インストール:a83ba35589dc155b4148020205967001&#34;&gt;インストール&lt;/h2&gt;
+
+&lt;p&gt;Golangの環境はあるので、&lt;code&gt;go get&lt;/code&gt;でインストールします。Macの人はbrew、Linuxの人はyumやdpkgなんかでも入れられると思います。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;go get -v github.com/spf13/hugo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;移行:a83ba35589dc155b4148020205967001&#34;&gt;移行&lt;/h2&gt;
+
+&lt;p&gt;記事と画像ファイルをコピーして、front matterのフォーマットをyamlからtomlに変更したくらいです。&lt;/p&gt;
+
+&lt;p&gt;OctopressからHugoに移行する際、日付フォーマットや画像タグの変更が必要みたいですが、私の場合は元々Hugoに合っていたので変更しなくてもOKでした。&lt;/p&gt;
+
+&lt;p&gt;また、テーマは&lt;a href=&#34;https://github.com/spf13/hugoThemes/&#34;&gt;公式&lt;/a&gt;にまとめられているみたいです。全部、個別どちらでも簡単に導入できます。今回は&lt;a href=&#34;https://github.com/rakuishi/hugo-zen&#34;&gt;hugo-zen&lt;/a&gt;と&lt;a href=&#34;http://rakuishi.com/&#34;&gt;作者さんのサイト&lt;/a&gt;を参考にして、&lt;code&gt;[my_blog]/layouts&lt;/code&gt;に適当に作りました。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;hugo server -w&lt;/code&gt;でプレビューしながら記事やレイアウトを作って、この時点でのHugoのディレクトリはこんな感じ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;tree -L 1 [my_blog]
+
+[my_blog]
+├── README.md
+├── archetypes
+├── config.toml
+├── content
+├── data
+├── layouts
+├── public
+└── static
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ホスティング:a83ba35589dc155b4148020205967001&#34;&gt;ホスティング&lt;/h2&gt;
+
+&lt;p&gt;既存のGithubのユーザーページのリポジトリ([username].github.io.git)を使います。&lt;/p&gt;
+
+&lt;p&gt;Octopressの時は&lt;code&gt;source&lt;/code&gt;ブランチはBitbucketにしていたのですが、別に分ける必要ないかなと思ったので両方Githubにまとめます。&lt;/p&gt;
+
+&lt;p&gt;やり方は自信ない。あってるのかなぁ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# Octopressで生成していたサイトのデータを取得
+git clone git@github.com:[username]/[username].github.io.git
+
+# 全部消す
+cd [username].github.io.git]
+rm -rf ./*
+
+# とりあえずREADME.mdを入れておく
+touch README.md
+
+# masterブランチをコミット
+git add -A
+git commit -m &#39;delete octopress&#39;
+git push origin master
+
+# sourceブランチを作る
+git checkout -b source
+
+# Hugoで生成したサイトのデータをコピーしてくる
+cp -a [my_blog]/* ./
+rm -rf public
+
+# sourceブランチをコミット
+git add -A
+git commit -m &#39;initial commit hugo&#39;
+git push origin source
+
+# Hugoの公開ディレクトリをsubtreeでmasterブランチに切り出す
+git subtree add --prefix=public --squash origin master
+git subtree pull --prefix=public --squash origin master
+
+# 記事生成（publicディレクトリが作られる）
+hugo
+
+# publicの内容をsource、masterブランチにコミット
+git add -A
+git commit -m &#39;subtree public directory&#39;
+git push origin source
+git subtree push --prefix=public origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;記事を書いて更新していく:a83ba35589dc155b4148020205967001&#34;&gt;記事を書いて更新していく&lt;/h2&gt;
+
+&lt;p&gt;以下のコマンドを実行する。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;hugo
+git add -A
+git commit -m &#39;xxxxxx&#39;
+git push origin source
+git subtree push --prefix=public origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://gohugo.io/tutorials/github-pages-blog/&#34;&gt;Hugoのチュートリアル&lt;/a&gt;にデプロイスクリプトがあったのでそれを元に作る。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
+
+echo -e &amp;quot;\033[0;32mDeploying updates to GitHub...\033[0m&amp;quot;
+
+# Build the project.
+hugo
+
+# Add changes to git.
+git add -A
+
+# Commit changes.
+msg=&amp;quot;rebuilding site `date`&amp;quot;
+if [ $# -eq 1 ]
+  then msg=&amp;quot;$1&amp;quot;
+fi
+git commit -m &amp;quot;$msg&amp;quot;
+
+# Push source and build repos.
+git push origin source
+git subtree push --prefix=public origin master
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;参考ページ:a83ba35589dc155b4148020205967001&#34;&gt;参考ページ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://gohugo.io/overview/introduction/&#34;&gt;Introduction to Hugo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://yet.unresolved.xyz/blog/2015/01/04/migrate-blog-to-hugo-from-octopress/&#34;&gt;ブログをOctopressからHugoに移行した | Unresolved&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://deeeet.com/writing/2014/12/25/hugo/&#34;&gt;OctopressからHugoへ移行した | SOTA&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://rakuishi.com/archives/hugo-zen/&#34;&gt;Hugo Zen: これから Hugo を始める人向けのミニマムなテーマを作りました - rakuishi.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.syati.info/post/create_hugo_2/&#34;&gt;Hugo で github にブログを立ち上げる Part 2 - Syati.info&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>JSONフォーマッタを公開してみた</title>
+      <link>http://blog.withweb.info/blog/2012/12/04/json-formatter/</link>
+      <pubDate>Tue, 04 Dec 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/12/04/json-formatter/</guid>
+      <description>
+
+&lt;p&gt;ローカルのツールを外でも使えるように公開してみました。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://jsonformatter.withweb.info&#34;&gt;JSON formatter&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20121204-jsonformatter-withweb-info.png&#34; alt=&#34;image jsonformatter.withweb.info&#34; title=&#34;jsonformatter.withweb.info&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;jQueryを使った簡単なJSONフォーマッタです。（エラー処理とか細かい事はほとんどしてませんが&amp;hellip;）&lt;/p&gt;
+
+&lt;h2 id=&#34;作ろうとした理由:d00eed88a9a0a9490434903d95f199ee&#34;&gt;作ろうとした理由&lt;/h2&gt;
+
+&lt;p&gt;以前Yahoo!オークションAPIで遊ぼうとした時に、日本語がエンコードされたままだと中身が見づらかったんです。&lt;/p&gt;
+
+&lt;p&gt;さらっとデータの中身を見たかったので、JSONPを返してくるサービスならJavascriptをそのまま展開しちゃえばいいや。ということで作りました。&lt;/p&gt;
+
+&lt;p&gt;ついでにJSONを貼り付けたら適当にフォーマットして読みやすくしようかな、と。フォーマッタがおまけです。&lt;/p&gt;
+
+&lt;h2 id=&#34;使い方:d00eed88a9a0a9490434903d95f199ee&#34;&gt;使い方&lt;/h2&gt;
+
+&lt;p&gt;リンク先のAboutに書いてあるんですが、[JSON Data]か[JSONP Data URL]に入力して[Process]ボタンを押すと結果が下に表示されます。&lt;/p&gt;
+
+&lt;p&gt;実行結果は[Close]ボタンで消したり、[Collapse]ボタンでたためます。実行結果が積まれていくのでパターン別に何度も実行するような使い方に便利だと思います。&lt;/p&gt;
+
+&lt;p&gt;ただ、実行結果をクリップボードにコピーしたり、バリデーションする機能はありません。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Octopressのプレビューにthinを使うと速くて快適になった</title>
+      <link>http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/</link>
+      <pubDate>Thu, 29 Nov 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/11/29/octopress-preview-use-thin/</guid>
+      <description>
+
+&lt;p&gt;なかなかお気に入りのOctopressですが、&lt;code&gt;rake preview&lt;/code&gt;が妙に遅いのと「Could not determine&amp;hellip;」ってログが鬱陶しいのが気になってました。&lt;/p&gt;
+
+&lt;p&gt;どうしたものかとググってみるとけっこう簡単に対策できるみたい。これはやらねばなるまい、というわけでメモ。&lt;/p&gt;
+
+&lt;h2 id=&#34;やること:814b0a41ea5cb12459ece38e80d0bb47&#34;&gt;やること&lt;/h2&gt;
+
+&lt;p&gt;どうやら遅いのも邪魔なログも原因はWEBrickらしい。WEBrickやめてthinを使うためにGemfileに追加します。&lt;/p&gt;
+
+&lt;p&gt;Gemfile.diff&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-diff&#34;&gt;diff --git a/Gemfile b/Gemfile
+
+index be2518b..2df250f 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -13,6 +13,7 @@ group :development do
+   gem &#39;rb-fsevent&#39;, &#39;~&amp;gt; 0.9&#39;
+   gem &#39;stringex&#39;, &#39;~&amp;gt; 1.4.0&#39;
+   gem &#39;liquid&#39;, &#39;~&amp;gt; 2.3.0&#39;
++  gem &#39;thin&#39;
+ end
+
+ gem &#39;sinatra&#39;, &#39;~&amp;gt; 1.3.2&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;thinを導入してパスを通します。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;bundle install
+exec $SHELL
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;参考ページでは&lt;code&gt;thin start&lt;/code&gt;で起動するかRakefile修正が必要な様ですが、いつも通りプレビューするだけでいけました。(バージョンが違うから？)&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;rake preview
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;参考ページ:814b0a41ea5cb12459ece38e80d0bb47&#34;&gt;参考ページ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://qiita.com/items/3cd2e2c84e7dcecbc22a&#34;&gt;Octopressのプレビューにthinを使う #Octopress #Github - Qiita&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.glidenote.com/blog/2012/10/31/thin-octopress/&#34;&gt;OctopressのRake Previewにthinを利用してプレビューを高速化する - Glide Note - グライドノート&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>PlayFramework2とYahoo!オークションAPIを使ってみた</title>
+      <link>http://blog.withweb.info/blog/2012/11/28/playframework-and-yahoo-auction-api/</link>
+      <pubDate>Wed, 28 Nov 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/11/28/playframework-and-yahoo-auction-api/</guid>
+      <description>
+
+&lt;p&gt;Yahoo!オークションAPIを使ってみたくなったので、とりあえず動くものを作ってみました。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://auction.drive7.info&#34;&gt;いまYahoo!オークションで人気の商品はコレ！&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20121128-auction-drive7-info.png&#34; alt=&#34;image auction.drive7.info&#34; title=&#34;auction.drive7.info&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;いかにもアフィリエイトっぽくてアレな感じのタイトルですね。実際アフィリエイトID使っています。&lt;/p&gt;
+
+&lt;p&gt;適当に用意したカテゴリから検索した結果をパネルっぽく表示して、クリックするとオークションのページに飛べます。&lt;/p&gt;
+
+&lt;h2 id=&#34;準備:2071ee04fd874a7c6fb7692c5452e3b1&#34;&gt;準備&lt;/h2&gt;
+
+&lt;p&gt;だいたいの流れはYahoo!デベロッパーネットワークの&lt;a href=&#34;http://developer.yahoo.co.jp/start/&#34;&gt;ご利用ガイド&lt;/a&gt;に手順が書いてありますが、他に必要になりそうなドキュメントはこのへんです。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;http://developer.yahoo.co.jp/webapi/auctions/&#34;&gt;APIドキュメント&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://developer.yahoo.co.jp/sample/auctions/&#34;&gt;サンプルコード&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://developer.yahoo.co.jp/attribution/&#34;&gt;クレジット表示&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;2のサンプルコードのページにサンプルリクエストURLが載っているので、ブラウザのURLバーに入れる等で試せます。&lt;/p&gt;
+
+&lt;p&gt;アフィリエイトIDの確認と使い方は&lt;a href=&#34;http://developer.yahoo.co.jp/appendix/auctions/affiliate.html&#34;&gt;アフィリエイトプログラム&lt;/a&gt;に書いてあります。Yahoo!ポイントで受け取るか、バリューコマースを使うか選べるようです。&lt;/p&gt;
+
+&lt;h2 id=&#34;apiを使う:2071ee04fd874a7c6fb7692c5452e3b1&#34;&gt;APIを使う&lt;/h2&gt;
+
+&lt;p&gt;JavascriptにアプリケーションIDを直書きするのはよくないかなぁと思ったので、Webサービスを作ります。&lt;/p&gt;
+
+&lt;p&gt;それだけならYahoo! Pipesで十分だと思いますが、今回は使いたいのでPlay使います。おおまかにはこんな感じです。&lt;/p&gt;
+
+&lt;h3 id=&#34;playframework2:2071ee04fd874a7c6fb7692c5452e3b1&#34;&gt;Playframework2&lt;/h3&gt;
+
+&lt;p&gt;conf/routes&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;GET /yapi controllers.YahooAPI.auction(q: String ?= &amp;quot;book&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;controllers/YahooAPI.scala&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-scala&#34;&gt;package controllers
+
+import play.api._
+import play.api.mvc._
+import play.api.libs._
+import play.api.libs.json._
+import play.api.libs.ws._
+
+object YahooAPI extends Controller {
+  def auction(q: String) = Action { request =&amp;gt;
+    val appid = &amp;quot;YOUR_APPID&amp;quot;
+    val baseurl = &amp;quot;http://auctions.yahooapis.jp/AuctionWebService/V2/json/search&amp;quot;
+    val url = baseurl + &amp;quot;?appid=&amp;quot; + appid + &amp;quot;&amp;amp;query=&amp;quot; + q
+
+    Async {
+      WS.url(url).get().map { response =&amp;gt;
+        Ok(response.body).as(&amp;quot;application/json&amp;quot;)
+      }
+    }
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;http://example.com/yapi?q=book&lt;/code&gt;にアクセスするとbookの検索結果がJSONで返ってきます。&lt;/p&gt;
+
+&lt;h3 id=&#34;jquery:2071ee04fd874a7c6fb7692c5452e3b1&#34;&gt;jQuery&lt;/h3&gt;
+
+&lt;p&gt;script.js&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;// API呼び出し
+$.ajax({
+  url: &amp;quot;http://example.com/yapi&amp;quot;,
+  data: {
+    &amp;quot;q&amp;quot;:&amp;quot;ほげほげ&amp;quot;
+  },
+  dataType: &amp;quot;jsonp&amp;quot;,
+  complete: function() {
+    // 終了時の処理
+  }
+});
+
+// コールバック
+function loaded(json) {
+  // API呼び出しの結果をゴニョゴニョする
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;取得した商品情報をレイアウトすれば完成です。&lt;/p&gt;
+
+&lt;p&gt;いろいろ手を抜いてます。アクセスが多いならYahooのサーバに優しくしておいた方がいいと思います。リクエストをキューでコントロールするとか、同一クエリは数秒キャッシュするとか、複数のアプリケーションIDでローテーションするとか。あ、最後のは違うか。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>VPSにGitLabをインストール</title>
+      <link>http://blog.withweb.info/blog/2012/11/17/vps-gitlab-install/</link>
+      <pubDate>Sat, 17 Nov 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/11/17/vps-gitlab-install/</guid>
+      <description>
+
+&lt;p&gt;プライベートなリポジトリにBitbucketを使っているんですが、なんだかんだで使いにくい。そこで、お手軽とはいかないけど人気のGitHubクローンということで、GitLab使ってみます。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/gitlabhq/gitlabhq/blob/stable/doc/installation.md&#34;&gt;プロジェクトページの手順&lt;/a&gt;の通りにやればいいんだけど、ちょっと手を抜いて違う手順でインストールしたのでメモ。&lt;/p&gt;
+
+&lt;h2 id=&#34;構成:b2ff91b7e84828be0aaed437ac6e7a77&#34;&gt;構成&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;CentOS 6.2&lt;/li&gt;
+&lt;li&gt;Ruby 1.9.3-p194&lt;/li&gt;
+&lt;li&gt;Gitolite 3.2&lt;/li&gt;
+&lt;li&gt;GitLab 3.0.3&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;準備:b2ff91b7e84828be0aaed437ac6e7a77&#34;&gt;準備&lt;/h2&gt;
+
+&lt;p&gt;とりあえず必要そうなのを入れます。足りない物があればbundle installで怒られると思うので都度入れていけばいいと思います。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo yum install libxml2-devel libxslt-devel libicu-devel sqlite-devel redis
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Redisを起動＋自動起動。いわゆるNoSQLってやつで、使うのは今回が初めて。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo chkconfig redis on
+sudo service redis start
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;GitoliteとGitLabのユーザを分けずにgitユーザだけで設定します。ここから先はgitユーザで作業します。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo useradd git
+sudo passwd git
+su - git
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;rbenv派です。GitLabに合うバージョンのRubyが導入済みの場合は読み飛ばしてください。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone http://github.com/sstephenson/rbenv.git ~/.rbenv
+git clone http://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;~/.bash_profile&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;PATH=$HOME/.rbenv/bin:$PATH:$HOME/bin
+export PATH
+eval &amp;quot;$(rbenv init -)&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;rbenv install 1.9.3-p194
+rbenv global 1.9.3-p194
+gem install bundler
+rbenv rehash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;gitoliteインストール:b2ff91b7e84828be0aaed437ac6e7a77&#34;&gt;Gitoliteインストール&lt;/h2&gt;
+
+&lt;p&gt;SSHの鍵はgitlabとか分かりやすい名前にした方がいいかも。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git config --global user.email &amp;quot;git@example.com&amp;quot;
+git config --global user.name &amp;quot;gitadmin&amp;quot;
+git clone git://github.com/sitaramc/gitolite
+ssh-keygen -t rsa -N &amp;quot;&amp;quot;
+gitolite/install
+gitolite/src/gitolite setup -pk ~/.ssh/id_rsa.pub
+chmod -R g+rwX repositories/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;~/.gitolite.rc&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;UMASK                       =&amp;gt;  0007, # 0077 -&amp;gt; 0007
+GIT_CONFIG_KEYS             =&amp;gt;  &#39;.*&#39;, # &#39;&#39; -&amp;gt; &#39;.*&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;~/.ssh/config&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Host localhost
+    Port &amp;lt;SSHのポート番号&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;chmod 600 ~/.ssh/config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;gitlabインストール:b2ff91b7e84828be0aaed437ac6e7a77&#34;&gt;GitLabインストール&lt;/h2&gt;
+
+&lt;p&gt;SQLite大好きなのでDBはSQLiteを使います。たぶんMySQL使う人が多いだろうけど。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone -b stable git://github.com/gitlabhq/gitlabhq.git
+cd gitlabhq
+cp config/gitlab.yml.example config/gitlab.yml
+cp config/database.yml.sqlite config/database.yml
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;環境に合わせてgitlab.ymlとdatabase.ymlを編集したらセットアップ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;bundle install --without development test mysql postgres --deployment
+bundle exec rake gitlab:app:setup RAILS_ENV=production
+cp ./lib/hooks/post-receive ~/.gitolite/hooks/common/post-receive
+chmod 750 /home/git/.gitolite
+./resque.sh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;あとは手順どおりにWebサーバや起動スクリプトを設定すればOKです。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>VPSにログ監視ツールlogwatchをインストール</title>
+      <link>http://blog.withweb.info/blog/2012/11/13/vps-logwatch/</link>
+      <pubDate>Tue, 13 Nov 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/11/13/vps-logwatch/</guid>
+      <description>
+
+&lt;p&gt;Linuxサーバのログを整形して管理者(root)に1日1回メール送信してくれるツールです。&lt;/p&gt;
+
+&lt;p&gt;メール送信なのでMTAが必要です。既に設定済の場合は読み飛ばしてください。&lt;/p&gt;
+
+&lt;p&gt;今回は個人的なサーバなので正直sSMTPで十分ですが、最近のLinuxならPostfixが標準だと思うのでそっちを使います。また、ドメインは信頼と実績のexample.comなので適時読み替えてください。外部からの受信、転送はしないのでDNSは触りません。&lt;/p&gt;
+
+&lt;h2 id=&#34;インストール:8c0225624c2dc7594b2f1accc06b672f&#34;&gt;インストール&lt;/h2&gt;
+
+&lt;p&gt;yumでサクッとインストール。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo yum install -y postfix logwatch
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;postfixの設定:8c0225624c2dc7594b2f1accc06b672f&#34;&gt;Postfixの設定&lt;/h2&gt;
+
+&lt;p&gt;ローカルと外向きにメール送信できるように以下を編集します。メールボックスはMaildir形式。&lt;/p&gt;
+
+&lt;p&gt;/etc/postfix/main.cf&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;myhostname = mail.example.com                                           // 自FQDN名
+mydomain = example.com                                                  // 自ドメイン名
+myorigin = $mydomain                                                    // 送信元ドメイン名
+inet_interfaces = localhost                                             // 待ち受けるネットワークインタフェース
+mydestination = $myhostname, localhost.$mydomain, localhost, $mydomain  // ローカルで受信するドメイン名
+home_mailbox = Maildir/                                                 // メールボックス形式
+smtpd_banner = $myhostname ESMTP unknown                                // バージョン非表示
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Maildir形式のメールボックスを使うので、新規ユーザ用にスケルトンを作っておく。既存ユーザのメールボックスを移行する場合はググればすぐ見つかります。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo mkdir -p /etc/skel/Maildir/{new,cur,tmp}
+sudo chmod -R 700 /etc/skel/Maildir/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;メール送信できるか確認&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;echo &amp;quot;test message.&amp;quot; | mail -s test &amp;lt;受信確認用の外部のメールアドレス&amp;gt;
+echo &amp;quot;test message.&amp;quot; | mail -s test &amp;lt;受信確認用のローカルユーザ&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;外部のメールアドレスにメールが届くのと、ローカルユーザの$HOME/Maildir/newにメールが届いていることを確認します。&lt;/p&gt;
+
+&lt;h2 id=&#34;logwatchの設定:8c0225624c2dc7594b2f1accc06b672f&#34;&gt;logwatchの設定&lt;/h2&gt;
+
+&lt;p&gt;と言っても、今回はlogwatch自体は設定しません。ログレベルやアーカイブ有無など設定したい場合は/etc/logwatch/conf/logwatch.confを編集します。&lt;/p&gt;
+
+&lt;p&gt;設定するのはこっち。logwatchはデフォルトでroot宛てのメール転送先を設定します。&lt;/p&gt;
+
+&lt;p&gt;/etc/aliases&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;root: example@example.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;logwatchをインストールすると/etc/cron.daily/00logwatchも作られるので、ほっといても1日1回メール送信されます。が、コマンドでメール送信できるので確認しておきます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;logwatch --mailto root
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;とりあえずこれで簡単にログ監視できます。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>cronの中でsudoを使う方法</title>
+      <link>http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/</link>
+      <pubDate>Sat, 06 Oct 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/10/06/script-enable-sudo-in-cron/</guid>
+      <description>
+
+&lt;p&gt;jenkins(実行ユーザ:jenkins)のcronでsudoを使う必要があり、/etc/sudoersの設定を変えたのでメモ。&lt;/p&gt;
+
+&lt;p&gt;ユーザ:jenkinsをtty(コンソール)無しでsudoさせるため、こんな感じで設定しました。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo /usr/sbin/visudo
+
+#Defaults requiretty           # tty無しの場合sudoさせない(コメントアウト)
+Defaults:jenkins !requiretty   # ユーザjenkinsはtty無しでsudo可能
+jenkins ALL=(ALL) NOPASSWD:ALL # ユーザjenkinsはパスワード無しでsudo可能
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ちょっと解説:202d89dff242d7247ade7a5bbac7390f&#34;&gt;ちょっと解説&lt;/h2&gt;
+
+&lt;p&gt;sshコマンドやcronの中でsudoを使うスクリプトを使う場合によくあるケースなんですが&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo: sorry, you must have a tty to run sudo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;こんなエラーで止まることがあります。これは、/etc/sudoersの設定でtty(コンソール)とつながってないsudoが禁止されているためです。&lt;/p&gt;
+
+&lt;p&gt;/etc/sudoersの下の行をコメントアウトするか、!requirettyを指定するとこの設定を無効化できます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;Defaults requiretty
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;が、クラッキング目的で進入したソフト等からsudoされないようにするのが目的なので、安易に外すのもいかがなものかと思うわけです。(効果があるかどうかは置いといて)&lt;/p&gt;
+
+&lt;p&gt;というわけで、今回は特定のユーザのみsudoを許可する設定を行いました。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Scala&#43;PlayFramework2はじめました</title>
+      <link>http://blog.withweb.info/blog/2012/10/05/scala-playframework/</link>
+      <pubDate>Fri, 05 Oct 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/10/05/scala-playframework/</guid>
+      <description>
+
+&lt;p&gt;最近Scalaが人気あるみたいですね。Twitterがバックエンドで使ってることも話題になりました。そんなScalaに興味がでてきたので、とっかかりが簡単そうなPlay Framework2と合わせて触ってみます。&lt;/p&gt;
+
+&lt;p&gt;ドキュメントが充実してるからわざわざ書くことはあんまりないんだけど、最初は大まかな流れが分かればいいんじゃないかと思います。&lt;/p&gt;
+
+&lt;h2 id=&#34;インストール:9279a50bdb686ba80ff971f0efdbd6e9&#34;&gt;インストール&lt;/h2&gt;
+
+&lt;p&gt;JDK6以降が前提です。あとは特に何も言う事が無いくらい簡単。&lt;a href=&#34;http://playdocja.appspot.com/&#34;&gt;日本語公式サイト&lt;/a&gt;からzipファイルをダウンロードして、展開してパスを通すだけです。&lt;/p&gt;
+
+&lt;p&gt;今回はMacのHomebrewにパッケージがあったのでそっちでインストールします。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;brew install play
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;アプリ作成の流れ:9279a50bdb686ba80ff971f0efdbd6e9&#34;&gt;アプリ作成の流れ&lt;/h2&gt;
+
+&lt;p&gt;大まかな流れはこんな感じ。分かりやすくていい感じ。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;playコマンドでアプリケーションを作成する&lt;/li&gt;
+&lt;li&gt;URLとコントローラを対応付ける&lt;/li&gt;
+&lt;li&gt;コントローラ(+モデル)を実装する&lt;/li&gt;
+&lt;li&gt;2〜3の繰り返し&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&#34;playコマンドでアプリケーションを作成する:9279a50bdb686ba80ff971f0efdbd6e9&#34;&gt;playコマンドでアプリケーションを作成する&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;play new sample
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;対話式にアプリケーション名とテンプレートの選択をします。テンプレートは下の3つから選びますが、今回はScalaを使いたいので1を選びます。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Scalaアプリケーション&lt;/li&gt;
+&lt;li&gt;Javaアプリケーション&lt;/li&gt;
+&lt;li&gt;空のアプリケーション&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;この時点で起動できます。やり方はこんな感じ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;play  # playコンソール起動
+run   # playコンソール内でアプリケーション起動
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;http://localhost:9000&lt;/code&gt;にアクセスするとwelcome画面が表示されます。サーバ起動しっぱなしでもソース変更すれば反映されるので、止めずにこのまま進めます。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20121005-playframework-welcome.png&#34; alt=&#34;image playframework welcome&#34; title=&#34;playframework welcome&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;urlとコントローラを対応付ける:9279a50bdb686ba80ff971f0efdbd6e9&#34;&gt;URLとコントローラを対応付ける&lt;/h2&gt;
+
+&lt;p&gt;conf/routesにルートを追加します。このURLにアクセスした時に対応したコントローラのメソッドが実行されます。&lt;/p&gt;
+
+&lt;p&gt;とりあえずGETで/helloを追加。Applicationクラスにメソッドを追加してみます。&lt;/p&gt;
+
+&lt;p&gt;conf/routes&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# Home page
+GET     /                       controllers.Application.index
+
+# Hello
+GET     /hello                  controllers.Application.hello
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;コントローラ-モデル-を実装する:9279a50bdb686ba80ff971f0efdbd6e9&#34;&gt;コントローラ(+モデル)を実装する&lt;/h2&gt;
+
+&lt;p&gt;とりあえずモデルは置いといて、Application.scalaに追記します。&lt;/p&gt;
+
+&lt;p&gt;Application.scala&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-scala&#34;&gt;package controllers
+
+import play.api._
+import play.api.mvc._
+
+object Application extends Controller {
+
+  def index = Action {
+    Ok(views.html.index(&amp;quot;Your new application is ready.&amp;quot;))
+  }
+
+  // 信頼と実績のアレ
+  def hello = Action {
+    Ok(&amp;quot;Hello, world!&amp;quot;)
+  }
+
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;http://localhost:9000/hello&lt;/code&gt;にアクセスすると、「Hello, world!」が表示されます。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20121005-playframework-hello.png&#34; alt=&#34;image playframework hello&#34; title=&#34;playframework hello&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;とりあえず触ってみるレベルではとても簡単です。J2EEでの作り方とはずいぶん違いますね。XML地獄が無いだけでもすごくありがたい。&lt;/p&gt;
+
+&lt;p&gt;ScalaもPlay Framework2もいろいろ作ってみるのはこれからになりますが、なかなか楽しそうです。&lt;/p&gt;
+
+&lt;h2 id=&#34;参考ページ:9279a50bdb686ba80ff971f0efdbd6e9&#34;&gt;参考ページ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://playdocja.appspot.com/documentation/2.0.3/Home&#34;&gt;Documentation: Home — Playframework&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/playframework-ja/Play20/wiki&#34;&gt;Play 2.0 ドキュメント · playframework-ja/Play20 Wiki · GitHub&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Octopressでブログしよう</title>
+      <link>http://blog.withweb.info/blog/2012/10/04/octopress/</link>
+      <pubDate>Thu, 04 Oct 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/10/04/octopress/</guid>
+      <description>
+
+&lt;p&gt;普通のブログってやつがとても面倒なんです。&lt;/p&gt;
+
+&lt;p&gt;CMSにログインしたり画像アップロードしたり謎エディタで記事書いたり公開ボタン押したりバックアップするのにプラグイン入れたりとか、やってられない。&lt;/p&gt;
+
+&lt;p&gt;手元のエディタで記事を書いてコマンド打ったら公開。そんな感じで楽したいのでOctopressに移行します。いまさら感が半端ないけどね。&lt;/p&gt;
+
+&lt;h2 id=&#34;構成:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;構成&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Octopress ブログエンジン。Markdownで記事を書いてhtmlに出力する。&lt;/li&gt;
+&lt;li&gt;Bitbucket ソース管理。Octopressのディレクトリを管理する。&lt;/li&gt;
+&lt;li&gt;GitHub サイトの公開場所。Octopressで出力したhtmlなどを置く。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ソースはとりあえずBitbucketのプライベートリポジトリに置くことにします。なんとなくですが。&lt;/p&gt;
+
+&lt;h2 id=&#34;github-pagesの準備:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;GitHub Pagesの準備&lt;/h2&gt;
+
+&lt;p&gt;gitのインストール、SSH Keysの登録が終わっている前提で、&lt;a href=&#34;https://github.com/new&#34;&gt;Create a New Repo&lt;/a&gt;でUSERNAME.github.comの名前でリポジトリを作ります。&lt;/p&gt;
+
+&lt;p&gt;USERNAMEは各自置き換えてくださいね。&lt;/p&gt;
+
+&lt;h2 id=&#34;octopressインストール:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;Octopressインストール&lt;/h2&gt;
+
+&lt;p&gt;まずは、USERNAME.github.comでアクセスできるようにするところまで。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone git://github.com/imathis/octopress.git octopress
+cd octopress
+sudo gem install bundler
+sudo bundle install
+rake install
+
+rake setup_github_pages
+Enter the read/write url for your repository:
+git@github.com:USERNAME/USERNAME.github.com.gitを入力します。
+
+rake generate
+rake deploy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;独自ドメイン（サブドメイン）で運用したいので、ドメイン会社のサイトでDNSの設定をしておきます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;サブドメイン：blog
+種別：CNAME
+内容：USERNAME.github.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;OctopressにCNAMEファイルを作ります。_config.ymlも書き換えて、タイトルやURLなどちゃんとしたものに設定しておきましょう。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;echo &#39;blog.withweb.info&#39; &amp;gt; source/CNAME
+rake generate
+rake deploy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;あとは、記事をどんどん追加していくだけ。&lt;/p&gt;
+
+&lt;h2 id=&#34;記事を書いて投稿する:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;記事を書いて投稿する&lt;/h2&gt;
+
+&lt;p&gt;これだけ覚えておけばだいたいいける。記事やページの追加はコマンド打たなくてもsource/_postsの中にMarkdownのファイルを突っ込むだけでいけるみたい。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;rake new_post[&amp;quot;title&amp;quot;] # 新規記事を作成
+rake new_page[&amp;quot;title&amp;quot;] # 新規ページを作成
+rake generate          # 記事をhtmlに変換
+rake preview           # プレビュー(localhost:4000)
+rake deploy            # 記事を公開(GitHub Pagesにデプロイ)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;サイトの運用:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;サイトの運用&lt;/h2&gt;
+
+&lt;p&gt;ソースはBitbucketにするのでリモートリポジトリを追加します。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git remote add bitbucket git@bitbucket.org:USERNAME/octopress.git
+git push -u bitbucket source
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;あとはpushしていけば記事のバックアップをとっていけます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git add .
+git commit -m &#39;commit message&#39;
+git push
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;octopressの更新:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;Octopressの更新&lt;/h2&gt;
+
+&lt;p&gt;Octopress自体を更新する場合は、本家の更新を取り込んでマージします。その後、ソースとスタイルを更新してpush、デプロイします。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git fetch octopress
+git pull octopress master
+bundle install
+rake update_source
+rake update_style
+rm -rf sass.old
+rm -rf source.old
+git push
+rake deploy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;参考ページ:9293311909a74062d0cda7c3de1d7a5a&#34;&gt;参考ページ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/&#34;&gt;Octopressのインストールから運用管理まで - T.I.D.&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.glidenote.com/blog/2011/11/07/install-octopress-on-github/&#34;&gt;GithubとOctopressでモダンな技術系ブログを作ってみる - Glide Note - グライドノート&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>VPSのファイアウォール設定を見直す</title>
+      <link>http://blog.withweb.info/blog/2012/05/22/vps-iptables/</link>
+      <pubDate>Tue, 22 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/05/22/vps-iptables/</guid>
+      <description>
+
+&lt;p&gt;自分しか使わないサーバとはいえ、あんまり考えずに設定をしてたので見直し。&lt;/p&gt;
+
+&lt;h2 id=&#34;ポリシー:482f337740c3447f41b3f0b1c079da45&#34;&gt;ポリシー&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;受信パケットは原則破棄&lt;/li&gt;
+&lt;li&gt;送信パケットは原則通過&lt;/li&gt;
+&lt;li&gt;転送パケットは原則破棄&lt;/li&gt;
+&lt;li&gt;ローカルループバックからの受信を許可&lt;/li&gt;
+&lt;li&gt;セッションが確立した後の受信を許可&lt;/li&gt;
+&lt;li&gt;SYN Cookies有効&lt;/li&gt;
+&lt;li&gt;ブロードキャスト宛のPINGに応答しない&lt;/li&gt;
+&lt;li&gt;ICMP Redirectパケットを破棄&lt;/li&gt;
+&lt;li&gt;Source Routedパケットを破棄&lt;/li&gt;
+&lt;li&gt;フラグメント化されたパケットを破棄&lt;/li&gt;
+&lt;li&gt;NetBIOS関連のパケットを破棄&lt;/li&gt;
+&lt;li&gt;1秒間に4回を超えるPINGを破棄&lt;/li&gt;
+&lt;li&gt;ブロードキャスト、マルチキャスト宛のパケットを破棄&lt;/li&gt;
+&lt;li&gt;113番ポート(IDENT)の受信は拒否応答&lt;/li&gt;
+&lt;li&gt;指定サービスの受信を許可&lt;/li&gt;
+&lt;li&gt;その他のアクセスはログ記録して破棄&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;ひとまず特定の国やIPはブロックしていませんが、後で手を入れていくことになると思うのでこんな感じのスクリプトにしてます。&lt;/p&gt;
+
+&lt;h2 id=&#34;スクリプト:482f337740c3447f41b3f0b1c079da45&#34;&gt;スクリプト&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
+
+########################################
+# 前処理
+########################################
+
+# ファイアウォール停止
+/etc/rc.d/init.d/iptables stop
+
+########################################
+# 基本設定
+########################################
+
+# デフォルトルール
+iptables -P INPUT DROP
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD DROP
+
+# 自ホストからのアクセスを許可
+iptables -A INPUT -i lo -j ACCEPT
+
+# セッションが確立した後は許可
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+########################################
+# 攻撃対策
+########################################
+
+# SYN Cookies有効(TCP SYN Flood攻撃対策)
+sysctl -w net.ipv4.tcp_syncookies=1 &amp;gt; /dev/null
+sed -i &#39;/net.ipv4.tcp_syncookies/d&#39; /etc/sysctl.conf
+echo &amp;quot;net.ipv4.tcp_syncookies=1&amp;quot; &amp;gt;&amp;gt; /etc/sysctl.conf
+
+# ブロードキャストアドレス宛pingには応答しない(Smurf攻撃対策)
+sysctl -w net.ipv4.icmp_echo_ignore_broadcasts=1 &amp;gt; /dev/null
+sed -i &#39;/net.ipv4.icmp_echo_ignore_broadcasts/d&#39; /etc/sysctl.conf
+echo &amp;quot;net.ipv4.icmp_echo_ignore_broadcasts=1&amp;quot; &amp;gt;&amp;gt; /etc/sysctl.conf
+
+# ICMP Redirectパケットは拒否
+sed -i &#39;/net.ipv4.conf.*.accept_redirects/d&#39; /etc/sysctl.conf
+for dev in `ls /proc/sys/net/ipv4/conf/`
+do
+    sysctl -w net.ipv4.conf.$dev.accept_redirects=0 &amp;gt; /dev/null
+    echo &amp;quot;net.ipv4.conf.$dev.accept_redirects=0&amp;quot; &amp;gt;&amp;gt; /etc/sysctl.conf
+done
+
+# Source Routedパケットは拒否
+sed -i &#39;/net.ipv4.conf.*.accept_source_route/d&#39; /etc/sysctl.conf
+for dev in `ls /proc/sys/net/ipv4/conf/`
+do
+    sysctl -w net.ipv4.conf.$dev.accept_source_route=0 &amp;gt; /dev/null
+    echo &amp;quot;net.ipv4.conf.$dev.accept_source_route=0&amp;quot; &amp;gt;&amp;gt; /etc/sysctl.conf
+done
+
+# フラグメント化されたパケットは破棄
+iptables -A INPUT -f -j LOG --log-prefix &#39;[IPTABLES FRAGMENT] : &#39;
+iptables -A INPUT -f -j DROP
+
+# NetBIOS関連のアクセスは破棄
+iptables -A INPUT -p tcp -m multiport --dports 135,137,138,139,445 -j DROP
+iptables -A INPUT -p udp -m multiport --dports 135,137,138,139,445 -j DROP
+iptables -A OUTPUT -p tcp -m multiport --sports 135,137,138,139,445 -j DROP
+iptables -A OUTPUT -p udp -m multiport --sports 135,137,138,139,445 -j DROP
+
+# 1秒間に4回を超えるpingは破棄(Ping of Death攻撃対策)
+iptables -N LOG_PINGDEATH
+iptables -A LOG_PINGDEATH -m limit --limit 1/s --limit-burst 4 -j ACCEPT
+iptables -A LOG_PINGDEATH -j LOG --log-prefix &#39;[IPTABLES PINGDEATH] : &#39;
+iptables -A LOG_PINGDEATH -j DROP
+iptables -A INPUT -p icmp --icmp-type echo-request -j LOG_PINGDEATH
+
+# 全ホスト(ブロードキャストアドレス、マルチキャストアドレス)宛パケットは破棄
+iptables -A INPUT -d 255.255.255.255 -j DROP
+iptables -A INPUT -d 224.0.0.1 -j DROP
+
+# 113番ポート(IDENT)へのアクセスには拒否応答(メールサーバ等のレスポンス低下防止)
+iptables -A INPUT -p tcp --dport 113 -j REJECT --reject-with tcp-reset
+
+########################################
+# 各種サービス設定
+########################################
+
+# SSH
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+
+# HTTP, HTTPS
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+
+########################################
+# その他
+########################################
+
+# 上記のルールにマッチしなかったアクセスはログを記録して破棄
+iptables -A INPUT -m limit --limit 1/s -j LOG --log-prefix &#39;[IPTABLES INPUT] : &#39;
+iptables -A INPUT -j DROP
+iptables -A FORWARD -m limit --limit 1/s -j LOG --log-prefix &#39;[IPTABLES FORWARD] : &#39;
+iptables -A FORWARD -j DROP
+
+########################################
+# 後処理
+########################################
+
+# サーバー再起動時にも上記設定が有効となるようにルールを保存
+/etc/rc.d/init.d/iptables save
+
+# ファイアウォール起動
+/etc/rc.d/init.d/iptables start
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;何か変なことしてたらツッコミお願いします。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>さくらのVPS 2G(CentOS6)で最初にやったことメモ</title>
+      <link>http://blog.withweb.info/blog/2012/05/20/sakura-vps2g-centos6/</link>
+      <pubDate>Sun, 20 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2012/05/20/sakura-vps2g-centos6/</guid>
+      <description>
+
+&lt;p&gt;さくらのVPS 2Gを借りたので、最初にやったことをメモ。どこかに書かないと忘れちゃう。&lt;/p&gt;
+
+&lt;h2 id=&#34;ユーザ:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;ユーザ&lt;/h2&gt;
+
+&lt;p&gt;まずはrootのパスワードを変更。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;passwd
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;直接rootでログインしたくないので一般ユーザをwheelグループで作る。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;useradd &amp;lt;ユーザID&amp;gt; -g wheel
+passwd &amp;lt;ユーザID&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;wheelグループをパスワードなしでsudoできるようにする。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;visudo
+
+%wheel ALL=(ALL) NOPASSWD:ALL
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ssh:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;SSH&lt;/h2&gt;
+
+&lt;p&gt;一般ユーザの公開鍵を登録。authorized_keysの中身はローカルPCで作った公開鍵からコピペ。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd /home/&amp;lt;ユーザID&amp;gt;
+mkdir .ssh
+chmod 700 .ssh
+vi .ssh/authorized_keys
+
+chmod 600 .ssh/authorized_keys
+chown -R &amp;lt;ユーザID&amp;gt;:wheel .ssh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;SSHの設定。ポート番号を変えて、rootログイン禁止、パスワード認証を止めて鍵交換方式で認証する。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;vi /etc/ssh/sshd_config
+
+Port &amp;lt;SSHのポート番号&amp;gt;
+PermitRootLogin no
+PubkeyAuthentication yes
+PasswordAuthentication no
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ひと通り設定したらサービスを再起動。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;service sshd restart
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;ファイアウォール:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;ファイアウォール&lt;/h2&gt;
+
+&lt;p&gt;とりあえずHTTPとSSHを通す。色々なサイトで紹介されているものをベースにしてます。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;vi /etc/sysconfig/iptables
+
+*filter
+:INPUT   ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT  ACCEPT [0:0]
+:RH-Firewall-1-INPUT - [0:0]
+-A INPUT -j RH-Firewall-1-INPUT
+-A FORWARD -j RH-Firewall-1-INPUT
+-A RH-Firewall-1-INPUT -i lo -j ACCEPT
+-A RH-Firewall-1-INPUT -p icmp --icmp-type any -j ACCEPT
+-A RH-Firewall-1-INPUT -p 50 -j ACCEPT
+-A RH-Firewall-1-INPUT -p 51 -j ACCEPT
+-A RH-Firewall-1-INPUT -p udp --dport 5353 -d 224.0.0.251 -j ACCEPT
+-A RH-Firewall-1-INPUT -p udp -m udp --dport 631 -j ACCEPT
+-A RH-Firewall-1-INPUT -p tcp -m tcp --dport 631 -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+# HTTP, SSH
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 80    -j ACCEPT
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport &amp;lt;SSHのポート番号&amp;gt; -j ACCEPT
+-A RH-Firewall-1-INPUT -j REJECT --reject-with icmp-host-prohibited
+COMMIT
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;不要なサービスの停止:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;不要なサービスの停止&lt;/h2&gt;
+
+&lt;p&gt;わざわざ止めるほどサービスが起動していなかったけど、いくつか止めておいた。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;chkconfig lvm2-monitor off
+chkconfig yum-updateonboot off
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;メモリ使用量を確認:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;メモリ使用量を確認&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;free
+
+	             total       used       free     shared    buffers     cached
+	Mem:       2054808     139612    1915196          0       8312      57288
+	-/+ buffers/cache:      74012    1980796
+	Swap:      2096472          0    2096472
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;メモリ使用量は140MBくらい。素の状態ならこんなもんでしょう。&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ:3f5feadac33a3be28795edfd450f3aeb&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;ひとまず使い始める前の設定は最低限できたかな。ログ監視くらいはこの時点で入れておけばよかったかも。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>URoad-8000が802.11nに対応</title>
+      <link>http://blog.withweb.info/blog/2011/12/28/uroad-8000/</link>
+      <pubDate>Wed, 28 Dec 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/12/28/uroad-8000/</guid>
+      <description>
+
+&lt;p&gt;何となくURoad-8000の自動アップデートをしてみたら2011/12/26のアップデートで802.11nに対応したようです。私はあまり気にしていなかったのですが、URoad-8000ユーザは待っていた人も多いんじゃないでしょうか。&lt;/p&gt;
+
+&lt;h2 id=&#34;ieee-802-11nって何:ef9f4eadf55d3dfe3fdc8cb3f7ee8447&#34;&gt;IEEE 802.11Nって何？&lt;/h2&gt;
+
+&lt;p&gt;簡単に言うと、IEEEという学会が決めた無線LANの規格です。802.11g、802.11a、802.11bあたりとまとめて802シリーズなんて呼ばれたりします。 他の802シリーズと比較すると&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;速い&lt;/li&gt;
+&lt;li&gt;安定している&lt;/li&gt;
+&lt;li&gt;カバーエリアが広い&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;という特徴があります。&lt;/p&gt;
+
+&lt;p&gt;イマドキのルータはだいたい対応していそうなので、知らないうちにご家庭の無線LANが11nということも多いかと思います。&lt;/p&gt;
+
+&lt;h2 id=&#34;macで通信規格を確認する方法:ef9f4eadf55d3dfe3fdc8cb3f7ee8447&#34;&gt;Macで通信規格を確認する方法&lt;/h2&gt;
+
+&lt;p&gt;ネットワークユーティリティで確認できますが、もっと簡単な方法があります。&lt;/p&gt;
+
+&lt;p&gt;メニューバーのAirMacアイコンをoptionキーを押しながらクリックすると詳細情報が表示されます。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20111228-mac-network-config-view.png&#34; alt=&#34;image mac network config view&#34; title=&#34;mac network config view&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;通信規格、セキュリティなどいろいろ表示されるので今何を使っているのか簡単に確認できます。（近所にWi-Fiを使っている人が多いのか、たくさん表示されてますがそこは気にしないで）&lt;/p&gt;
+
+&lt;p&gt;この「optionキーを押しながらクリック」は他のメニューにも使えます。&lt;/p&gt;
+
+&lt;p&gt;例えば、Bluetoothならアドレスの確認、サウンドなら入出力装置の切り替えなどの項目が追加されます。いちいちシステム環境設定を起動しなくてすむので便利ですね。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>MacBook Air 13インチ (mid 2011) を買いました</title>
+      <link>http://blog.withweb.info/blog/2011/11/05/macbook-air/</link>
+      <pubDate>Sat, 05 Nov 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/11/05/macbook-air/</guid>
+      <description>
+
+&lt;p&gt;新しいMacBook Airが欲しいけどいつ買おうか。何となく決め手が無い。&lt;/p&gt;
+
+&lt;p&gt;7月21日に発売されてから3ヶ月以上も迷った末に、結局買いました。&lt;/p&gt;
+
+&lt;h2 id=&#34;引っ越しの荷物を減らしたい:b2c48a88930496e2a1e3a5cd3e985d6d&#34;&gt;引っ越しの荷物を減らしたい&lt;/h2&gt;
+
+&lt;p&gt;買う決心をした理由はこれです。というか、これだけです。&lt;/p&gt;
+
+&lt;p&gt;東京から広島へ引越すことになり「荷物を減らしたいなー」ということで、iMacから乗り換えるべく注文していたMacBook Airが届きました。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20111105-macbook-air-package.png&#34; alt=&#34;image macbook air package&#34; title=&#34;macbook air package&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;なんかもう箱からして薄い。&lt;/p&gt;
+
+&lt;p&gt;前に使っていたiMac(early 2009)はまだまだ普通に使えますが、リセールバリューを考えると3年半使ったのは長過ぎた気がします。売れるうちに売ってしまいます。&lt;/p&gt;
+
+&lt;h2 id=&#34;スペックは適当に選んだ:b2c48a88930496e2a1e3a5cd3e985d6d&#34;&gt;スペックは適当に選んだ&lt;/h2&gt;
+
+&lt;p&gt;今回買ったスペックは13インチの高い方です。キーボードだけカスタマイズしています。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;サイズ：13インチ&lt;/li&gt;
+&lt;li&gt;CPU：1.7GHz i5&lt;/li&gt;
+&lt;li&gt;メモリ：4GB&lt;/li&gt;
+&lt;li&gt;ストレージ：256GB&lt;/li&gt;
+&lt;li&gt;キーボード：US&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;利用シーンが単純なのでスペックも単純に決めました。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;家で使う&lt;/li&gt;
+&lt;li&gt;メインマシン（これ1台）&lt;/li&gt;
+&lt;li&gt;外に持ち出すことがあるかも（ないかも）&lt;/li&gt;
+&lt;li&gt;Webサービスやアプリの開発をする&lt;/li&gt;
+&lt;li&gt;だいたい2年くらいで買い替える&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;スペック選びは悩む人が多いと思いますが、どのくらいの期間使うか決めておけば案外割り切って選べると思います。&lt;/p&gt;
+
+&lt;p&gt;キーボードは慣れでUSにしています。打つ時は見ないのでこだわりはありません。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20111105-macbook-air-keyboard.png&#34; alt=&#34;image macbook air keyboard&#34; title=&#34;macbook air keyboard&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;ファンクションキーの列もLion仕様になってます。写ってないけど右端のイジェクトキーも電源キーに変わっています。&lt;/p&gt;
+
+&lt;h2 id=&#34;使い勝手:b2c48a88930496e2a1e3a5cd3e985d6d&#34;&gt;使い勝手&lt;/h2&gt;
+
+&lt;p&gt;そろそろ聞き飽きてきた頃ですが、SSDのおかげで全体的に静かで速いです。&lt;/p&gt;
+
+&lt;p&gt;今のところアプリの起動も操作も「待たされる感」がありません。VirtualBoxでWindowsを起動した時なんてもう意味が分からないレベルです。&lt;/p&gt;
+
+&lt;p&gt;あと関係ないけど、MacBook Airって大根とか切れそうなくらい薄いですね。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>iPhone 4Sが届いた</title>
+      <link>http://blog.withweb.info/blog/2011/11/02/iphone4s/</link>
+      <pubDate>Wed, 02 Nov 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/11/02/iphone4s/</guid>
+      <description>
+
+&lt;p&gt;もう届いたと言うか、やっと届いたと言うか。&lt;a href=&#34;http://blog.withweb.info/blog/2011/10/21/iphone4s/&#34;&gt;ソフトバンクオンラインショップで注文していたiPhone 4S&lt;/a&gt;が届きました。発売前から機種変更したかったからうれしいですね。&lt;/p&gt;
+
+&lt;h2 id=&#34;いつものapple:82adc8e076c69275464d12110bf25bac&#34;&gt;いつものApple&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20111102-iphone4s-package.png&#34; alt=&#34;image iphone4s package&#34; title=&#34;iphone4s package&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;箱です。相変わらずのシンプル梱包。&lt;/p&gt;
+
+&lt;p&gt;MacやiPodもそうですが、この「Apple製品のシンプルさ」が好きな人は多いのではないかと。&lt;/p&gt;
+
+&lt;p&gt;説明書もペラペラの紙が入ってるだけ。日本の携帯電話も見習って欲しいところです。&lt;/p&gt;
+
+&lt;h2 id=&#34;予約から受け取りまでの流れ:82adc8e076c69275464d12110bf25bac&#34;&gt;予約から受け取りまでの流れ&lt;/h2&gt;
+
+&lt;p&gt;だいたいこんな感じです。&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;2011/10/19：ソフトバンクオンラインショップで予約&lt;/li&gt;
+&lt;li&gt;2011/10/19：メール受信「ご予約お申し込み受付のご連絡」&lt;/li&gt;
+&lt;li&gt;2011/10/30：メール受信「本申し込みの依頼」&lt;/li&gt;
+&lt;li&gt;2011/10/30：ソフトバンクオンラインショップで本申し込み&lt;/li&gt;
+&lt;li&gt;2011/10/30：メール受信「お申し込み受付のご連絡」&lt;/li&gt;
+&lt;li&gt;2011/10/30：メール受信「商品発送手続き開始のご連絡」&lt;/li&gt;
+&lt;li&gt;2011/10/31：メール受信「出荷完了のご連絡」&lt;/li&gt;
+&lt;li&gt;2011/11/01：iPhone4S到着&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;予約からしばらくは入荷待ちですが、用意できてからはすぐ届きました。&lt;/p&gt;
+
+&lt;p&gt;本申し込みの時に受け取りの日時指定ができます。運送業者は佐◯。（佐◯はいつも時間指定を守らないのでヤマトにして欲しかった&amp;hellip;）&lt;/p&gt;
+
+&lt;h2 id=&#34;機種変更作業:82adc8e076c69275464d12110bf25bac&#34;&gt;機種変更作業&lt;/h2&gt;
+
+&lt;p&gt;オンラインショップで買った場合、電話の切り替えとか自分でやります。&lt;/p&gt;
+
+&lt;p&gt;「めんどくさそー」と思ってましたがそんなことはなかった。簡単でした。&lt;/p&gt;
+
+&lt;p&gt;ソフトバンクから届くメール「出荷完了のご連絡」に商品到着後の手続きについて書かれているのでその通りにします。&lt;/p&gt;
+
+&lt;h2 id=&#34;電話機切替手続き:82adc8e076c69275464d12110bf25bac&#34;&gt;電話機切替手続き&lt;/h2&gt;
+
+&lt;p&gt;Webと電話のどちらかで手続きします。私はWebでやりました。&lt;/p&gt;
+
+&lt;p&gt;予約した時の受付番号とメールアドレス、生年月日を入力すれば完了です。&lt;/p&gt;
+
+&lt;h2 id=&#34;アクティベーション:82adc8e076c69275464d12110bf25bac&#34;&gt;アクティベーション&lt;/h2&gt;
+
+&lt;p&gt;iTunesにつないで、言われるがままに進めます。&lt;/p&gt;
+
+&lt;p&gt;もともとiTunesを使っていたからか、項目は基本的に入力済。よくある「同意する」チェックを付ける程度で完了です。&lt;/p&gt;
+
+&lt;h2 id=&#34;3gsから4sへのデータ移行:82adc8e076c69275464d12110bf25bac&#34;&gt;3GSから4Sへのデータ移行&lt;/h2&gt;
+
+&lt;p&gt;アクティベーションが終わった後で復元するか聞かれるのでそのまま進めます。&lt;/p&gt;
+
+&lt;p&gt;あとは同期と同じ要領で待つだけ。超簡単。&lt;/p&gt;
+
+&lt;h2 id=&#34;サクサク:82adc8e076c69275464d12110bf25bac&#34;&gt;サクサク&lt;/h2&gt;
+
+&lt;p&gt;もういろんなサイトで言われている通り、ぱっと見た感じはiPhone4です。&lt;/p&gt;
+
+&lt;p&gt;少し触っただけですが本当にサクサク動きます。（3GSからの機種変更だから？）&lt;/p&gt;
+
+&lt;p&gt;これもそのうち「重いなー」と思う時が来るんだろうけど、新しいうちはこのサクサク感がうれしいですね。&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>iPhone 4Sをソフトバンクオンラインショップで予約した</title>
+      <link>http://blog.withweb.info/blog/2011/10/21/iphone4s/</link>
+      <pubDate>Fri, 21 Oct 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/10/21/iphone4s/</guid>
+      <description>
+
+&lt;p&gt;待ちに待ったiPhoneの最新機種。もう買って手元に届いた人も多いんじゃないでしょうか。&lt;/p&gt;
+
+&lt;p&gt;ソフトバンクだけでなくauからも発売される事や予約の行列、販売台数などなど、発売前も後も世間で熱い話題ですね。&lt;/p&gt;
+
+&lt;p&gt;そんなiPhone4Sを予約しました。&lt;/p&gt;
+
+&lt;h2 id=&#34;やっと予約した:55b4b87ed958dfa0e5c0d67b0dbb4de0&#34;&gt;やっと予約した&lt;/h2&gt;
+
+&lt;p&gt;発売日の前後は帰省したりでバタバタしていたので、帰宅後にソフトバンクオンラインショップで予約しました。もう乗り遅れてる感が満載です。&lt;/p&gt;
+
+&lt;p&gt;iPhone4もiPhone4Sも予約開始当日は激混みだったようですが、さすがにオンラインショップも混み合うこともなくスイスイ進みました。乗り遅れて良かったかも。&lt;/p&gt;
+
+&lt;p&gt;今回予約したのはiPhone 4S 64GBの黒。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;白だと汚れが目立ちそうだから黒&lt;/li&gt;
+&lt;li&gt;今は16GBでも十分だけど写真たくさん撮りたいから64GB&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;理由なんて簡単なものです。&lt;/p&gt;
+
+&lt;h2 id=&#34;下調べはほとんどしていない:55b4b87ed958dfa0e5c0d67b0dbb4de0&#34;&gt;下調べはほとんどしていない&lt;/h2&gt;
+
+&lt;p&gt;先にキャリアの回線、価格、キャンペーンの比較をしておけば良かったんですが、ネットで少し調べただけです。&lt;/p&gt;
+
+&lt;p&gt;さらっと眺めてみた印象としては&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;価格は正直たいして変わらない&lt;/li&gt;
+&lt;li&gt;回線は正直どっちもどっち(基本的にWifi使うし)&lt;/li&gt;
+&lt;li&gt;3GSから乗り換えるならソフトバンクがお得？&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;といったところです。&lt;/p&gt;
+
+&lt;p&gt;3GSの割賦金が残っているのでソフトバンクの「実質無償機種変更キャンペーン」を使いました。簡単に言うと「残っている割賦金を月々の割引でチャラにしてくれる」ようです。お得じゃないですか。即決。&lt;/p&gt;
+
+&lt;p&gt;他にもiPad2が月額料金0円から使えるようですが、端末代がタダになるわけではないのでトータルコストはWifi版とあまり変わらないみたいです。&lt;/p&gt;
+
+&lt;p&gt;iPadは今欲しいわけでもないし、買うならWifi版で十分なのでこれは見送りました。&lt;/p&gt;
+
+&lt;h2 id=&#34;あとは待つだけ:55b4b87ed958dfa0e5c0d67b0dbb4de0&#34;&gt;あとは待つだけ&lt;/h2&gt;
+
+&lt;p&gt;単純に楽しみです。引取りに行く手間も無いのでのんびり待ってます。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

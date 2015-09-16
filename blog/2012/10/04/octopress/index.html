@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Octopressでブログしよう - withweb</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/github.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato%3a900" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://blog.withweb.info/assets/css/style.css">
+<link rel="alternate" href="http://blog.withweb.info/index.xml" type="application/rss+xml" title="withweb">
+</head>
+
+<body>
+  <header>
+    <h1 class="column"><a href="http://blog.withweb.info/">withweb</a></h1>
+    <nav role="navigation" class="column">
+      <ul>
+        <li><a href="http://blog.withweb.info/about/">About</a></li>
+        <li><a href="http://blog.withweb.info/archives/">Archives</a></li>
+        <li><a href="http://blog.withweb.info/index.xml" type="application/rss+xml"><span class="fa-stack fa-lg"><i class="fa fa-rss fa-stack-1x"></i></span>
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">Octopressでブログしよう</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="2012-10-04">October 04, 2012</time>
+              <a class="category" href="http://blog.withweb.info/categories/octopress">#octopress</a>
+            </span>
+			<section itemprop="entry-text">
+				
+
+<p>普通のブログってやつがとても面倒なんです。</p>
+
+<p>CMSにログインしたり画像アップロードしたり謎エディタで記事書いたり公開ボタン押したりバックアップするのにプラグイン入れたりとか、やってられない。</p>
+
+<p>手元のエディタで記事を書いてコマンド打ったら公開。そんな感じで楽したいのでOctopressに移行します。いまさら感が半端ないけどね。</p>
+
+<h2 id="構成:9293311909a74062d0cda7c3de1d7a5a">構成</h2>
+
+<ul>
+<li>Octopress ブログエンジン。Markdownで記事を書いてhtmlに出力する。</li>
+<li>Bitbucket ソース管理。Octopressのディレクトリを管理する。</li>
+<li>GitHub サイトの公開場所。Octopressで出力したhtmlなどを置く。</li>
+</ul>
+
+<p>ソースはとりあえずBitbucketのプライベートリポジトリに置くことにします。なんとなくですが。</p>
+
+<h2 id="github-pagesの準備:9293311909a74062d0cda7c3de1d7a5a">GitHub Pagesの準備</h2>
+
+<p>gitのインストール、SSH Keysの登録が終わっている前提で、<a href="https://github.com/new">Create a New Repo</a>でUSERNAME.github.comの名前でリポジトリを作ります。</p>
+
+<p>USERNAMEは各自置き換えてくださいね。</p>
+
+<h2 id="octopressインストール:9293311909a74062d0cda7c3de1d7a5a">Octopressインストール</h2>
+
+<p>まずは、USERNAME.github.comでアクセスできるようにするところまで。</p>
+
+<pre><code class="language-bash">git clone git://github.com/imathis/octopress.git octopress
+cd octopress
+sudo gem install bundler
+sudo bundle install
+rake install
+
+rake setup_github_pages
+Enter the read/write url for your repository:
+git@github.com:USERNAME/USERNAME.github.com.gitを入力します。
+
+rake generate
+rake deploy
+</code></pre>
+
+<p>独自ドメイン（サブドメイン）で運用したいので、ドメイン会社のサイトでDNSの設定をしておきます。</p>
+
+<pre><code>サブドメイン：blog
+種別：CNAME
+内容：USERNAME.github.com
+</code></pre>
+
+<p>OctopressにCNAMEファイルを作ります。_config.ymlも書き換えて、タイトルやURLなどちゃんとしたものに設定しておきましょう。</p>
+
+<pre><code class="language-bash">echo 'blog.withweb.info' &gt; source/CNAME
+rake generate
+rake deploy
+</code></pre>
+
+<p>あとは、記事をどんどん追加していくだけ。</p>
+
+<h2 id="記事を書いて投稿する:9293311909a74062d0cda7c3de1d7a5a">記事を書いて投稿する</h2>
+
+<p>これだけ覚えておけばだいたいいける。記事やページの追加はコマンド打たなくてもsource/_postsの中にMarkdownのファイルを突っ込むだけでいけるみたい。</p>
+
+<pre><code class="language-bash">rake new_post[&quot;title&quot;] # 新規記事を作成
+rake new_page[&quot;title&quot;] # 新規ページを作成
+rake generate          # 記事をhtmlに変換
+rake preview           # プレビュー(localhost:4000)
+rake deploy            # 記事を公開(GitHub Pagesにデプロイ)
+</code></pre>
+
+<h2 id="サイトの運用:9293311909a74062d0cda7c3de1d7a5a">サイトの運用</h2>
+
+<p>ソースはBitbucketにするのでリモートリポジトリを追加します。</p>
+
+<pre><code class="language-bash">git remote add bitbucket git@bitbucket.org:USERNAME/octopress.git
+git push -u bitbucket source
+</code></pre>
+
+<p>あとはpushしていけば記事のバックアップをとっていけます。</p>
+
+<pre><code class="language-bash">git add .
+git commit -m 'commit message'
+git push
+</code></pre>
+
+<h2 id="octopressの更新:9293311909a74062d0cda7c3de1d7a5a">Octopressの更新</h2>
+
+<p>Octopress自体を更新する場合は、本家の更新を取り込んでマージします。その後、ソースとスタイルを更新してpush、デプロイします。</p>
+
+<pre><code class="language-bash">git fetch octopress
+git pull octopress master
+bundle install
+rake update_source
+rake update_style
+rm -rf sass.old
+rm -rf source.old
+git push
+rake deploy
+</code></pre>
+
+<h2 id="参考ページ:9293311909a74062d0cda7c3de1d7a5a">参考ページ</h2>
+
+<ul>
+<li><a href="http://tokkonopapa.github.com/blog/2011/12/30/octopress-on-github-and-bitbucket/">Octopressのインストールから運用管理まで - T.I.D.</a></li>
+<li><a href="http://blog.glidenote.com/blog/2011/11/07/install-octopress-on-github/">GithubとOctopressでモダンな技術系ブログを作ってみる - Glide Note - グライドノート</a></li>
+</ul>
+
+			</section>
+			
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:728px;height:90px"
+				 data-ad-client="ca-pub-8327324847265548"
+				 data-ad-slot="8436320854"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			
+			<section class="social">
+				<a href="//twitter.com/share?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f10%2f04%2foctopress%2f&text=Octopress%e3%81%a7%e3%83%96%e3%83%ad%e3%82%b0%e3%81%97%e3%82%88%e3%81%86" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f10%2f04%2foctopress%2f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2012%2f10%2f04%2foctopress%2f&title=Octopress%e3%81%a7%e3%83%96%e3%83%ad%e3%82%b0%e3%81%97%e3%82%88%e3%81%86" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>
+			
+ 			
+			<script type="text/javascript" async="async">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + 'withweb' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</article>
+	</main>
+
+  <footer role="contentinfo">
+    <p class="copyright">&copy; withweb</p>
+  </footer>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-25619310-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/languages/scala.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
+

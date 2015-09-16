@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Wordpress on withweb</title>
+    <link>http://blog.withweb.info/categories/wordpress/</link>
+    <description>Recent content in Wordpress on withweb</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>jp</language>
+    <lastBuildDate>Sat, 10 Sep 2011 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://blog.withweb.info/categories/wordpress/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>WordPress3.2のデフォルトテーマがシンプルできれい</title>
+      <link>http://blog.withweb.info/blog/2011/09/10/wordpress32/</link>
+      <pubDate>Sat, 10 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2011/09/10/wordpress32/</guid>
+      <description>
+
+&lt;p&gt;WordPress3.2になってから、デフォルトテーマがTwentyTenからTwentyElevenに変わりましたね。&lt;/p&gt;
+
+&lt;h2 id=&#34;twenty-eleven:447700aba0836678fcaefb81757d69b4&#34;&gt;Twenty Eleven&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&#34;http://blog.withweb.info/images/20110910-twentyeleven.png&#34; alt=&#34;image twentyeleven&#34; title=&#34;twentyeleven&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;見た目はかなりきれいだと思います。イメージギャラリーやフォトログ、ショーケースのテンプレートも用意されていてなかなかに高機能。デモはここで見られます。&lt;/p&gt;
+
+&lt;p&gt;たぶん大抵の人がブログでやりたいことは、だいたいできちゃうんじゃないでしょうか。&lt;/p&gt;
+
+&lt;p&gt;デバイスの幅に対応してくれるので、何もしなくてもiPhoneやAndroidできれいに表示されます。&lt;/p&gt;
+
+&lt;p&gt;このブログも始めたばかりなので、今のところテーマはTwentyElevenのままにしています。後で変えることになると思いますが、しばらくはこのままでもいいかな。&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

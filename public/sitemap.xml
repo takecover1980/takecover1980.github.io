@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://blog.withweb.info/</loc>
-    <lastmod>2015-09-16T00:00:00+00:00</lastmod>
+    <lastmod>2015-09-28T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.withweb.info/blog/2015/09/28/cant-boot-arch-linux/</loc>
+    <lastmod>2015-09-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>

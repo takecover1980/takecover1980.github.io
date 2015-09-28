@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arch Linuxが起動しない - withweb</title>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/github.min.css">
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato%3a900" />
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://blog.withweb.info/assets/css/style.css">
+<link rel="alternate" href="http://blog.withweb.info/index.xml" type="application/rss+xml" title="withweb">
+</head>
+
+<body>
+  <header>
+    <h1 class="column"><a href="http://blog.withweb.info/">withweb</a></h1>
+    <nav role="navigation" class="column">
+      <ul>
+        <li><a href="http://blog.withweb.info/about/">About</a></li>
+        <li><a href="http://blog.withweb.info/archives/">Archives</a></li>
+        <li><a href="http://blog.withweb.info/index.xml" type="application/rss+xml"><span class="fa-stack fa-lg"><i class="fa fa-rss fa-stack-1x"></i></span>
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+	<main role="main">
+		<article itemscope itemtype="http://schema.org/BlogPosting">
+			<h1 class="entry-title" itemprop="headline">Arch Linuxが起動しない</h1>
+			<span class="entry-meta">
+              <time itemprop="datePublished" datetime="2015-09-28">September 28, 2015</time>
+              <a class="category" href="http://blog.withweb.info/categories/linux">#linux</a>
+            </span>
+			<section itemprop="entry-text">
+				
+
+<p>Arch Linuxが起動しなくなって、復旧作業をしたのでメモ。</p>
+
+<h2 id="現象:e344b098681d1e72c5a19ba11b18de6c">現象</h2>
+
+<p>起動時にGRUBでカーネル選択後にエラーが表示されて止まりました。
+画面の写真を撮ったりしていないのでざっくりですが、以下のような内容が表示されました。</p>
+
+<pre><code class="language-bash">ERROR: Unable to find root device 'UUID-xxxxxxxxxx'
+sh: can't access tty; job control turned off
+[rootfs /]#
+</code></pre>
+
+<p>ディスクが見つからない。とかそんな意味みたい。</p>
+
+<h2 id="直前の操作:e344b098681d1e72c5a19ba11b18de6c">直前の操作</h2>
+
+<ol>
+<li>OSアップデート</li>
+<li>シャットダウン</li>
+<li>マザーボードのBIOSアップデート</li>
+<li>マザーボードのBIOS設定変更(Intel VT-xを有効)</li>
+<li>OS起動(ここでエラー)</li>
+</ol>
+
+<p>一気にやったからどれが原因か分からないです。
+ググってみたら<a href="https://bbs.archlinux.org/viewtopic.php?id=142052">Archのフォーラム</a>に似たようなのがあったので、多分OSアップデートが原因なのでしょう。</p>
+
+<p>同じ現象の人が他にもいるかなと思って探してみると、ちょいちょい見つかります。今回初めて経験したけどよくある事なのかな。</p>
+
+<h2 id="対処方法:e344b098681d1e72c5a19ba11b18de6c">対処方法</h2>
+
+<p>作業自体は<a href="http://archlinux-blogger.blogspot.jp/2014/11/arch-linux-cant-boot-arch-linux.html">こちら</a>の対応そのままでいけました。</p>
+
+<p>やることは以下の4つ。Arch Linuxをインストールしている人には簡単だと思います。</p>
+
+<ul>
+<li>LiveCDやブータブルUSBみたいにシステム外からブートできるものを用意する</li>
+<li>udevを再インストールする</li>
+<li>mkinitcpioを再インストールする</li>
+<li>カーネルイメージを作りなおす</li>
+</ul>
+
+<h1 id="参考ページ:e344b098681d1e72c5a19ba11b18de6c">参考ページ</h1>
+
+<ul>
+<li><a href="http://archlinux-blogger.blogspot.jp/2014/11/arch-linux-cant-boot-arch-linux.html">普段使いのArch Linux: Arch Linuxが起動しない (can&rsquo;t boot Arch Linux)</a></li>
+<li><a href="http://blog.myon.info/blog/2013-07-27/entry/">ERROR: Unable to find root device &lsquo;xxxxxx&rsquo;で起動しなくなった時の対処法 | とさいぬの隠し部屋</a></li>
+</ul>
+
+			</section>
+			
+			<section class="ads">
+			<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			
+			<ins class="adsbygoogle"
+			     style="display:block"
+			     data-ad-client="ca-pub-8327324847265548"
+			     data-ad-slot="8936827656"
+			     data-ad-format="auto"></ins>
+			<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+			</section>
+			
+			<section class="social">
+				<a href="//twitter.com/share?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2015%2f09%2f28%2fcant-boot-arch-linux%2f&text=Arch%20Linux%e3%81%8c%e8%b5%b7%e5%8b%95%e3%81%97%e3%81%aa%e3%81%84" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="twitter">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-twitter fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//www.facebook.com/sharer.php?u=http%3a%2f%2fblog.withweb.info%2fblog%2f2015%2f09%2f28%2fcant-boot-arch-linux%2f" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,height=300,width=600');return false;" class="facebook">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-facebook fa-stack-1x"></i>
+					</span>
+				</a>
+				<a href="//getpocket.com/edit?url=http%3a%2f%2fblog.withweb.info%2fblog%2f2015%2f09%2f28%2fcant-boot-arch-linux%2f&title=Arch%20Linux%e3%81%8c%e8%b5%b7%e5%8b%95%e3%81%97%e3%81%aa%e3%81%84" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,scrollbars=yes,height=300,width=600');return false;" class="pocket">
+					<span class="fa-stack fa-lg">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-get-pocket fa-stack-1x"></i>
+					</span>
+				</a>
+			 </section>
+			
+ 			
+			<div id="disqus_thread"></div>
+			<script type="text/javascript">
+			(function() {
+			  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+			  dsq.src = '//' + 'withweb' + '.disqus.com/embed.js';
+			  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+			</script>
+			<noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+		</article>
+	</main>
+
+  <footer role="contentinfo">
+    <p class="copyright">&copy; withweb</p>
+  </footer>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-25619310-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/languages/scala.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</body>
+</html>
+

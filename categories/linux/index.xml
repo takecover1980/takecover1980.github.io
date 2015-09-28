@@ -6,8 +6,67 @@
     <description>Recent content in Linux on withweb</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>jp</language>
-    <lastBuildDate>Tue, 13 Sep 2011 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 28 Sep 2015 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://blog.withweb.info/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Arch Linuxが起動しない</title>
+      <link>http://blog.withweb.info/blog/2015/09/28/cant-boot-arch-linux/</link>
+      <pubDate>Mon, 28 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.withweb.info/blog/2015/09/28/cant-boot-arch-linux/</guid>
+      <description>
+
+&lt;p&gt;Arch Linuxが起動しなくなって、復旧作業をしたのでメモ。&lt;/p&gt;
+
+&lt;h2 id=&#34;現象:e344b098681d1e72c5a19ba11b18de6c&#34;&gt;現象&lt;/h2&gt;
+
+&lt;p&gt;起動時にGRUBでカーネル選択後にエラーが表示されて止まりました。
+画面の写真を撮ったりしていないのでざっくりですが、以下のような内容が表示されました。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;ERROR: Unable to find root device &#39;UUID-xxxxxxxxxx&#39;
+sh: can&#39;t access tty; job control turned off
+[rootfs /]#
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;ディスクが見つからない。とかそんな意味みたい。&lt;/p&gt;
+
+&lt;h2 id=&#34;直前の操作:e344b098681d1e72c5a19ba11b18de6c&#34;&gt;直前の操作&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;OSアップデート&lt;/li&gt;
+&lt;li&gt;シャットダウン&lt;/li&gt;
+&lt;li&gt;マザーボードのBIOSアップデート&lt;/li&gt;
+&lt;li&gt;マザーボードのBIOS設定変更(Intel VT-xを有効)&lt;/li&gt;
+&lt;li&gt;OS起動(ここでエラー)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;一気にやったからどれが原因か分からないです。
+ググってみたら&lt;a href=&#34;https://bbs.archlinux.org/viewtopic.php?id=142052&#34;&gt;Archのフォーラム&lt;/a&gt;に似たようなのがあったので、多分OSアップデートが原因なのでしょう。&lt;/p&gt;
+
+&lt;p&gt;同じ現象の人が他にもいるかなと思って探してみると、ちょいちょい見つかります。今回初めて経験したけどよくある事なのかな。&lt;/p&gt;
+
+&lt;h2 id=&#34;対処方法:e344b098681d1e72c5a19ba11b18de6c&#34;&gt;対処方法&lt;/h2&gt;
+
+&lt;p&gt;作業自体は&lt;a href=&#34;http://archlinux-blogger.blogspot.jp/2014/11/arch-linux-cant-boot-arch-linux.html&#34;&gt;こちら&lt;/a&gt;の対応そのままでいけました。&lt;/p&gt;
+
+&lt;p&gt;やることは以下の4つ。Arch Linuxをインストールしている人には簡単だと思います。&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;LiveCDやブータブルUSBみたいにシステム外からブートできるものを用意する&lt;/li&gt;
+&lt;li&gt;udevを再インストールする&lt;/li&gt;
+&lt;li&gt;mkinitcpioを再インストールする&lt;/li&gt;
+&lt;li&gt;カーネルイメージを作りなおす&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;参考ページ:e344b098681d1e72c5a19ba11b18de6c&#34;&gt;参考ページ&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://archlinux-blogger.blogspot.jp/2014/11/arch-linux-cant-boot-arch-linux.html&#34;&gt;普段使いのArch Linux: Arch Linuxが起動しない (can&amp;rsquo;t boot Arch Linux)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.myon.info/blog/2013-07-27/entry/&#34;&gt;ERROR: Unable to find root device &amp;lsquo;xxxxxx&amp;rsquo;で起動しなくなった時の対処法 | とさいぬの隠し部屋&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
     
     <item>
       <title>後で泣かないための個人的なWeb開発環境の作り方</title>

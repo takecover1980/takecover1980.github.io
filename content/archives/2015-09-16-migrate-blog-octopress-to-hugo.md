@@ -25,7 +25,7 @@ go get -v github.com/spf13/hugo
 
 OctopressからHugoに移行する際、日付フォーマットや画像タグの変更が必要みたいですが、私の場合は元々Hugoに合っていたので変更しなくてもOKでした。
 
-また、テーマは[公式](https://github.com/spf13/hugoThemes/)にまとめられているみたいです。全部、個別どちらでも簡単に導入できます。今回は[hugo-zen](https://github.com/rakuishi/hugo-zen)と[作者さんのサイト](http://rakuishi.com/)を参考にして、`[my_blog]/layouts`に適当に作りました。
+また、テーマは[公式](https://github.com/spf13/hugoThemes/)にまとめられているみたいです。全部、個別どちらでも簡単に導入できます。今回は[hugo-zen](https://github.com/rakuishi/hugo-zen)と[hugo-zenの作者さんのサイト](http://rakuishi.com/)を参考にして、`[my_blog]/layouts`に適当に作りました。
 
 `hugo server -w`でプレビューしながら記事やレイアウトを作って、この時点でのHugoのディレクトリはこんな感じ。
 

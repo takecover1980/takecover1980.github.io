@@ -36,7 +36,7 @@
 
 &lt;p&gt;OctopressからHugoに移行する際、日付フォーマットや画像タグの変更が必要みたいですが、私の場合は元々Hugoに合っていたので変更しなくてもOKでした。&lt;/p&gt;
 
-&lt;p&gt;また、テーマは&lt;a href=&#34;https://github.com/spf13/hugoThemes/&#34;&gt;公式&lt;/a&gt;にまとめられているみたいです。全部、個別どちらでも簡単に導入できます。今回は&lt;a href=&#34;https://github.com/rakuishi/hugo-zen&#34;&gt;hugo-zen&lt;/a&gt;と&lt;a href=&#34;http://rakuishi.com/&#34;&gt;作者さんのサイト&lt;/a&gt;を参考にして、&lt;code&gt;[my_blog]/layouts&lt;/code&gt;に適当に作りました。&lt;/p&gt;
+&lt;p&gt;また、テーマは&lt;a href=&#34;https://github.com/spf13/hugoThemes/&#34;&gt;公式&lt;/a&gt;にまとめられているみたいです。全部、個別どちらでも簡単に導入できます。今回は&lt;a href=&#34;https://github.com/rakuishi/hugo-zen&#34;&gt;hugo-zen&lt;/a&gt;と&lt;a href=&#34;http://rakuishi.com/&#34;&gt;hugo-zenの作者さんのサイト&lt;/a&gt;を参考にして、&lt;code&gt;[my_blog]/layouts&lt;/code&gt;に適当に作りました。&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;hugo server -w&lt;/code&gt;でプレビューしながら記事やレイアウトを作って、この時点でのHugoのディレクトリはこんな感じ。&lt;/p&gt;
 

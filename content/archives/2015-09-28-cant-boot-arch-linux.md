@@ -44,7 +44,7 @@ sh: can't access tty; job control turned off
 - mkinitcpioを再インストールする
 - カーネルイメージを作りなおす
 
-# 参考ページ
+## 参考ページ
 
 - [普段使いのArch Linux: Arch Linuxが起動しない (can't boot Arch Linux)](http://archlinux-blogger.blogspot.jp/2014/11/arch-linux-cant-boot-arch-linux.html)
 - [ERROR: Unable to find root device 'xxxxxx'で起動しなくなった時の対処法 | とさいぬの隠し部屋](http://blog.myon.info/blog/2013-07-27/entry/)
